@@ -1,0 +1,43 @@
+@import "tailwindcss";
+
+.m-color {
+    color: #FFB200;
+}
+
+.m-b-color {
+    background-color: #FFB200;
+}
+
+.s-color {
+    color: #EB5B00
+}
+
+.s-b-color {
+    background-color: #EB5B00;
+}
+
+.t-color {
+    color: #D91656
+}
+
+.t-b-color {
+    background-color: #D91656;
+}
+
+.comp-color {
+    color: #640D5F;
+}
+
+.comp-b-color {
+    background-color: #640D5F;
+}
+
+.icon-b {
+    height: 60px;
+    width: auto;
+}
+
+.icon-s {
+    height: 40px;
+    width: auto;
+}
