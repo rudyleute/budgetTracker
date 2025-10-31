@@ -1,5 +1,45 @@
 @import "tailwindcss";
 
+.ul-scroll {
+    scrollbar-width: thin;
+    scrollbar-color: #640D5F white;
+}
+
+.s-scroll::-webkit-scrollbar {
+    width: 6px;
+}
+
+.s-scroll::-webkit-scrollbar-track {
+    background: inherit;
+    border-radius: 15px;
+}
+
+.s-scroll::-webkit-scrollbar-thumb {
+    background-color: #640D5F;
+    border-left: 2px solid transparent;
+    background-clip: content-box;
+}
+
+.s-scroll::-webkit-scrollbar-thumb:hover {
+    @apply brightness-900
+}
+
+.field-wrapper {
+    @apply flex flex-col w-full items-center
+}
+
+.field {
+    @apply bg-white rounded-[15px] h-[40px] p-[5px] pl-[20px] w-full font-bold
+}
+
+.text-clipped {
+    @apply text-ellipsis overflow-hidden whitespace-nowrap
+}
+
+.end-adornment {
+    @apply absolute right-[10px] !w-[30px] top-[50%] translate-y-[-50%]
+}
+
 .m-color {
     color: #FFB200;
 }
@@ -41,3 +81,4 @@
     height: 40px;
     width: auto;
 }
+
