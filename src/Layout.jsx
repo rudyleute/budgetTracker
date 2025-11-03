@@ -5,8 +5,12 @@ const Layout = () => {
   return (
     <div className={"flex justify-start font-[Quicksand] text-2xl"}>
       <Menu/>
-      <div className={"m-b-color h-screen grow p-[30px] overflow-y-auto"}>
-        <Outlet />
+      <div className={"grid grid-cols-[9fr_2fr] m-b-color h-screen grow"}>
+        <div className={"s-scroll p-[30px] overflow-y-auto"}>
+          <Outlet />
+        </div>
+        <div className={"w-full h-full overflow-y-auto comp-b-color"}>
+        </div>
       </div>
     </div>
   );

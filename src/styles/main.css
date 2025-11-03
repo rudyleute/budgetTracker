@@ -1,8 +1,11 @@
 @import "tailwindcss";
 
-.ul-scroll {
-    scrollbar-width: thin;
-    scrollbar-color: #640D5F transparent;
+.text-hbg {
+    @apply px-1 py-1 rounded-[5px] bg-[#640D5F]/70;
+}
+
+.transition-500 {
+    @apply transition-all duration-500 ease-in-out
 }
 
 .s-scroll::-webkit-scrollbar {
@@ -15,8 +18,8 @@
 }
 
 .s-scroll::-webkit-scrollbar-thumb {
-    background-color: #640D5F;
-    border-left: 2px solid transparent;
+    background-color: #D91656;
+    border-left: 1px solid transparent;
     background-clip: content-box;
 }
 
@@ -74,6 +77,11 @@
 
 .icon-b {
     height: 60px;
+    width: auto;
+}
+
+.icon-xs {
+    height: 25px;
     width: auto;
 }
 

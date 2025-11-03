@@ -3,6 +3,7 @@ import { useState } from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faHourglassEnd, faHourglassStart } from '@fortawesome/free-solid-svg-icons';
 import Select from '../components/simple/Select.jsx';
+import TransactionsList from '../components/transactions/TransactionsList.jsx';
 
 const options = [
   {label: "--Select time filter--", func: () => console.log("--Select time filter--"), isDefault: true},
@@ -34,7 +35,7 @@ const Main = () => {
 
   return (
     <>
-      <div className={"grid grid-cols-[8fr_2fr_6fr] gap-[20px]"}>
+      <div className={"grid grid-cols-[8fr_2fr] gap-[20px] mb-[10px]"}>
         <div className={"flex flex-col items-end gap-[10px] min-w-0"}>
           <Input placeholder={"Search by name..."} type={"text"} value={values.filter}
                  onChange={(e) => setValues(prev => ({ ...prev, filter: e.target.value }))}/>
@@ -53,6 +54,7 @@ const Main = () => {
           />
         </div>
       </div>
+      <TransactionsList />
     </>
   )
 }

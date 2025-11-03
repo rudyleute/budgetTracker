@@ -18,10 +18,10 @@ const Accordion = ({ hClassName, bClassName, label, children }) => {
       </div>
 
       <div className={twMerge(
-        "grid transition-all duration-500 ease-in-out overflow-hidden bg-gray-400 p-[5px_10px]",
-        isOpen ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0", bClassName, !isOpen && "p-0"
+        "grid transition-500 overflow-hidden",
+        isOpen ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0",
       )}>
-        <div className={"overflow-hidden"}>
+        <div className={twMerge("bg-gray-400 p-[5px_10px] transition-500", bClassName, "overflow-hidden", !isOpen && "p-0")}>
           {children}
         </div>
       </div>
