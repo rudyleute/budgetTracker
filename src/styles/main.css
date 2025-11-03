@@ -2,7 +2,7 @@
 
 .ul-scroll {
     scrollbar-width: thin;
-    scrollbar-color: #640D5F white;
+    scrollbar-color: #640D5F transparent;
 }
 
 .s-scroll::-webkit-scrollbar {
@@ -37,7 +37,7 @@
 }
 
 .end-adornment {
-    @apply absolute right-[10px] !w-[30px] top-[50%] translate-y-[-50%]
+    @apply hover:cursor-pointer absolute right-[10px] w-[30px] top-[50%] translate-y-[-50%]
 }
 
 .m-color {

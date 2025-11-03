@@ -1,8 +1,8 @@
-import classNames from "classnames";
+import { twMerge } from 'tailwind-merge';
 
 const Button = ({ children, className, ...rest }) => {
   return (
-    <button className={classNames('hover:cursor-pointer w-fit h-fit', className)} {...rest}>
+    <button className={twMerge('hover:cursor-pointer w-fit h-fit', className)} {...rest}>
       {children}
     </button>
   )
