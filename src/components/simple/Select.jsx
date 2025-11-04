@@ -9,13 +9,13 @@ const Select = ({ options, onOptionClick, className }) => {
   const wrapperRef = useRef(null);
 
   useEffect(() => {
-    const handleOutsideClick = (e) => {
-      if (wrapperRef.current && !wrapperRef.current.contains(e.target)) setIsOpen(false);
-    }
-
     const defaultOption = options.find(option => option.isDefault)
     if (defaultOption) setCurValue(defaultOption)
     else if (options.length > 0) setCurValue(options[0]);
+
+    const handleOutsideClick = (e) => {
+      if (wrapperRef.current && !wrapperRef.current.contains(e.target)) setIsOpen(false);
+    }
 
     document.addEventListener('mousedown', handleOutsideClick, true);
     return () => {

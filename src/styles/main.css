@@ -1,5 +1,9 @@
 @import "tailwindcss";
 
+body {
+    @apply font-[Quicksand] text-2xl
+}
+
 .text-hbg {
     @apply px-1 py-1 rounded-[5px] bg-[#640D5F]/70;
 }
@@ -21,6 +25,10 @@
     background-color: #D91656;
     border-left: 1px solid transparent;
     background-clip: content-box;
+}
+
+.s-scroll-comp::-webkit-scrollbar-thumb {
+    @apply bg-[#FFB200];
 }
 
 .s-scroll::-webkit-scrollbar-thumb:hover {
