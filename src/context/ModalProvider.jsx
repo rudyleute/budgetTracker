@@ -1,16 +1,16 @@
 import { createContext, useContext, useState } from 'react';
-import Modal from '../simple/Modal.jsx';
+import Modal from '../components/simple/Modal.jsx';
 
 const ModalContext = createContext({});
 const ModalProvider = ({ children }) => {
   const [stack, setStack] = useState([]);
 
-  const showModal = (title, content, saveFunc = null, closeFunc = null, hideOnSave = false) => {
+  const showModal = (title, content, closeFunc = null, saveFunc = null, hideOnSave = false) => {
     setStack(prev => [...prev, {
       content,
       title,
-      saveFunc,
       closeFunc,
+      saveFunc,
       hideOnSave
     }]);
   }

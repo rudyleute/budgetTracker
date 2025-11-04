@@ -1,7 +1,7 @@
 import { Outlet } from "react-router-dom";
 import Menu from "./components/Menu";
 import Modal from './components/simple/Modal.jsx';
-import { ModalProvider } from './components/context/ModalProvider.jsx';
+import { ModalProvider } from './context/ModalProvider.jsx';
 
 const Layout = () => {
   return (
