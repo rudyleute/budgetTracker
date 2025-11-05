@@ -3,15 +3,15 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faAngleDown, faAngleUp } from '@fortawesome/free-solid-svg-icons';
 import { twMerge } from 'tailwind-merge';
 
-const Select = ({ options, onOptionClick, className }) => {
+const Select = ({ options, onOptionClick, className, label, lClassName }) => {
   const [curValue, setCurValue] = useState({});
   const [isOpen, setIsOpen] = useState(false);
   const wrapperRef = useRef(null);
 
   useEffect(() => {
-    const defaultOption = options.find(option => option.isDefault)
+    const defaultOption = options?.find(option => option.isDefault)
     if (defaultOption) setCurValue(defaultOption)
-    else if (options.length > 0) setCurValue(options[0]);
+    else if (options?.length > 0) setCurValue(options[0]);
 
     const handleOutsideClick = (e) => {
       if (wrapperRef.current && !wrapperRef.current.contains(e.target)) setIsOpen(false);
@@ -25,6 +25,7 @@ const Select = ({ options, onOptionClick, className }) => {
 
   return (
     <div ref={wrapperRef} className={twMerge("field-wrapper relative", className)}>
+      {label && <label className={twMerge("label", lClassName)}>{label}</label>}
       <div className={"field relative mb-[1px]"}>
         <span className={"w-full text-clipped inline-block pr-[45px]"}>{curValue.label}</span>
         <FontAwesomeIcon className={"end-adornment"} onClick={() => setIsOpen(prev => !prev)}
@@ -38,7 +39,8 @@ const Select = ({ options, onOptionClick, className }) => {
                                            onClick={() => {
                                              setIsOpen(false)
                                              setCurValue(elem)
-                                             onOptionClick(elem)
+                                             if (elem.func) elem.func()
+                                             else onOptionClick(elem)
                                            }}>{elem.label}</li>)}
         </ul>
       </div>}

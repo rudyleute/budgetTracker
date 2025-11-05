@@ -44,8 +44,12 @@ body {
     @apply brightness-900
 }
 
+.label {
+    @apply capitalize font-bold h-fit text-white text-xl
+}
+
 .field-wrapper {
-    @apply flex flex-col w-full items-center
+    @apply flex flex-col w-full justify-start
 }
 
 .field {
