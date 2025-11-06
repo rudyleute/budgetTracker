@@ -19,4 +19,4 @@ export const groupBy = (data, columnName, functor = null) => {
   return { keys, groups };
 };
 
-export const getDate = (date, options = {}) => { return (new Date(date)).toLocaleDateString("en-GB", options)}
+export const getDate = (date, options = {}) => { return (new Date(date)).toLocaleDateString("en-CA", options)}

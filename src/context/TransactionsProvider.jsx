@@ -1,6 +1,7 @@
 import { createContext, useContext, useEffect, useState } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import { getDate, groupBy } from '../helpers/transformers.js';
+import _ from 'lodash';
 
 const trans = [
   {
@@ -226,15 +227,42 @@ const TransactionsProvider = ({children}) => {
 
   useEffect(() => {
     const { keys, groups: data } = groupBy(trans, "createdAt", (date) => getDate(date, {
+      year: 'numeric',
       month: 'long',
-      year: 'numeric'
     }));
 
     setTransactions({ keys, data });
   }, []);
 
+  const addTransaction = (data) => {
+    const date = getDate(data.createdAt, {
+      month: 'long',
+      year: 'numeric'
+    });
+
+    if (transactions.keys.includes(date)) {
+      const ind = _.sortedIndexBy(transactions.data[date], data, (t) => -new Date(t.createdAt))
+      setTransactions(prev => ({
+        keys: prev.keys,
+        data: {
+          ...prev.data,
+          [date]: [...prev.data[date].slice(0, ind), data, ...prev.data[date].slice(ind)]
+        }
+      }))
+    } else {
+      const ind = _.sortedIndexBy(transactions.keys, data.createdAt, (t) => -new Date(t))
+      setTransactions(prev => ({
+        keys: [...prev.keys.slice(0, ind), date, ...prev.keys.slice(ind)],
+        data: {
+          ...prev.data,
+          [date]: [data],
+        },
+      }));
+    }
+  }
+
   return (
-    <TransactionsContext.Provider value={{transactions}}>
+    <TransactionsContext.Provider value={{transactions, addTransaction}}>
       {children}
     </TransactionsContext.Provider>
   )

@@ -1,5 +1,5 @@
 import Input from '../components/simple/Input.jsx';
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faBroom, faCartPlus, faFileCsv, faFilePdf,
@@ -12,6 +12,7 @@ import TransactionsList from '../components/transactions/TransactionsList.jsx';
 import PillButtons from '../components/simple/PillButtons.jsx';
 import { useModal } from '../context/ModalProvider.jsx';
 import TransactionsForm from '../components/transactions/TransactionsForm.jsx';
+import { useTransactions } from '../context/TransactionsProvider.jsx';
 
 const options = [
   { label: "--Select time filter--", func: () => console.log("--Select time filter--"), isDefault: true },
@@ -33,6 +34,8 @@ const Main = () => {
   });
   const [isSelected, setIsSelected] = useState(false);
   const { showModal } = useModal();
+  const { addTransaction } = useTransactions();
+  const formRef = useRef(null);
 
   const handleOptionClick = (option) => {
     if (option?.isDefault) {
@@ -45,9 +48,9 @@ const Main = () => {
   const handleCreation = () => {
     showModal(
       "New expense",
-      <TransactionsForm />,
+      <TransactionsForm ref={formRef}/>,
       null,
-      () => alert("New expense has been created"),
+      () => addTransaction(formRef.current.getData()),
       true
     )
   }

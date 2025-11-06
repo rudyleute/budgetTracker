@@ -11,7 +11,6 @@ const Select = ({ options, onOptionClick, className, label, lClassName }) => {
   useEffect(() => {
     const defaultOption = options?.find(option => option.isDefault)
     if (defaultOption) setCurValue(defaultOption)
-    else if (options?.length > 0) setCurValue(options[0]);
 
     const handleOutsideClick = (e) => {
       if (wrapperRef.current && !wrapperRef.current.contains(e.target)) setIsOpen(false);
@@ -32,7 +31,7 @@ const Select = ({ options, onOptionClick, className, label, lClassName }) => {
                          icon={isOpen ? faAngleUp : faAngleDown}/>
       </div>
       {isOpen && <div
-        className={"w-full rounded-[15px] pr-0 text-xl max-h-[200px] overflow-hidden bg-white absolute top-full left-0 z-10 shadow-[0_10px_25px_rgba(0,0,0,0.3)]"}>
+        className={"w-full text-black rounded-[15px] pr-0 text-xl max-h-[200px] overflow-hidden bg-white absolute top-full left-0 z-10 shadow-[0_10px_25px_rgba(0,0,0,0.3)]"}>
         <ul className={"s-scroll max-h-[200px] h-full overflow-y-auto"}>
           {options?.map((elem, ind) => <li key={ind}
                                            className={"hover:cursor-pointer bg-white hover:bg-[#640D5F]/40 w-full text-left text-clipped p-[5px_10px]"}
