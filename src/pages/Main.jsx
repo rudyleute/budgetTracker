@@ -11,7 +11,7 @@ import Select from '../components/simple/Select.jsx';
 import TransactionsList from '../components/transactions/TransactionsList.jsx';
 import PillButtons from '../components/simple/PillButtons.jsx';
 import { useModal } from '../context/ModalProvider.jsx';
-import TransactionForm from '../components/transactions/TransactionForm.jsx';
+import TransactionsForm from '../components/transactions/TransactionsForm.jsx';
 
 const options = [
   { label: "--Select time filter--", func: () => console.log("--Select time filter--"), isDefault: true },
@@ -45,7 +45,7 @@ const Main = () => {
   const handleCreation = () => {
     showModal(
       "New expense",
-      <TransactionForm />,
+      <TransactionsForm />,
       null,
       () => alert("New expense has been created"),
       true
@@ -72,12 +72,12 @@ const Main = () => {
         <div className={"flex flex-col gap-[10px]"}>
           <Input label={
             <FontAwesomeIcon icon={faHourglassStart}/>
-          } lClassName={"text-black"} wClassName={"!flex-row items-center"} name={"from"} type={"date"} value={values.from}
+          } lClassName={"!text-black"} wClassName={"!flex-row items-center"} name={"from"} type={"date"} value={values.from}
                  onChange={(e) => setValues(prev => ({ ...prev, from: e.target.value }))}
           />
           <Input label={
             <FontAwesomeIcon icon={faHourglassEnd}/>
-          } lClassName={"text-black"} wClassName={"!flex-row items-center"} name={"to"} type={"date"} value={values.to}
+          } lClassName={"!text-black"} wClassName={"!flex-row items-center"} name={"to"} type={"date"} value={values.to}
                  onChange={(e) => setValues(prev => ({ ...prev, to: e.target.value }))}
           />
         </div>

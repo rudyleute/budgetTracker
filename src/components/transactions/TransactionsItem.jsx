@@ -3,7 +3,7 @@ import { getDate } from '../../helpers/transformers.js';
 import { twMerge } from 'tailwind-merge';
 import { faCircleXmark, faPenToSquare } from '@fortawesome/free-regular-svg-icons';
 
-const TransactionItem = ({ data, className }) => {
+const TransactionsItem = ({ data, className }) => {
   const { id, createdAt, createdAtNew, name, category, price } = data;
 
   return (
@@ -23,4 +23,4 @@ const TransactionItem = ({ data, className }) => {
   )
 }
 
-export default TransactionItem;
+export default TransactionsItem;

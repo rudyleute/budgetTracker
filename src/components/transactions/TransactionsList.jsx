@@ -1,5 +1,5 @@
 import Accordion from '../simple/Accordion.jsx';
-import TransactionItem from './TransactionItem.jsx';
+import TransactionsItem from './TransactionsItem.jsx';
 import { useEffect, useState } from 'react';
 import { groupBy, getDate } from '../../helpers/transformers.js';
 import { v4 as uuidv4 } from 'uuid';
@@ -237,7 +237,7 @@ const TransactionsList = () => {
       {
         elements.keys.map(key => {
           return <Accordion hClassName={"comp-b-color text-white"} bClassName={"t-b-color p-[5px]"} label={key} key={uuidv4()}>
-            {elements.data[key].map(({ id, ...rest }) => <TransactionItem data={rest} key={id}/>)}
+            {elements.data[key].map(({ id, ...rest }) => <TransactionsItem data={rest} key={id}/>)}
           </Accordion>
         })
       }

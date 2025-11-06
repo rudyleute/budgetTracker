@@ -15,7 +15,7 @@ const Modal = ({ children, onClose, onSubmit, bClassName, title, zIndex }) => {
           <IconButton size={"xl"} title={"Close"} onClick={onClose} icon={faCircleXmark}/>
         </div>
       </div>
-      <div className={twMerge("t-b-color p-[5px_10px] s-scroll s-scroll-comp overflow-x-hidden overflow-y-auto min-h-full h-full", bClassName)}>
+      <div className={twMerge("t-b-color p-[15px_25px] s-scroll s-scroll-comp overflow-x-hidden overflow-y-auto min-h-full h-full", bClassName)}>
         {children}
       </div>
     </div>, document.body))

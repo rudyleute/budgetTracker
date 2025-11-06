@@ -8,6 +8,10 @@ body {
     @apply px-1 py-1 rounded-[5px] bg-[#640D5F]/70;
 }
 
+.form {
+    @apply flex flex-col gap-[10px]
+}
+
 .jump-1 {
     @apply transition-transform duration-300 hover:scale-110 hover:-translate-y-1;
 }
@@ -53,7 +57,7 @@ body {
 }
 
 .field {
-    @apply bg-white rounded-[15px] h-[40px] p-[5px] pl-[20px] w-full font-bold
+    @apply bg-white rounded-[15px] h-[40px] p-[5px] pl-[20px] w-full font-bold text-black
 }
 
 .text-clipped {
