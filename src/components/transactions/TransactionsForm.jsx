@@ -1,4 +1,4 @@
-import { useEffect, useImperativeHandle, useState } from 'react';
+import { useEffect, useState } from 'react';
 import Input from '../simple/Input.jsx';
 import Select from '../simple/Select.jsx';
 import { useCategories } from '../../context/CategoriesProvider.jsx';
@@ -16,7 +16,7 @@ const TransactionsForm = ({ ref, name, category, price, createdAt }) => {
     name: name || "",
     category: category || {},
     price: price || null,
-    createdAt: createdAt || (new Date()).toISOString().slice(0, 16)
+    createdAt: createdAt?.slice(0, 16) || (new Date()).toISOString().slice(0, 16)
   });
 
   useEffect(() => {
@@ -30,7 +30,8 @@ const TransactionsForm = ({ ref, name, category, price, createdAt }) => {
         <Color value={color}/>
         <span className={"text-clipped"}>{name}</span>
       </span>,
-      ...item
+      ...item,
+      isDefault: fields.category?.id === id
     }
   })
 

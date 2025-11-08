@@ -7,7 +7,7 @@ const defCategories = [
   { id: uuidv4(), color: "#F9C74F", name: "Snacks" },
   { id: uuidv4(), color: "#3FC1A1", name: "Leisure" },
   { id: uuidv4(), color: "#9B5DE5", name: "Transport" },
-  { id: uuidv4(), color: "#F15BB5", name: "Utilities" },
+  { id: "2", color: "#F15BB5", name: "Utilities" },
   { id: uuidv4(), color: "#00BBF9", name: "Entertainment" },
   { id: uuidv4(), color: "#00F5D4", name: "Dining out" },
   { id: uuidv4(), color: "#5B5FEF", name: "Insurance" }

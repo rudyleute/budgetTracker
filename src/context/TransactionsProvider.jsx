@@ -6,45 +6,10 @@ import _ from 'lodash';
 const trans = [
   {
     id: uuidv4(),
-    createdAt: "2025-10-31T08:12:15.000Z",
-    category: { id: uuidv4(), color: "#5B5FEF", name: "Health insurance" },
-    price: 150,
-    name: "Monthly premium payment"
-  },
-  {
-    id: uuidv4(),
-    createdAt: "2025-10-31T09:45:20.000Z",
-    category: { id: uuidv4(), color: "#E85A93", name: "Food" },
-    price: 45,
-    name: "Supermarket groceries"
-  },
-  {
-    id: uuidv4(),
-    createdAt: "2025-10-31T10:18:54.000Z",
-    category: { id: uuidv4(), color: "#F9C74F", name: "Snacks" },
-    price: 8,
-    name: "Chips and soda"
-  },
-  {
-    id: uuidv4(),
-    createdAt: "2025-10-31T12:40:05.000Z",
-    category: { id: uuidv4(), color: "#3FC1A1", name: "Leisure" },
-    price: 20,
-    name: "Streaming subscription"
-  },
-  {
-    id: uuidv4(),
-    createdAt: "2025-10-31T14:02:45.000Z",
-    category: { id: uuidv4(), color: "#9B5DE5", name: "Transport" },
-    price: 16,
-    name: "Taxi to work"
-  },
-  {
-    id: uuidv4(),
-    createdAt: "2025-10-31T15:27:18.000Z",
-    category: { id: uuidv4(), color: "#F15BB5", name: "Utilities" },
-    price: 65,
-    name: "Electricity bill"
+    createdAt: "2025-10-31T20:51:12.000Z",
+    category: { id: uuidv4(), color: "#00F5D4", name: "Dining out" },
+    price: 55,
+    name: "Dinner with friends"
   },
   {
     id: uuidv4(),
@@ -55,13 +20,46 @@ const trans = [
   },
   {
     id: uuidv4(),
-    createdAt: "2025-10-31T20:51:12.000Z",
-    category: { id: uuidv4(), color: "#00F5D4", name: "Dining out" },
-    price: 55,
-    name: "Dinner with friends"
+    createdAt: "2025-10-31T15:27:18.000Z",
+    category: { id: "2", color: "#F15BB5", name: "Utilities" },
+    price: 65,
+    name: "Electricity bill"
   },
-
-  // Other random dates
+  {
+    id: uuidv4(),
+    createdAt: "2025-10-31T14:02:45.000Z",
+    category: { id: uuidv4(), color: "#9B5DE5", name: "Transport" },
+    price: 16,
+    name: "Taxi to work"
+  },
+  {
+    id: uuidv4(),
+    createdAt: "2025-10-31T12:40:05.000Z",
+    category: { id: uuidv4(), color: "#3FC1A1", name: "Leisure" },
+    price: 20,
+    name: "Streaming subscription"
+  },
+  {
+    id: uuidv4(),
+    createdAt: "2025-10-31T10:18:54.000Z",
+    category: { id: uuidv4(), color: "#F9C74F", name: "Snacks" },
+    price: 8,
+    name: "Chips and soda"
+  },
+  {
+    id: uuidv4(),
+    createdAt: "2025-10-31T09:45:20.000Z",
+    category: { id: uuidv4(), color: "#E85A93", name: "Food" },
+    price: 45,
+    name: "Supermarket groceries"
+  },
+  {
+    id: uuidv4(),
+    createdAt: "2025-10-31T08:12:15.000Z",
+    category: { id: uuidv4(), color: "#5B5FEF", name: "Health insurance" },
+    price: 150,
+    name: "Monthly premium payment"
+  },
   {
     id: uuidv4(),
     createdAt: "2025-10-30T06:01:55.000Z",
@@ -218,6 +216,7 @@ const trans = [
   }
 ];
 
+
 const TransactionsContext = createContext({});
 const TransactionsProvider = ({ children }) => {
   const [transactions, setTransactions] = useState({
@@ -234,12 +233,7 @@ const TransactionsProvider = ({ children }) => {
     setTransactions({ keys, data });
   }, []);
 
-  const addTransaction = async (data) => {
-    const date = getDate(data.createdAt, {
-      month: 'long',
-      year: 'numeric'
-    });
-
+  const addTransactionUI = (date, data) => {
     if (transactions.keys.includes(date)) {
       const ind = _.sortedIndexBy(transactions.data[date], data, (t) => -new Date(t.createdAt))
       setTransactions(prev => ({
@@ -261,6 +255,15 @@ const TransactionsProvider = ({ children }) => {
     }
   }
 
+  const addTransaction = async (data) => {
+    const date = getDate(data.createdAt, {
+      month: 'long',
+      year: 'numeric'
+    });
+
+    addTransactionUI(date, data);
+  }
+
   const deleteTransaction = async (month, id) => {
     const newData = transactions.data[month].filter(item => item.id !== id);
     let keys = transactions.keys;
@@ -279,8 +282,37 @@ const TransactionsProvider = ({ children }) => {
     }))
   }
 
+  const editTransaction = async (month, id, data) => {
+    const newData = transactions.data[month].filter(item => item.id !== id);
+    const newDate = getDate(data.createdAt, {
+      month: 'long',
+      year: 'numeric'
+    })
+
+    if (newDate === month) {
+      const ind = _.sortedIndexBy(newData, data, (t) => -new Date(t.createdAt))
+      setTransactions(prev => ({
+        keys: prev.keys,
+        data: {
+          ...prev.data,
+          [month]: [...newData.slice(0, ind), data, ...newData.slice(ind)]
+        }
+      }))
+    } else {
+      setTransactions(prev => ({
+        keys: prev.keys,
+        data: {
+          ...prev.data,
+          [month]: newData
+        }
+      }))
+
+      addTransactionUI(newDate, data);
+    }
+  }
+
   return (
-    <TransactionsContext.Provider value={{ transactions, addTransaction, deleteTransaction }}>
+    <TransactionsContext.Provider value={{ transactions, addTransaction, deleteTransaction, editTransaction }}>
       {children}
     </TransactionsContext.Provider>
   )
