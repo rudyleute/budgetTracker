@@ -25,15 +25,15 @@ const ModalProvider = ({ children }) => {
           return (<Modal key={i} title={title} zIndex={2000 + i} onClose={() => {
             closeFunc && closeFunc();
             hideModal();
-          }} onSubmit={() => {
-            saveFunc && saveFunc();
+          }} onSubmit={async () => {
+            saveFunc && await saveFunc();
             hideOnSave && hideModal();
           }}>
             {content}
           </Modal>)
         })
       }
-      {stack.length > 0 && <div className={"fixed top-0 left-0 w-full h-full z-[1999] bg-black/70"} {...(stack.length === 1 ? {onClick: hideModal} : {})} />}
+      {stack.length > 0 && <div className={"overlay z-[1999]"} {...(stack.length === 1 ? {onClick: hideModal} : {})} />}
     </ModalContext.Provider>
   )
 }

@@ -50,7 +50,7 @@ const Main = () => {
       "New expense",
       <TransactionsForm ref={formRef}/>,
       null,
-      () => addTransaction(formRef.current.getData()),
+      async () => await addTransaction(formRef.current.getData()),
       true
     )
   }

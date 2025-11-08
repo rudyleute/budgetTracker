@@ -6,13 +6,12 @@ export const groupBy = (data, columnName, functor = null) => {
 
   data.forEach(item => {
     const newKey = getKey(item[columnName]);
-    const newItem = {...item, [columnName + "New"]: newKey}
 
     if (newKey in groups) {
-      groups[newKey].push(newItem);
+      groups[newKey].push(item);
     } else {
       keys.push(newKey);
-      groups[newKey] = [newItem];
+      groups[newKey] = [item];
     }
   });
 

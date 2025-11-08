@@ -12,8 +12,24 @@ body {
     @apply flex flex-col gap-[10px]
 }
 
+.window-center {
+    @apply fixed top-[50%] left-[50%] -translate-1/2 overflow-hidden
+}
+
+.overlay {
+    @apply fixed top-0 left-0 w-full h-full bg-black/70;
+}
+
 .jump-1 {
     @apply transition-transform duration-300 hover:scale-110 hover:-translate-y-1;
+}
+
+.jump-05 {
+    @apply transition-transform duration-300 hover:scale-105 hover:-translate-y-0.5;
+}
+
+.btn-classic {
+    @apply rounded-[15px] p-[5px_10px] ;
 }
 
 .btn-rounded {

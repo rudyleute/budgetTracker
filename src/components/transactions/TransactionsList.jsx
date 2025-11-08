@@ -13,7 +13,7 @@ const TransactionsList = () => {
         transactions.keys.map(key => {
           return <Accordion hClassName={"comp-b-color text-white"} bClassName={"t-b-color p-[5px]"} label={key}
                             key={uuidv4()}>
-            {transactions.data[key].map(({ id, ...rest }) => <TransactionsItem data={rest} key={id}/>)}
+            {transactions.data[key].map((item) => <TransactionsItem data={item} key={item.id} month={key} />)}
           </Accordion>
         })
       }

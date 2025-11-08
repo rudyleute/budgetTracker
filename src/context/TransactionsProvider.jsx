@@ -219,7 +219,7 @@ const trans = [
 ];
 
 const TransactionsContext = createContext({});
-const TransactionsProvider = ({children}) => {
+const TransactionsProvider = ({ children }) => {
   const [transactions, setTransactions] = useState({
     keys: [],
     data: {}
@@ -228,13 +228,13 @@ const TransactionsProvider = ({children}) => {
   useEffect(() => {
     const { keys, groups: data } = groupBy(trans, "createdAt", (date) => getDate(date, {
       year: 'numeric',
-      month: 'long',
+      month: 'long'
     }));
 
     setTransactions({ keys, data });
   }, []);
 
-  const addTransaction = (data) => {
+  const addTransaction = async (data) => {
     const date = getDate(data.createdAt, {
       month: 'long',
       year: 'numeric'
@@ -255,14 +255,32 @@ const TransactionsProvider = ({children}) => {
         keys: [...prev.keys.slice(0, ind), date, ...prev.keys.slice(ind)],
         data: {
           ...prev.data,
-          [date]: [data],
-        },
+          [date]: [data]
+        }
       }));
     }
   }
 
+  const deleteTransaction = async (month, id) => {
+    const newData = transactions.data[month].filter(item => item.id !== id);
+    let keys = transactions.keys;
+
+    if (newData.length === 0) {
+      const ind = _.sortedIndexBy(transactions.keys, month, t => -new Date(t))
+      delete newData[month];
+      keys = [...transactions.keys.slice(0, ind), ...transactions.keys.slice(ind + 1)];
+    }
+
+    setTransactions(prev => ({
+      keys, data: {
+        ...prev.data,
+        [month]: newData
+      }
+    }))
+  }
+
   return (
-    <TransactionsContext.Provider value={{transactions, addTransaction}}>
+    <TransactionsContext.Provider value={{ transactions, addTransaction, deleteTransaction }}>
       {children}
     </TransactionsContext.Provider>
   )

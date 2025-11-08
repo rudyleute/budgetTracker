@@ -6,7 +6,7 @@ import { twMerge } from 'tailwind-merge';
 const Modal = ({ children, onClose, onSubmit, bClassName, title, zIndex }) => {
   return (createPortal(
     <div
-      className={"font-bold text-white fixed top-[50%] left-[50%] w-[480px] h-[550px] -translate-1/2 rounded-[10px] overflow-hidden"}
+      className={"font-bold text-white window-center w-[480px] h-[550px] rounded-[15px]"}
       style={{ zIndex }}>
       <div className={"p-[5px_10px] flex justify-between items-center gap-[10px] comp-b-color"}>
         <span className={"uppercase text-clipped"}>{title}</span>
