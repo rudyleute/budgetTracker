@@ -7,10 +7,12 @@ import Color from '../simple/Color.jsx';
 import { faFolderPlus } from '@fortawesome/free-solid-svg-icons';
 import IconButton from '../simple/IconButton.jsx';
 import CategoriesForm from '../categories/CategoriesForm.jsx';
-import { faPenToSquare } from '@fortawesome/free-regular-svg-icons';
+import { faPenToSquare, faXmarkCircle } from '@fortawesome/free-regular-svg-icons';
+import { useConfirmation } from '../../context/ConfirmationProvider.jsx';
 
 const TransactionsForm = ({ ref, name, category, price, createdAt }) => {
-  const { categories, addCategory, editCategory } = useCategories();
+  const { categories, addCategory, editCategory, deleteCategory } = useCategories();
+  const { showConfirmation } = useConfirmation();
   const { showModal } = useModal();
   const catFormRef = useRef(null);
 
@@ -40,6 +42,12 @@ const TransactionsForm = ({ ref, name, category, price, createdAt }) => {
               "Edit category",
               <CategoriesForm ref={catFormRef} name={name} color={color}/>,
               () => editCategory(id, catFormRef.current.getData())
+            )
+          }}/>
+          <IconButton title={"Delete category"} size={"xs"} icon={faXmarkCircle} onClick={() => {
+            showConfirmation(
+              () => deleteCategory(id),
+              `'${name}' category`
             )
           }}/>
         </span>

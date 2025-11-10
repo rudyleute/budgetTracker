@@ -10,7 +10,7 @@ const Select = ({ options, onOptionClick, className, label, lClassName }) => {
 
   useEffect(() => {
     const defaultOption = options?.find(option => option.isDefault)
-    if (defaultOption) setCurValue(defaultOption)
+    setCurValue(defaultOption ?? {})
 
     const handleOutsideClick = (e) => {
       if (wrapperRef.current && !wrapperRef.current.contains(e.target)) setIsOpen(false);
