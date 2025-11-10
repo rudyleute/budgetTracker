@@ -49,9 +49,7 @@ const Main = () => {
     showModal(
       "New expense",
       <TransactionsForm ref={formRef}/>,
-      null,
-      () => addTransaction(formRef.current.getData()),
-      true
+      () => addTransaction(formRef.current.getData())
     )
   }
 

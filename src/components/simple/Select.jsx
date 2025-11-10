@@ -20,7 +20,7 @@ const Select = ({ options, onOptionClick, className, label, lClassName }) => {
     return () => {
       document.removeEventListener('mousedown', handleOutsideClick, true);
     }
-  }, [])
+  }, [options])
 
   return (
     <div ref={wrapperRef} className={twMerge("field-wrapper relative", className)}>

@@ -22,9 +22,7 @@ const TransactionsItem = ({ data, month }) => {
     showModal(
       "New expense",
       <TransactionsForm ref={formRef} name={name} category={category} createdAt={createdAt} price={price} />,
-      null,
-      () => editTransaction(month, id, formRef.current.getData()),
-      true
+      () => editTransaction(month, id, formRef.current.getData())
     )
   }
 

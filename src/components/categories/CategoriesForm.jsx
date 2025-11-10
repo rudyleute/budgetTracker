@@ -1,15 +1,19 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { SliderPicker } from 'react-color';
 import Input from '../simple/Input.jsx';
 
-const CategoriesForm = ({ color, name }) => {
+const CategoriesForm = ({ ref, color, name }) => {
   const [data, setData] = useState({
     color: color || {},
     name: name || ""
   });
 
+  useEffect(() => {
+    if (ref) ref.current = { getData: () => data }
+  }, [ref, data]);
+
   return (
-    <div className={"form"}>
+    <div ref={ref} className={"form"}>
       <Input label={"name"} value={data.name} onChange={(e) => setData(prev => ({ ...prev, "name": e.target.value }))}/>
       <div>
         <label className={"label"}>Color</label>

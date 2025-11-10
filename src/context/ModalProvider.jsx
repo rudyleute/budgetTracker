@@ -5,7 +5,7 @@ const ModalContext = createContext({});
 const ModalProvider = ({ children }) => {
   const [stack, setStack] = useState([]);
 
-  const showModal = (title, content, closeFunc = null, saveFunc = null, hideOnSave = false) => {
+  const showModal = (title, content, saveFunc = null, hideOnSave = true, closeFunc = null) => {
     setStack(prev => [...prev, {
       content,
       title,

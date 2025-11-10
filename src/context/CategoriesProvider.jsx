@@ -21,8 +21,27 @@ const CategoriesProvider = ({ children }) => {
     setCategories(defCategories);
   }, []);
 
+  const addCategory = async (category) => {
+    const catWithId = { ...category, id: uuidv4() }
+    setCategories(prev => [ ...prev, catWithId ])
+    return catWithId;
+  }
+
+  const editCategory = async (id, category) => {
+    setCategories(prev => prev.map(item => {
+      if (item.id !== id) return item;
+      return category
+    }))
+
+    return category;
+  }
+
+  const deleteCategory = async (id) => {
+    setCategories(prev => prev.filter(item => item.id !== id))
+  }
+
   return (
-    <CategoriesContext.Provider value={{categories}}>
+    <CategoriesContext.Provider value={{categories, addCategory, editCategory, deleteCategory}}>
       {children}
     </CategoriesContext.Provider>
   )

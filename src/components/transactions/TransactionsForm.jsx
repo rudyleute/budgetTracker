@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Input from '../simple/Input.jsx';
 import Select from '../simple/Select.jsx';
 import { useCategories } from '../../context/CategoriesProvider.jsx';
@@ -9,8 +9,9 @@ import IconButton from '../simple/IconButton.jsx';
 import CategoriesForm from '../categories/CategoriesForm.jsx';
 
 const TransactionsForm = ({ ref, name, category, price, createdAt }) => {
-  const { categories } = useCategories();
+  const { categories, addCategory } = useCategories();
   const { showModal } = useModal();
+  const catFormRef = useRef(null);
 
   const [fields, setFields] = useState({
     name: name || "",
@@ -25,6 +26,7 @@ const TransactionsForm = ({ ref, name, category, price, createdAt }) => {
 
   const options = categories.map(item => {
     const { color, name, id } = item;
+
     return {
       label: <span className={"flex items-center gap-[10px]"}>
         <Color value={color}/>
@@ -35,12 +37,16 @@ const TransactionsForm = ({ ref, name, category, price, createdAt }) => {
     }
   })
 
+  const handleCatSave = async () => {
+    const category = await addCategory(catFormRef.current.getData());
+    setFields(prev => ({ ...prev, category }));
+  }
+
   const handleCatCreate = () => {
     showModal(
       "Add category",
-      <CategoriesForm/>,
-      () => alert("Close category"),
-      () => alert("Save category")
+      <CategoriesForm ref={catFormRef}/>,
+      handleCatSave,
     )
   }
 
@@ -59,7 +65,8 @@ const TransactionsForm = ({ ref, name, category, price, createdAt }) => {
           <span className={"mr-[3px]"}>Category</span>
           <IconButton onClick={handleCatCreate} className={"leading-0"} iconClassName={"!text-white"}
                       title={"Add category"} icon={faFolderPlus}/>
-        </>} onOptionClick={({label, ...rest}) => setFields(prev => ({ ...prev, category: rest }))} options={options}/>
+        </>} onOptionClick={({ label, ...rest }) => setFields(prev => ({ ...prev, category: rest }))}
+                options={options}/>
       </div>
     </div>
   )

@@ -262,6 +262,7 @@ const TransactionsProvider = ({ children }) => {
     });
 
     addTransactionUI(date, data);
+    return data;
   }
 
   const deleteTransaction = async (month, id) => {
@@ -309,6 +310,8 @@ const TransactionsProvider = ({ children }) => {
 
       addTransactionUI(newDate, data);
     }
+
+    return data;
   }
 
   return (
