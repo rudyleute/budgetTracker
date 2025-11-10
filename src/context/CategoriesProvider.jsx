@@ -28,12 +28,13 @@ const CategoriesProvider = ({ children }) => {
   }
 
   const editCategory = async (id, category) => {
+    const catWithId = { ...category, id }
     setCategories(prev => prev.map(item => {
       if (item.id !== id) return item;
-      return category
+      return catWithId
     }))
 
-    return category;
+    return catWithId;
   }
 
   const deleteCategory = async (id) => {

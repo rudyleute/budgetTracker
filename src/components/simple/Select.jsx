@@ -33,7 +33,7 @@ const Select = ({ options, onOptionClick, className, label, lClassName }) => {
       {isOpen && <div
         className={"w-full text-black rounded-[15px] pr-0 text-xl max-h-[200px] overflow-hidden bg-white absolute top-full left-0 z-10 shadow-[0_10px_25px_rgba(0,0,0,0.3)]"}>
         <ul className={"s-scroll max-h-[200px] h-full overflow-y-auto"}>
-          {options?.map((elem, ind) => <li key={ind}
+          {options?.map((elem, ind) => elem.id !== curValue?.id && <li key={ind}
                                            className={"hover:cursor-pointer bg-white hover:bg-[#640D5F]/40 w-full text-left text-clipped p-[5px_10px]"}
                                            onClick={() => {
                                              setIsOpen(false)

@@ -7,9 +7,10 @@ import Color from '../simple/Color.jsx';
 import { faFolderPlus } from '@fortawesome/free-solid-svg-icons';
 import IconButton from '../simple/IconButton.jsx';
 import CategoriesForm from '../categories/CategoriesForm.jsx';
+import { faPenToSquare } from '@fortawesome/free-regular-svg-icons';
 
 const TransactionsForm = ({ ref, name, category, price, createdAt }) => {
-  const { categories, addCategory } = useCategories();
+  const { categories, addCategory, editCategory } = useCategories();
   const { showModal } = useModal();
   const catFormRef = useRef(null);
 
@@ -28,9 +29,20 @@ const TransactionsForm = ({ ref, name, category, price, createdAt }) => {
     const { color, name, id } = item;
 
     return {
-      label: <span className={"flex items-center gap-[10px]"}>
-        <Color value={color}/>
-        <span className={"text-clipped"}>{name}</span>
+      label: <span className={"flex items-center justify-between gap-[10px]"}>
+        <span className={"text-clipped"}>
+          <Color value={color}/>
+          <span className={"ml-[10px]"}>{name}</span>
+        </span>
+        <span>
+          <IconButton title={"Edit category"} size={"xs"} icon={faPenToSquare} onClick={() => {
+            showModal(
+              "Edit category",
+              <CategoriesForm ref={catFormRef} name={name} color={color}/>,
+              () => editCategory(id, catFormRef.current.getData())
+            )
+          }}/>
+        </span>
       </span>,
       ...item,
       isDefault: fields.category?.id === id
@@ -46,7 +58,7 @@ const TransactionsForm = ({ ref, name, category, price, createdAt }) => {
     showModal(
       "Add category",
       <CategoriesForm ref={catFormRef}/>,
-      handleCatSave,
+      handleCatSave
     )
   }
 
