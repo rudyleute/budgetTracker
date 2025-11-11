@@ -2,7 +2,7 @@ import Accordion from '../simple/Accordion.jsx';
 import TransactionsItem from './TransactionsItem.jsx';
 import { v4 as uuidv4 } from 'uuid';
 import { useTransactions } from '../../context/TransactionsProvider.jsx';
-
+import React from 'react';
 
 const TransactionsList = () => {
   const { transactions } = useTransactions();
@@ -21,4 +21,4 @@ const TransactionsList = () => {
   )
 }
 
-export default TransactionsList;
+export default React.memo(TransactionsList);

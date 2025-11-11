@@ -1,17 +1,13 @@
-import { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faAngleDown, faAngleUp } from '@fortawesome/free-solid-svg-icons';
 import { twMerge } from 'tailwind-merge';
 
-const Select = ({ options, onOptionClick, className, label, lClassName }) => {
-  const [curValue, setCurValue] = useState({});
+const Select = ({ curValue, options, onOptionClick, className, label, lClassName }) => {
   const [isOpen, setIsOpen] = useState(false);
   const wrapperRef = useRef(null);
 
   useEffect(() => {
-    const defaultOption = options?.find(option => option.isDefault)
-    setCurValue(defaultOption ?? {})
-
     const handleOutsideClick = (e) => {
       if (wrapperRef.current && !wrapperRef.current.contains(e.target)) setIsOpen(false);
     }
@@ -20,26 +16,25 @@ const Select = ({ options, onOptionClick, className, label, lClassName }) => {
     return () => {
       document.removeEventListener('mousedown', handleOutsideClick, true);
     }
-  }, [options])
+  }, [])
 
   return (
     <div ref={wrapperRef} className={twMerge("field-wrapper relative", className)}>
       {label && <label className={twMerge("label", lClassName)}>{label}</label>}
       <div className={"field relative mb-[1px]"}>
-        <span className={"w-full text-clipped inline-block pr-[45px]"}>{curValue.label}</span>
+        <span className={"w-full text-clipped inline-block pr-[45px]"}>{curValue}</span>
         <FontAwesomeIcon className={"end-adornment"} onClick={() => setIsOpen(prev => !prev)}
                          icon={isOpen ? faAngleUp : faAngleDown}/>
       </div>
       {isOpen && <div
         className={"w-full text-black rounded-[15px] pr-0 text-xl max-h-[200px] overflow-hidden bg-white absolute top-full left-0 z-10 shadow-[0_10px_25px_rgba(0,0,0,0.3)]"}>
         <ul className={"s-scroll max-h-[200px] h-full overflow-y-auto"}>
-          {options?.map((elem, ind) => elem.id !== curValue?.id && <li key={ind}
+          {options?.map((elem, ind) => <li key={ind}
                                            className={"hover:cursor-pointer bg-white hover:bg-[#640D5F]/40 w-full text-left text-clipped p-[5px_10px]"}
                                            onClick={() => {
                                              setIsOpen(false)
-                                             setCurValue(elem)
                                              if (elem.func) elem.func()
-                                             else onOptionClick(elem)
+                                             onOptionClick && onOptionClick(elem)
                                            }}>{elem.label}</li>)}
         </ul>
       </div>}
@@ -47,4 +42,4 @@ const Select = ({ options, onOptionClick, className, label, lClassName }) => {
   )
 }
 
-export default Select;
+export default React.memo(Select);

@@ -216,7 +216,6 @@ const trans = [
   }
 ];
 
-
 const TransactionsContext = createContext({});
 const TransactionsProvider = ({ children }) => {
   const [transactions, setTransactions] = useState({

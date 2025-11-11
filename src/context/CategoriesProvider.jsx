@@ -22,19 +22,20 @@ const CategoriesProvider = ({ children }) => {
   }, []);
 
   const addCategory = async (category) => {
-    const catWithId = { ...category, id: uuidv4() }
+    const { label, ...rest } = category
+    const catWithId = {...rest, id: uuidv4()}
     setCategories(prev => [ ...prev, catWithId ])
     return catWithId;
   }
 
   const editCategory = async (id, category) => {
-    const catWithId = { ...category, id }
     setCategories(prev => prev.map(item => {
       if (item.id !== id) return item;
-      return catWithId
+      const {label, ...rest} = category
+      return rest
     }))
 
-    return catWithId;
+    return category;
   }
 
   const deleteCategory = async (id) => {

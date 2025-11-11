@@ -9,6 +9,8 @@ import IconButton from '../simple/IconButton.jsx';
 import CategoriesForm from '../categories/CategoriesForm.jsx';
 import { faPenToSquare, faXmarkCircle } from '@fortawesome/free-regular-svg-icons';
 import { useConfirmation } from '../../context/ConfirmationProvider.jsx';
+import { getDatetime } from '../../helpers/transformers.js';
+import _ from 'lodash';
 
 const TransactionsForm = ({ ref, name, category, price, createdAt }) => {
   const { categories, addCategory, editCategory, deleteCategory } = useCategories();
@@ -16,22 +18,8 @@ const TransactionsForm = ({ ref, name, category, price, createdAt }) => {
   const { showModal } = useModal();
   const catFormRef = useRef(null);
 
-  const [fields, setFields] = useState({
-    name: name || "",
-    category: category || {},
-    price: price || null,
-    createdAt: createdAt?.slice(0, 16) || (new Date()).toISOString().slice(0, 16)
-  });
-
-  useEffect(() => {
-    if (ref) ref.current = { getData: () => fields }
-  }, [ref, fields]);
-
-  const options = categories.map(item => {
-    const { color, name, id } = item;
-
-    return {
-      label: <span className={"flex items-center justify-between gap-[10px]"}>
+  const formLabel = ({id, name, color}) => {
+    return <span className={"flex items-center justify-between gap-[10px]"}>
         <span className={"text-clipped"}>
           <Color value={color}/>
           <span className={"ml-[10px]"}>{name}</span>
@@ -41,26 +29,44 @@ const TransactionsForm = ({ ref, name, category, price, createdAt }) => {
             showModal(
               "Edit category",
               <CategoriesForm ref={catFormRef} name={name} color={color}/>,
-              () => editCategory(id, catFormRef.current.getData())
+              () => handleCatEdit(id)
             )
           }}/>
           <IconButton title={"Delete category"} size={"xs"} icon={faXmarkCircle} onClick={() => {
             showConfirmation(
-              () => deleteCategory(id),
+              () => {
+                deleteCategory(id)
+                setFields(prev => ({...prev, category: {}}))
+              },
               `'${name}' category`
             )
           }}/>
         </span>
-      </span>,
-      ...item,
-      isDefault: fields.category?.id === id
-    }
-  })
+      </span>
+  }
+
+  const [fields, setFields] = useState({
+    name: name || "",
+    category: category || {},
+    price: price || null,
+    createdAt: createdAt?.slice(0, 16) || getDatetime(new Date()),
+  });
+
+  const handleCatEdit = async (id) => {
+    const category = await editCategory(id, catFormRef.current.getData())
+    setFields(prev => ({ ...prev, category: {...category, label: formLabel(category)} }));
+  }
 
   const handleCatSave = async () => {
     const category = await addCategory(catFormRef.current.getData());
     setFields(prev => ({ ...prev, category }));
   }
+
+  useEffect(() => {
+    if (ref) ref.current = { getData: () => fields }
+  }, [ref, fields]);
+
+  const options = categories.filter(cat => cat.id !== fields.category?.id).map(item => ({ label: formLabel(item), ...item }))
 
   const handleCatCreate = () => {
     showModal(
@@ -81,11 +87,11 @@ const TransactionsForm = ({ ref, name, category, price, createdAt }) => {
                value={fields.price ?? ""}/>
       </div>
       <div className={"flex gap-[10px] items-end"}>
-        <Select lClassName={"flex items-center"} label={<>
+        <Select curValue={!_.isEmpty(fields.category) ? formLabel(fields.category) : ""} lClassName={"flex items-center"} label={<>
           <span className={"mr-[3px]"}>Category</span>
           <IconButton onClick={handleCatCreate} className={"leading-0"} iconClassName={"!text-white"}
                       title={"Add category"} icon={faFolderPlus}/>
-        </>} onOptionClick={({ label, ...rest }) => setFields(prev => ({ ...prev, category: rest }))}
+        </>} onOptionClick={(category) => setFields(prev => ({ ...prev, category }))}
                 options={options}/>
       </div>
     </div>

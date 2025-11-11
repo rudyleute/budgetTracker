@@ -20,7 +20,7 @@ const TransactionsItem = ({ data, month }) => {
 
   const handleEditing = () => {
     showModal(
-      "New expense",
+      "Edit transaction",
       <TransactionsForm ref={formRef} name={name} category={category} createdAt={createdAt} price={price} />,
       () => editTransaction(month, id, formRef.current.getData())
     )

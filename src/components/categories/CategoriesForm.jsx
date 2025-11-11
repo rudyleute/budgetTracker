@@ -4,7 +4,7 @@ import Input from '../simple/Input.jsx';
 
 const CategoriesForm = ({ ref, color, name }) => {
   const [data, setData] = useState({
-    color: color || {},
+    color: color || "",
     name: name || ""
   });
 
