@@ -25,7 +25,8 @@ export const getDatetime = (date) => {
   const minutes = String(date.getMinutes()).padStart(2, '0');
   return `${year}-${month}-${day}T${hours}:${minutes}`;
 };
-export const getDate = (date, options = {}) => { return (new Date(date)).toLocaleDateString("en-CA", options)}
+
+export const getDate = (date, options = {}) => { return (new Date(date)).toLocaleDateString("en-CA", {hour12: false, ...options})}
 
 export const createTimeFilters = (setValues, uuidv4) => {
   const getDateRange = (label) => {

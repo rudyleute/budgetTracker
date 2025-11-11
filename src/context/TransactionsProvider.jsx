@@ -2,6 +2,7 @@ import { createContext, useContext, useEffect, useState } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import { getDate, groupBy } from '../helpers/transformers.js';
 import _ from 'lodash';
+import { toast } from 'react-toastify';
 
 const trans = [
   {
@@ -215,6 +216,17 @@ const trans = [
     name: "Train ticket"
   }
 ];
+const toastBody = (name, createdAt, action) => {
+  return (<span className={"text-xs text-black"}>
+      Transaction <b>"{name}"</b> at <b>{getDate(createdAt, {
+        hour: '2-digit',
+        minute: '2-digit',
+        month: 'short',
+        year: 'numeric',
+        day: '2-digit'
+      })}</b> has been successfully {action}!
+  </span>);
+}
 
 const TransactionsContext = createContext({});
 const TransactionsProvider = ({ children }) => {
@@ -261,25 +273,8 @@ const TransactionsProvider = ({ children }) => {
     });
 
     addTransactionUI(date, data);
+    toast.success(toastBody(data.name, data.createdAt, "created"))
     return data;
-  }
-
-  const deleteTransaction = async (month, id) => {
-    const newData = transactions.data[month].filter(item => item.id !== id);
-    let keys = transactions.keys;
-
-    if (newData.length === 0) {
-      const ind = _.sortedIndexBy(transactions.keys, month, t => -new Date(t))
-      delete newData[month];
-      keys = [...transactions.keys.slice(0, ind), ...transactions.keys.slice(ind + 1)];
-    }
-
-    setTransactions(prev => ({
-      keys, data: {
-        ...prev.data,
-        [month]: newData
-      }
-    }))
   }
 
   const editTransaction = async (month, id, data) => {
@@ -310,7 +305,29 @@ const TransactionsProvider = ({ children }) => {
       addTransactionUI(newDate, data);
     }
 
+    toast.success(toastBody(data.name, data.createdAt, "edited"))
     return data;
+  }
+
+  const deleteTransaction = async (month, id) => {
+    const categoryToDelete = transactions.data[month].find(item => item.id === id);
+    const newData = transactions.data[month].filter(item => item.id !== id);
+    let keys = transactions.keys;
+
+    if (newData.length === 0) {
+      const ind = _.sortedIndexBy(transactions.keys, month, t => -new Date(t))
+      delete newData[month];
+      keys = [...transactions.keys.slice(0, ind), ...transactions.keys.slice(ind + 1)];
+    }
+
+    setTransactions(prev => ({
+      keys, data: {
+        ...prev.data,
+        [month]: newData
+      }
+    }))
+
+    toast.success(toastBody(categoryToDelete.name, categoryToDelete.createdAt, "deleted"))
   }
 
   return (

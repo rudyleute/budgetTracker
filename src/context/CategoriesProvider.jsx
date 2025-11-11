@@ -1,5 +1,6 @@
 import { createContext, useContext, useEffect, useState } from 'react';
 import { v4 as uuidv4 } from 'uuid';
+import { toast } from 'react-toastify';
 
 const defCategories = [
   { id: uuidv4(), color: "#5B5FEF", name: "Health insurance" },
@@ -13,6 +14,14 @@ const defCategories = [
   { id: uuidv4(), color: "#5B5FEF", name: "Insurance" }
 ];
 
+const toastCatBody = (name, action) => {
+  return (
+    <span className={"text-xs text-black"}>
+      Category <b>"{name}"</b> has been successfully {action}!
+    </span>
+  );
+}
+
 const CategoriesContext = createContext({});
 const CategoriesProvider = ({ children }) => {
   const [categories, setCategories] = useState([]);
@@ -23,27 +32,39 @@ const CategoriesProvider = ({ children }) => {
 
   const addCategory = async (category) => {
     const { label, ...rest } = category
-    const catWithId = {...rest, id: uuidv4()}
-    setCategories(prev => [ ...prev, catWithId ])
+    const catWithId = { ...rest, id: uuidv4() }
+    setCategories(prev => [...prev, catWithId])
+
+    toast.success(toastCatBody(category.name, "created"))
     return catWithId;
   }
 
   const editCategory = async (id, category) => {
     setCategories(prev => prev.map(item => {
       if (item.id !== id) return item;
-      const {label, ...rest} = category
+      const { label, ...rest } = category
       return rest
     }))
 
+    toast.success(toastCatBody(category.name, "edited"))
     return category;
   }
 
   const deleteCategory = async (id) => {
-    setCategories(prev => prev.filter(item => item.id !== id))
+    setCategories(prev => {
+      const categoryToDelete = prev.find(item => item.id === id);
+      const newList = prev.filter(item => item.id !== id);
+
+      setTimeout(() => {
+        toast.success(toastCatBody(categoryToDelete.name, "deleted"))
+      }, 0)
+
+      return newList;
+    })
   }
 
   return (
-    <CategoriesContext.Provider value={{categories, addCategory, editCategory, deleteCategory}}>
+    <CategoriesContext.Provider value={{ categories, addCategory, editCategory, deleteCategory }}>
       {children}
     </CategoriesContext.Provider>
   )
