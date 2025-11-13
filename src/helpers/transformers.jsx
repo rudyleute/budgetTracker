@@ -133,3 +133,9 @@ export const createTimeFilters = (setValues, uuidv4) => {
     { label: "Last year", func: () => formOption("Last year") },
   ]
 }
+
+export const formToast = (text) => {
+  return (<span className={"text-xs text-black"}>
+    {text}
+  </span>)
+}

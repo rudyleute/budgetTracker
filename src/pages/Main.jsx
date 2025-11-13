@@ -14,7 +14,7 @@ import { useModal } from '../context/ModalProvider.jsx';
 import TransactionsForm from '../components/transactions/TransactionsForm.jsx';
 import { useTransactions } from '../context/TransactionsProvider.jsx';
 import { v4 as uuidv4 } from 'uuid';
-import { createTimeFilters } from '../helpers/transformers.js';
+import { createTimeFilters } from '../helpers/transformers.jsx';
 
 const defaultValue = {
   filter: "",

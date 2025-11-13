@@ -1,6 +1,7 @@
 import { createContext, useContext, useEffect, useState } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import { toast } from 'react-toastify';
+import { formToast } from '../helpers/transformers.jsx';
 
 const defCategories = [
   { id: uuidv4(), color: "#5B5FEF", name: "Health insurance" },
@@ -15,11 +16,7 @@ const defCategories = [
 ];
 
 const toastCatBody = (name, action) => {
-  return (
-    <span className={"text-xs text-black"}>
-      Category <b>"{name}"</b> has been successfully {action}!
-    </span>
-  );
+  return formToast(<>Category <b>"{name}"</b> has been successfully {action}!</>);
 }
 
 const CategoriesContext = createContext({});

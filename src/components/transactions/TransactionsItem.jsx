@@ -1,5 +1,5 @@
 import IconButton from '../simple/IconButton.jsx';
-import { getDate } from '../../helpers/transformers.js';
+import { getDate } from '../../helpers/transformers.jsx';
 import { twMerge } from 'tailwind-merge';
 import { faCircleXmark, faPenToSquare } from '@fortawesome/free-regular-svg-icons';
 import { useConfirmation } from '../../context/ConfirmationProvider.jsx';

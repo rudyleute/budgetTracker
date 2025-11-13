@@ -3,6 +3,7 @@
 /build
 /tmp
 **/package-lock.json
+**/.env
 
 # Logs
 logs

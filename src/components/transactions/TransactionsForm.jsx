@@ -9,7 +9,7 @@ import IconButton from '../simple/IconButton.jsx';
 import CategoriesForm from '../categories/CategoriesForm.jsx';
 import { faPenToSquare, faXmarkCircle } from '@fortawesome/free-regular-svg-icons';
 import { useConfirmation } from '../../context/ConfirmationProvider.jsx';
-import { getDatetime } from '../../helpers/transformers.js';
+import { getDatetime } from '../../helpers/transformers.jsx';
 import _ from 'lodash';
 
 const TransactionsForm = ({ ref, name, category, price, createdAt }) => {

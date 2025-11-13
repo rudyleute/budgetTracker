@@ -1,6 +1,6 @@
 import { createContext, useContext, useEffect, useState } from 'react';
 import { v4 as uuidv4 } from 'uuid';
-import { getDate, groupBy } from '../helpers/transformers.js';
+import { formToast, getDate, groupBy } from '../helpers/transformers.jsx';
 import _ from 'lodash';
 import { toast } from 'react-toastify';
 
@@ -217,7 +217,7 @@ const trans = [
   }
 ];
 const toastBody = (name, createdAt, action) => {
-  return (<span className={"text-xs text-black"}>
+  return formToast(<>
       Transaction <b>"{name}"</b> at <b>{getDate(createdAt, {
         hour: '2-digit',
         minute: '2-digit',
@@ -225,7 +225,7 @@ const toastBody = (name, createdAt, action) => {
         year: 'numeric',
         day: '2-digit'
       })}</b> has been successfully {action}!
-  </span>);
+  </>);
 }
 
 const TransactionsContext = createContext({});
