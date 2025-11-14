@@ -5,6 +5,7 @@
 **/temp
 **/package-lock.json
 **/.env
+**/.idea
 
 # Logs
 logs
