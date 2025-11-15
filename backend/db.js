@@ -1,4 +1,5 @@
 const { Pool } = require('pg');
+const logger = require('./logger');
 
 const pool = new Pool({
   user: process.env.DB_USER,
@@ -11,15 +12,18 @@ const pool = new Pool({
   connectionTimeoutMillis: 2000
 });
 
-pool.on('connect', () => console.log('Connected to DB'));
+pool.on('connect', () => logger.info('Database connection has been established'));
 
-pool.on('error', err => {
-  console.log('Unexpected error on idle client', err);
+pool.on('error', (error) => {
+  logger.error('Unexpected error on idle database client', {
+    error: error.message,
+    stack: error.stack
+  });
   process.exit(-1);
 });
 
 const query = (text, params) => pool.query(text, params);
-const getClient = () => pool.connect();
+const getClient = options => pool.connect(options);
 
 module.exports = {
   query,

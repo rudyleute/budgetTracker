@@ -1,9 +1,15 @@
 require('dotenv').config()
+const morgan = require('morgan');
+const logger = require('./logger');
+const cors = require('cors');
+const { corsOptions } = require('./middleware');
 
 const express = require('express');
 const app = express();
 const { authenticateUser } = require('./middleware');
 
+app.use(cors(corsOptions));
+app.use(morgan('combined', { stream: logger.stream }));
 app.use(express.json());
 
 const apiRouter = express.Router();
@@ -17,6 +23,24 @@ apiRouter.use("/users", users);
 apiRouter.use("/transactions", transactions);
 apiRouter.use("/categories", categories);
 
-app.use('/api', apiRouter)
+app.use('/api', apiRouter);
 
-app.listen(process.env.PORT, () => console.log("Up and running"));
+app.use((err, req, res) => {
+  if (err.message === 'Not allowed by CORS') {
+    logger.warn('CORS error', {
+      origin: req.headers.origin,
+      path: req.path
+    });
+    return res.status(403).json({ message: 'Origin not allowed' });
+  }
+
+  logger.error('Unhandled error', {
+    error: err.message,
+    stack: err.stack,
+    path: req.path,
+    method: req.method
+  });
+  res.status(500).json({ message: 'Internal server error' });
+});
+
+app.listen(process.env.PORT, () => logger.info(`Server running on port ${process.env.PORT}`));
