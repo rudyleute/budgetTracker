@@ -1,3 +1,5 @@
+import DOMPurify from 'dompurify';
+
 export const groupBy = (data, columnName, functor = null) => {
   const keys = [];
   const groups = {};
@@ -28,7 +30,7 @@ export const getDatetime = (date) => {
 
 export const getDate = (date, options = {}) => { return (new Date(date)).toLocaleDateString("en-CA", {hour12: false, ...options})}
 
-export const createTimeFilters = (setValues, uuidv4) => {
+export const createTimeFilters = (setValues) => {
   const getDateRange = (label) => {
     const today = new Date();
     const formatDate = (date) => getDate(date, {year: "numeric", month: "2-digit", day: "2-digit"});
@@ -139,3 +141,16 @@ export const formToast = (text) => {
     {text}
   </span>)
 }
+
+export const sanitizeData = (value) => {
+  if (typeof value === "string") return DOMPurify.sanitize(value);
+  if (Array.isArray(value)) return value.map(sanitizeData);
+
+  if (value !== null && typeof value === "object") {
+    return Object.fromEntries(
+      Object.entries(value).map(([k, v]) => [k, sanitizeData(v)])
+    );
+  }
+
+  return value;
+};

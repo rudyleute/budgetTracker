@@ -1,11 +1,12 @@
 import { useEffect, useState, createContext, useContext } from "react";
-import { auth, provider } from "../Firebase.js";
+import { auth, provider } from "../services/firebase.js";
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
   signOut,
   sendEmailVerification,
-  onAuthStateChanged
+  onAuthStateChanged,
+  deleteUser
 } from "firebase/auth";
 import { useNavigate } from "react-router-dom";
 import { processErrors } from '../helpers/firebaseErrors.js';
@@ -13,12 +14,13 @@ import { toast } from 'react-toastify';
 import { formToast } from '../helpers/transformers.jsx';
 import { debounce } from 'lodash';
 import { useLoader } from './LoaderProvider.jsx';
+import api from '../services/axios.js';
 
 const AccountContext = createContext();
 const useAccount = () => useContext(AccountContext);
 
 const AccountProvider = ({ children }) => {
-  const [user, setUser] = useState(null);
+  const [isAuthenticated, setAuthenticated] = useState(false);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
   const { showLoader, hideLoader } = useLoader();
@@ -26,14 +28,9 @@ const AccountProvider = ({ children }) => {
   useEffect(() => {
     const debouncedAuthHandler = debounce(async (user) => {
       if (user) {
-        if (user.emailVerified) {
-          setUser({ email: user.email });
-        } else {
-          setUser({});
-        }
-      } else {
-        setUser({});
-      }
+        if (user.emailVerified) setAuthenticated(true);
+        else setAuthenticated(false);
+      } else setAuthenticated(false);
       setLoading(false);
     }, 600);
 
@@ -48,6 +45,14 @@ const AccountProvider = ({ children }) => {
     showLoader();
     try {
       const result = await createUserWithEmailAndPassword(auth, data.email, data.password);
+
+      const userRes = await api.post("/users");
+
+      if (!userRes.data) {
+        toast.error(formToast(userRes.message));
+        await deleteUser(result.user);
+        return;
+      }
       const user = result.user;
 
       await sendEmailVerification(user);
@@ -92,7 +97,7 @@ const AccountProvider = ({ children }) => {
   }
 
   return (
-    <AccountContext.Provider value={{ user, signUp, logIn, logOut, loading }}>
+    <AccountContext.Provider value={{ isAuthenticated, signUp, logIn, logOut, loading }}>
       {children}
     </AccountContext.Provider>
   )

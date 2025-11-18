@@ -15,8 +15,15 @@ import _ from 'lodash';
 const TransactionsForm = ({ ref, name, category, price, createdAt }) => {
   const { categories, addCategory, editCategory, deleteCategory } = useCategories();
   const { showConfirmation } = useConfirmation();
-  const { showModal } = useModal();
+  const { showModal, hideModal } = useModal();
   const catFormRef = useRef(null);
+
+  const [fields, setFields] = useState({
+    name: name || "",
+    category: category || {},
+    price: price || null,
+    createdAt:getDatetime(createdAt ?? new Date()),
+  });
 
   const formLabel = ({id, name, color}) => {
     return <span className={"flex items-center justify-between gap-[10px]"}>
@@ -29,14 +36,15 @@ const TransactionsForm = ({ ref, name, category, price, createdAt }) => {
             showModal(
               "Edit category",
               <CategoriesForm ref={catFormRef} name={name} color={color}/>,
-              () => handleCatEdit(id)
+              () => handleCatEdit(id),
+              false
             )
           }}/>
           <IconButton title={"Delete category"} size={"xs"} icon={faXmarkCircle} onClick={() => {
             showConfirmation(
               () => {
                 deleteCategory(id)
-                setFields(prev => ({...prev, category: {}}))
+                if (id === fields.category?.id) setFields(prev => ({...prev, category: {}}))
               },
               `'${name}' category`
             )
@@ -45,21 +53,22 @@ const TransactionsForm = ({ ref, name, category, price, createdAt }) => {
       </span>
   }
 
-  const [fields, setFields] = useState({
-    name: name || "",
-    category: category || {},
-    price: price || null,
-    createdAt: createdAt?.slice(0, 16) || getDatetime(new Date()),
-  });
-
   const handleCatEdit = async (id) => {
-    const category = await editCategory(id, catFormRef.current.getData())
-    setFields(prev => ({ ...prev, category: {...category, label: formLabel(category)} }));
+    const category = await editCategory(id, catFormRef.current.getData());
+
+    if (category) {
+      setFields(prev => ({ ...prev, category: { ...category, label: formLabel(category) } }));
+      hideModal();
+    }
   }
 
   const handleCatSave = async () => {
     const category = await addCategory(catFormRef.current.getData());
-    setFields(prev => ({ ...prev, category }));
+
+    if (category) {
+      setFields(prev => ({ ...prev, category }));
+      hideModal();
+    }
   }
 
   useEffect(() => {
@@ -72,7 +81,8 @@ const TransactionsForm = ({ ref, name, category, price, createdAt }) => {
     showModal(
       "Add category",
       <CategoriesForm ref={catFormRef}/>,
-      handleCatSave
+      handleCatSave,
+      false
     )
   }
 

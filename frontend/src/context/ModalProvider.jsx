@@ -18,7 +18,7 @@ const ModalProvider = ({ children }) => {
   const hideModal = () => setStack(prev => prev.slice(0, -1));
 
   return (
-    <ModalContext.Provider value={{ showModal }}>
+    <ModalContext.Provider value={{ showModal, hideModal }}>
       {children}
       {
         stack.map(({ content, title, saveFunc, closeFunc, hideOnSave }, i) => {
