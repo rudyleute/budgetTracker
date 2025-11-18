@@ -27,7 +27,7 @@ const Main = () => {
   const [values, setValues] = useState(defaultValue);
   const options = useMemo(() => createTimeFilters(setValues, uuidv4), [setValues]);
 
-  const { showModal } = useModal();
+  const { showModal, hideModal } = useModal();
   const { addTransaction } = useTransactions();
   const formRef = useRef(null);
 
@@ -35,7 +35,12 @@ const Main = () => {
     showModal(
       "New transaction",
       <TransactionsForm ref={formRef}/>,
-      () => addTransaction(formRef.current.getData())
+      async () => {
+        const res = await addTransaction(formRef.current.getData())
+
+        if (res) hideModal();
+      },
+      false
     )
   }
 

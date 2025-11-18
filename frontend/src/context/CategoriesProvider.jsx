@@ -18,7 +18,6 @@ const CategoriesProvider = ({ children }) => {
       const result = await api.get('/categories');
 
       if (!isMounted) return;
-
       if (!result.data) {
         toast.error(formToast(result.message))
         setCategories([]);
@@ -44,7 +43,7 @@ const CategoriesProvider = ({ children }) => {
     }
 
     setCategories(prev => [...prev, res.data]);
-    toast.success(toastCatBody(category.name, "created"))
+    toast.success(toastCatBody(res.data.name, "created"))
     return res.data;
   }
 
@@ -60,10 +59,10 @@ const CategoriesProvider = ({ children }) => {
     }
 
     setCategories(prev => prev.map(item => {
-      if (item.id !== id) return item;
+      if (item.id !== res.data.id) return item;
       return res.data
     }))
-    toast.success(toastCatBody(category.name, "edited"))
+    toast.success(toastCatBody(res.data.name, "edited"))
     return res.data;
   }
 
@@ -81,7 +80,7 @@ const CategoriesProvider = ({ children }) => {
 
       setTimeout(() => {
         toast.success(toastCatBody(categoryToDelete.name, "deleted"))
-      }, 0)
+      }, 0);
 
       return newList;
     })

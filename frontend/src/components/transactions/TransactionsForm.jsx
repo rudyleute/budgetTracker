@@ -12,7 +12,7 @@ import { useConfirmation } from '../../context/ConfirmationProvider.jsx';
 import { getDatetime } from '../../helpers/transformers.jsx';
 import _ from 'lodash';
 
-const TransactionsForm = ({ ref, name, category, price, createdAt }) => {
+const TransactionsForm = ({ ref, name, category, price, timestamp }) => {
   const { categories, addCategory, editCategory, deleteCategory } = useCategories();
   const { showConfirmation } = useConfirmation();
   const { showModal, hideModal } = useModal();
@@ -22,10 +22,10 @@ const TransactionsForm = ({ ref, name, category, price, createdAt }) => {
     name: name || "",
     category: category || {},
     price: price || null,
-    createdAt:getDatetime(createdAt ?? new Date()),
+    timestamp: getDatetime(new Date(timestamp || Date.now()))
   });
 
-  const formLabel = ({id, name, color}) => {
+  const formLabel = ({ id, name, color }) => {
     return <span className={"flex items-center justify-between gap-[10px]"}>
         <span className={"text-clipped"}>
           <Color value={color}/>
@@ -44,7 +44,7 @@ const TransactionsForm = ({ ref, name, category, price, createdAt }) => {
             showConfirmation(
               () => {
                 deleteCategory(id)
-                if (id === fields.category?.id) setFields(prev => ({...prev, category: {}}))
+                if (id === fields.category?.id) setFields(prev => ({ ...prev, category: {} }))
               },
               `'${name}' category`
             )
@@ -57,7 +57,7 @@ const TransactionsForm = ({ ref, name, category, price, createdAt }) => {
     const category = await editCategory(id, catFormRef.current.getData());
 
     if (category) {
-      setFields(prev => ({ ...prev, category: { ...category, label: formLabel(category) } }));
+      setFields(prev => ({ ...prev, category }));
       hideModal();
     }
   }
@@ -91,17 +91,18 @@ const TransactionsForm = ({ ref, name, category, price, createdAt }) => {
     <div className={"form"}>
       <Input label={"Name"} name={"name"} type={"text"} onChange={handleOnChange} value={fields.name}/>
       <div className={"grid grid-cols-[2fr_1fr] gap-[10px]"}>
-        <Input label={"Time"} name={"createdAt"} type={"datetime-local"} onChange={handleOnChange}
-               value={fields.createdAt}/>
-        <Input label={"Price"} name={"price"} type={"number"} min={0} onChange={handleOnChange}
+        <Input label={"Time"} name={"timestamp"} type={"datetime-local"} onChange={handleOnChange}
+               value={fields.timestamp}/>
+        <Input label={"Price"} name={"price"} type={"number"} min={0} step={0.10} onChange={handleOnChange}
                value={fields.price ?? ""}/>
       </div>
       <div className={"flex gap-[10px] items-end"}>
-        <Select curValue={!_.isEmpty(fields.category) ? formLabel(fields.category) : ""} lClassName={"flex items-center"} label={<>
+        <Select curValue={!_.isEmpty(fields.category) ? formLabel(fields.category) : ""}
+                lClassName={"flex items-center"} label={<>
           <span className={"mr-[3px]"}>Category</span>
           <IconButton onClick={handleCatCreate} className={"leading-0"} iconClassName={"!text-white"}
                       title={"Add category"} icon={faFolderPlus}/>
-        </>} onOptionClick={(category) => setFields(prev => ({ ...prev, category }))}
+        </>} onOptionClick={({ label, ...rest }) => setFields(prev => ({ ...prev, category: { ...rest } }))}
                 options={options}/>
       </div>
     </div>

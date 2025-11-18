@@ -9,20 +9,25 @@ import TransactionsForm from './TransactionsForm.jsx';
 import { useModal } from '../../context/ModalProvider.jsx';
 
 const TransactionsItem = ({ data, month }) => {
-  const { id, createdAt, name, category, price } = data;
+  const { id, timestamp, name, category, price } = data;
   const { showConfirmation } = useConfirmation();
   const { deleteTransaction, editTransaction } = useTransactions();
   const formRef = useRef(null);
-  const { showModal } = useModal();
+  const { showModal, hideModal } = useModal();
 
-  const transMonth = getDate(createdAt, { month: "short" });
-  const transDay = getDate(createdAt, { day: "2-digit" });
+  const transMonth = getDate(timestamp, { month: "short" });
+  const transDay = getDate(timestamp, { day: "2-digit" });
 
   const handleEditing = () => {
     showModal(
       "Edit transaction",
-      <TransactionsForm ref={formRef} name={name} category={category} createdAt={createdAt} price={price} />,
-      () => editTransaction(month, id, formRef.current.getData())
+      <TransactionsForm ref={formRef} name={name} category={category} timestamp={timestamp} price={price} />,
+      async () => {
+        const res = await editTransaction(month, id, formRef.current.getData());
+
+        if (res) hideModal();
+      },
+      false
     )
   }
 
