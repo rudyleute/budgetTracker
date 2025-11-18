@@ -4,10 +4,37 @@ const db = require('../db');
 const admin = require('../firebase');
 const logger = require('../logger');
 
-router.post('/', async (req, res) => {
+router.get('/', async (req, res) => {
   try {
     const uid = req.user.uid;
-    const { email } = req.body;
+
+    logger.debug('Fetching a user', { uid });
+
+    const result = await db.query(
+      'SELECT uid, email, created_at, updated_at FROM users WHERE uid = $1;',
+      [uid]
+    );
+
+    if (result.rows.length === 0) {
+      logger.warn('User has not been found', { uid });
+      return res.status(404).json({ message: 'User has not been found' });
+    }
+
+    logger.info('User retrieved successfully', { uid });
+    res.json(result.rows[0]);
+  } catch (error) {
+    logger.error('Failed to fetch the user', {
+      error: error.message,
+      stack: error.stack,
+      uid: req.user.uid
+    });
+    res.status(500).json({ message: 'Failed to retrieve the user' });
+  }
+});
+
+router.post('/', async (req, res) => {
+  try {
+    const { uid, email } = req.user;
 
     logger.info("Creating new user", { uid, email });
 

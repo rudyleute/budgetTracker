@@ -47,7 +47,7 @@ router.post('/', async (req, res) => {
     logger.info('Creating new category', { uid, name });
 
     const result = await db.query(
-      "INSERT INTO categories (color, name, user_uid) VALUES ($1, $2, $3) RETURNING *;",
+      "INSERT INTO categories (color, name, user_uid) VALUES ($1, $2, $3) RETURNING id, color, name, created_at, updated_at;",
       [color, name, uid]
     )
 
@@ -93,7 +93,7 @@ router.put('/:id', async (req, res) => {
       values.push(name)
     }
 
-    const query = `UPDATE categories SET ${fields.join(', ')}, updated_at = CURRENT_TIMESTAMP WHERE user_uid = $${ind} AND id = $${ind + 1} RETURNING *;`
+    const query = `UPDATE categories SET ${fields.join(', ')}, updated_at = CURRENT_TIMESTAMP WHERE user_uid = $${ind} AND id = $${ind + 1} RETURNING id, color, name, created_at, updated_at;`
     const result = await db.query(query, [...values, uid, id]);
 
     if (result.rows.length === 0) {

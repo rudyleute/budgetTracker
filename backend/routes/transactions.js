@@ -20,7 +20,7 @@ router.get('/', async (req, res) => {
     const offset = (page - 1) * pageSize;
     const result = await db.query(
       `SELECT 
-        t.id, t.timestamp, t.created_at, t.updated_at, t.name, t.price, t.user_uid,
+        t.id, t.timestamp, t.created_at, t.updated_at, t.name, t.price,
         json_build_object(
           'id', c.id,
           'name', c.name,
@@ -111,7 +111,7 @@ router.post('/', async (req, res) => {
     const placeholders = allValues.map((_, i) => `$${i + 1}`).join(", ");
 
     const result = await db.query(
-      `INSERT INTO transactions (${allFields.join(', ')}) VALUES (${placeholders}) RETURNING *;`,
+      `INSERT INTO transactions (${allFields.join(', ')}) VALUES (${placeholders}) RETURNING id, timestamp, created_at, updated_at, name, price;`,
       allValues
     );
 
@@ -181,7 +181,7 @@ router.put('/:id', async (req, res) => {
 
     logger.info('Updating transaction', { uid, transactionId: id });
 
-    const query = `UPDATE transactions SET ${fields.join(', ')}, updated_at = CURRENT_TIMESTAMP WHERE user_uid = $${ind} AND id = $${ind + 1} RETURNING *;`
+    const query = `UPDATE transactions SET ${fields.join(', ')}, updated_at = CURRENT_TIMESTAMP WHERE user_uid = $${ind} AND id = $${ind + 1} RETURNING id, timestamp, created_at, updated_at, name, price;`
     const result = await db.query(query, [...values, uid, id]);
 
     if (result.rows.length === 0) {
