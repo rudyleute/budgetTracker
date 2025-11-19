@@ -1,6 +1,6 @@
 import { createContext, useContext, useState } from 'react';
 import { createPortal } from 'react-dom';
-import { CircleLoader, GridLoader } from 'react-spinners';
+import { GridLoader } from 'react-spinners';
 
 const defaultState = {
   loading: false,

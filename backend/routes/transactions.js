@@ -51,7 +51,7 @@ router.get('/', async (req, res) => {
     return res.status(200).json({
       data: transactions,
       page: page,
-      isLastPage
+      is_last_page: isLastPage
     });
   } catch (error) {
     logger.error('Failed to retrieve transactions', {

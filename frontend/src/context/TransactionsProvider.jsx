@@ -18,7 +18,8 @@ const toastBody = (name, timestamp, action) => {
 
 const defaultValue = {
   keys: [],
-  data: {}
+  data: {},
+  total: 0
 };
 const TransactionsContext = createContext({});
 const TransactionsProvider = ({ children }) => {
@@ -28,104 +29,102 @@ const TransactionsProvider = ({ children }) => {
     let isMounted = true;
 
     (async () => {
-      const res = await api.get('/transactions');
+      const { data: newTransactions, message } = await api.get('/transactions');
 
       if (!isMounted) return;
-      if (!res.data) {
-        toast.error(formToast(res.message));
+      if (!newTransactions) {
+        toast.error(formToast(message));
         setTransactions(defaultValue);
         return;
       }
 
-      const { keys, groups: data } = groupBy(res.data.data, "timestamp", (date) => getDate(date, {
+      const { keys, groups: data } = groupBy(newTransactions.data, "timestamp", (date) => getDate(date, {
         year: 'numeric',
         month: 'long'
       }));
-      setTransactions({ keys, data });
+      setTransactions({ keys, data, total: newTransactions.data.length });
     })();
 
     return () => isMounted = false;
   }, []);
 
-  const addTransactionUI = (date, data) => {
-    if (transactions.keys.includes(date)) {
-      const ind = _.sortedIndexBy(transactions.data[date], data, (t) => -new Date(t.timestamp))
-      setTransactions(prev => ({
-        keys: prev.keys,
+  const insertTransactionUI = (keys, oldTransactions, month, newTrans) => {
+    if (keys.includes(month)) {
+      const ind = _.sortedIndexBy(oldTransactions[month], newTrans, (t) => -new Date(t.timestamp))
+      return {
+        keys,
         data: {
-          ...prev.data,
-          [date]: [...prev.data[date].slice(0, ind), data, ...prev.data[date].slice(ind)]
+          ...oldTransactions,
+          [month]: [...oldTransactions[month].slice(0, ind), newTrans, ...oldTransactions[month].slice(ind)]
         }
-      }))
-    } else {
-      const ind = _.sortedIndexBy(transactions.keys, data.timestamp, (t) => -new Date(t))
-      setTransactions(prev => ({
-        keys: [...prev.keys.slice(0, ind), date, ...prev.keys.slice(ind)],
-        data: {
-          ...prev.data,
-          [date]: [data]
-        }
-      }));
+      }
+    }
+
+    const ind = _.sortedIndexBy(keys, newTrans.timestamp, (t) => -new Date(t))
+    return {
+      keys: [...keys.slice(0, ind), month, ...keys.slice(ind)],
+      data: { ...oldTransactions, [month]: [newTrans] }
     }
   }
 
   const addTransaction = async (data) => {
-    const {data: transaction, message} = await api.post('/transactions', sanitizeData(data));
-    if (!transaction) {
+    const { data: newTrans, message } = await api.post('/transactions', sanitizeData(data));
+    if (!newTrans) {
       toast.error(formToast(message));
       return;
     }
 
-    const date = getDate(transaction.timestamp, {
+    const newMonth = getDate(newTrans.timestamp, {
       month: 'long',
       year: 'numeric'
     });
 
-    addTransactionUI(date, transaction);
-    toast.success(toastBody(transaction.name, transaction.timestamp, "created"))
-    return transaction;
+    const res = insertTransactionUI(transactions.keys, transactions.data, newMonth, newTrans);
+    setTransactions({ ...res, total: transactions.total + 1 });
+
+    toast.success(toastBody(newTrans.name, newTrans.timestamp, "created"))
+    return newTrans;
   }
 
   const editTransaction = async (month, id, data) => {
-    const {data: transaction, message} = await api.put(`/transactions/${id}`, sanitizeData(data));
-    if (!transaction) {
+    const { data: newTrans, message } = await api.put(`/transactions/${id}`, sanitizeData(data));
+    if (!newTrans) {
       toast.error(formToast(message));
       return;
     }
 
-    const newData = transactions.data[month].filter(item => item.id !== id);
-    const newDate = getDate(transaction.timestamp, {
+    const incmpTransactions = transactions.data[month].filter(item => item.id !== id);
+    const newMonth = getDate(newTrans.timestamp, {
       month: 'long',
       year: 'numeric'
     })
 
-    if (newDate === month) {
-      const ind = _.sortedIndexBy(newData, transaction, (t) => -new Date(t.timestamp))
+    if (newMonth === month) {
+      const ind = _.sortedIndexBy(incmpTransactions, newTrans, (t) => -new Date(t.timestamp))
       setTransactions(prev => ({
         keys: prev.keys,
         data: {
           ...prev.data,
-          [month]: [...newData.slice(0, ind), transaction, ...newData.slice(ind)]
-        }
+          [month]: [...incmpTransactions.slice(0, ind), newTrans, ...incmpTransactions.slice(ind)]
+        },
+        total: prev.total
       }))
     } else {
-      setTransactions(prev => ({
-        keys: prev.keys,
-        data: {
-          ...prev.data,
-          [month]: newData
-        }
-      }))
+      const res = insertTransactionUI(transactions.keys,
+        {
+          ...transactions.data,
+          [month]: incmpTransactions
+        }, newMonth, newTrans);
 
-      addTransactionUI(newDate, transaction);
+      setTransactions({ ...res, total: transactions.total });
     }
 
-    toast.success(toastBody(transaction.name, transaction.timestamp, "edited"))
-    return transaction;
+    toast.success(toastBody(newTrans.name, newTrans.timestamp, "edited"))
+    return newTrans;
   }
 
   const deleteTransaction = async (month, id) => {
-    const {status, message} = await api.delete(`/transactions/${id}`);
+    const { status, message } = await api.delete(`/transactions/${id}`);
     if (status !== 204) {
       toast.error(formToast(message));
       return;
@@ -145,7 +144,8 @@ const TransactionsProvider = ({ children }) => {
       keys, data: {
         ...prev.data,
         [month]: newData
-      }
+      },
+      total: prev.total - 1
     }))
 
     toast.success(toastBody(categoryToDelete.name, categoryToDelete.timestamp, "deleted"))
