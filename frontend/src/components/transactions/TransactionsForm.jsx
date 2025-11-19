@@ -10,17 +10,17 @@ import CategoriesForm from '../categories/CategoriesForm.jsx';
 import { faPenToSquare, faXmarkCircle } from '@fortawesome/free-regular-svg-icons';
 import { useConfirmation } from '../../context/ConfirmationProvider.jsx';
 import { getDatetime } from '../../helpers/transformers.jsx';
-import _ from 'lodash';
 
-const TransactionsForm = ({ ref, name, category, price, timestamp }) => {
+const TransactionsForm = ({ ref, name, categoryId, price, timestamp }) => {
   const { categories, addCategory, editCategory, deleteCategory } = useCategories();
+  const { data: catData, dataMap: catDataMap } = categories;
   const { showConfirmation } = useConfirmation();
   const { showModal, hideModal } = useModal();
   const catFormRef = useRef(null);
 
   const [fields, setFields] = useState({
     name: name || "",
-    category: category || {},
+    categoryId: categoryId || "",
     price: price || null,
     timestamp: getDatetime(new Date(timestamp || Date.now()))
   });
@@ -44,7 +44,7 @@ const TransactionsForm = ({ ref, name, category, price, timestamp }) => {
             showConfirmation(
               () => {
                 deleteCategory(id)
-                if (id === fields.category?.id) setFields(prev => ({ ...prev, category: {} }))
+                if (id === fields.categoryId) setFields(prev => ({ ...prev, categoryId: "" }))
               },
               `'${name}' category`
             )
@@ -57,7 +57,7 @@ const TransactionsForm = ({ ref, name, category, price, timestamp }) => {
     const category = await editCategory(id, catFormRef.current.getData());
 
     if (category) {
-      setFields(prev => ({ ...prev, category }));
+      if (category.id === fields.categoryId) setFields(prev => ({ ...prev, categoryId: category.id }));
       hideModal();
     }
   }
@@ -66,7 +66,7 @@ const TransactionsForm = ({ ref, name, category, price, timestamp }) => {
     const category = await addCategory(catFormRef.current.getData());
 
     if (category) {
-      setFields(prev => ({ ...prev, category }));
+      setFields(prev => ({ ...prev, categoryId: category.id }));
       hideModal();
     }
   }
@@ -75,8 +75,7 @@ const TransactionsForm = ({ ref, name, category, price, timestamp }) => {
     if (ref) ref.current = { getData: () => fields }
   }, [ref, fields]);
 
-  const options = categories.filter(cat => cat.id !== fields.category?.id).map(item => ({ label: formLabel(item), ...item }))
-
+  const options = catData.filter(cat => cat.id !== fields.categoryId).map(item => ({ label: formLabel(item), ...item }))
   const handleCatCreate = () => {
     showModal(
       "Add category",
@@ -97,12 +96,12 @@ const TransactionsForm = ({ ref, name, category, price, timestamp }) => {
                value={fields.price ?? ""}/>
       </div>
       <div className={"flex gap-[10px] items-end"}>
-        <Select curValue={!_.isEmpty(fields.category) ? formLabel(fields.category) : ""}
+        <Select curValue={fields.categoryId ? formLabel(catDataMap[fields.categoryId]) : ""}
                 lClassName={"flex items-center"} label={<>
           <span className={"mr-[3px]"}>Category</span>
           <IconButton onClick={handleCatCreate} className={"leading-0"} iconClassName={"!text-white"}
                       title={"Add category"} icon={faFolderPlus}/>
-        </>} onOptionClick={({ label, ...rest }) => setFields(prev => ({ ...prev, category: { ...rest } }))}
+        </>} onOptionClick={({ label, ...rest }) => setFields(prev => ({ ...prev, categoryId: rest.id }))}
                 options={options}/>
       </div>
     </div>

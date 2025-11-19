@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { auth } from './firebase';
+import humps from 'humps';
 
 const API_BASE_URL = import.meta.env.MODE === 'production'
   ? import.meta.env.VITE_BACKEND_URL
@@ -32,6 +33,9 @@ instance.interceptors.request.use(
       }
     }
 
+    if (config.data) config.data = humps.decamelizeKeys(config.data);
+    if (config.params) config.params = humps.decamelizeKeys(config.params);
+
     return config;
   },
   (error) => {
@@ -41,6 +45,7 @@ instance.interceptors.request.use(
 
 instance.interceptors.response.use(
   (response) => {
+    if (response.data) response.data = humps.camelizeKeys(response.data);
     return response;
   },
   (error) => {

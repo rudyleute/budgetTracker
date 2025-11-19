@@ -1,30 +1,40 @@
 import { createContext, useContext, useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
-import { formToast, sanitizeData } from '../helpers/transformers.jsx';
+import { formToast, groupBy, sanitizeData } from '../helpers/transformers.jsx';
 import api from '../services/axios.js';
 
 const toastCatBody = (name, action) => {
   return formToast(<>Category <b>"{name}"</b> has been successfully {action}!</>);
 }
 
+const defaultValue = {
+  data: [],
+  dataMap: {}
+};
 const CategoriesContext = createContext({});
 const CategoriesProvider = ({ children }) => {
-  const [categories, setCategories] = useState([]);
+  const [categories, setCategories] = useState(defaultValue);
 
   useEffect(() => {
     let isMounted = true;
 
     (async () => {
-      const result = await api.get('/categories');
+      const res = await api.get('/categories');
 
       if (!isMounted) return;
-      if (!result.data) {
-        toast.error(formToast(result.message))
-        setCategories([]);
+      if (!res.data) {
+        toast.error(formToast(res.message))
+        setCategories(defaultValue);
         return;
       }
 
-      setCategories(result.data.data);
+      setCategories({
+        data: res.data.data,
+        dataMap: res.data.data.reduce((acc, cur) => {
+          acc[cur.id] = cur;
+          return acc;
+        }, {})
+      });
     })();
 
     return () => {
@@ -32,57 +42,61 @@ const CategoriesProvider = ({ children }) => {
     }
   }, []);
 
-  const addCategory = async (category) => {
-    const sanCategory = sanitizeData(category);
-    const { label, ...rest } = sanCategory;
-
-    const res = await api.post('/categories', { ...rest });
-    if (!res.data) {
-      toast.error(formToast(res.message));
+  const addCategory = async (data) => {
+    const { data: category, message } = await api.post('/categories', sanitizeData(data));
+    if (!category) {
+      toast.error(formToast(message));
       return;
     }
 
-    setCategories(prev => [...prev, res.data]);
-    toast.success(toastCatBody(res.data.name, "created"))
-    return res.data;
+    setCategories(prev => ({
+      data: [...prev.data, category],
+      dataMap: { ...prev.dataMap, [category.id]: category }
+    }));
+    toast.success(toastCatBody(category.name, "created"))
+    return category;
   }
 
-  const editCategory = async (id, category) => {
-    const sanCategory = sanitizeData(category);
-    const { label, ...rest } = sanCategory;
+  const editCategory = async (id, data) => {
+    const { data: category, message } = await api.put(`/categories/${id}`, sanitizeData(data));
 
-    const res = await api.put(`/categories/${id}`, { ...rest });
-
-    if (!res.data) {
-      toast.error(formToast(res.message));
+    if (!category) {
+      toast.error(formToast(message));
       return;
     }
 
-    setCategories(prev => prev.map(item => {
-      if (item.id !== res.data.id) return item;
-      return res.data
+    setCategories(prev => ({
+      data: prev.data.map((item) => {
+        if (item.id !== category.id) return item;
+        return category;
+      }),
+      dataMap: { ...prev.dataMap, [category.id]: category }
     }))
-    toast.success(toastCatBody(res.data.name, "edited"))
-    return res.data;
+    toast.success(toastCatBody(category.name, "edited"))
+    return category;
   }
 
   const deleteCategory = async (id) => {
-    const res = await api.delete(`/categories/${id}`);
+    const { status, message } = await api.delete(`/categories/${id}`);
 
-    if (res.status !== 204) {
-      toast.error(formToast(`Failed to delete category: ${res.message}`));
+    if (status !== 204) {
+      toast.error(formToast(`Failed to delete category: ${message}`));
       return;
     }
 
     setCategories(prev => {
-      const categoryToDelete = prev.find(item => item.id === id);
-      const newList = prev.filter(item => item.id !== id);
+      const categoryToDelete = prev.dataMap[id];
+      const newMap = { ...prev.dataMap };
+      delete newMap[categoryToDelete.id];
 
       setTimeout(() => {
         toast.success(toastCatBody(categoryToDelete.name, "deleted"))
       }, 0);
 
-      return newList;
+      return {
+        data: prev.data.filter(item => item.id !== id),
+        dataMap: newMap
+      };
     })
   }
 

@@ -21,7 +21,7 @@ const TransactionsItem = ({ data, month }) => {
   const handleEditing = () => {
     showModal(
       "Edit transaction",
-      <TransactionsForm ref={formRef} name={name} category={category} timestamp={timestamp} price={price} />,
+      <TransactionsForm ref={formRef} name={name} categoryId={category.id} timestamp={timestamp} price={price}/>,
       async () => {
         const res = await editTransaction(month, id, formRef.current.getData());
 
@@ -38,7 +38,11 @@ const TransactionsItem = ({ data, month }) => {
         <span className={"leading-3"}>{transMonth}</span>
         <span className={"text-3xl leading-3"}>{transDay}</span>
       </div>
-      <div className={"text-clipped text-hbg"} style={{ color: category.color }}>{category.name}</div>
+      <div className="text-clipped text-hbg h-[100%] flex items-center">
+        <span className="overflow-hidden text-ellipsis whitespace-nowrap" style={{ color: category.color }}>
+          {category.name}
+        </span>
+      </div>
       <div className={"text-clipped"}>{name}</div>
       <div className={"text-right bg-[#640D5F]/90 text-white font-bold px-3 py-1 rounded-md"}>{price} €</div>
       <div className={"text-center leading-0 flex gap-[3px]"}>
