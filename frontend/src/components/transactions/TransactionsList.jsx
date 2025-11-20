@@ -22,7 +22,7 @@ const TransactionsList = () => {
       {transactionsMap.length > 0 ? transactionsMap : <div
         className={"flex rounded-[15px] comp-b-color flex-col gap-[10px] font-bold items-center text-white p-[25px_10px]"}>
         <FontAwesomeIcon size={"2xl"} icon={faWineGlassEmpty}/>
-        There are no transactions yet
+        No transactions found
       </div>}
     </div>
   )

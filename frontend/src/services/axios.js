@@ -34,7 +34,12 @@ instance.interceptors.request.use(
     }
 
     if (config.data) config.data = humps.decamelizeKeys(config.data);
-    if (config.params) config.params = humps.decamelizeKeys(config.params);
+    if (config.params) {
+      config.params = Object.fromEntries(
+        Object.entries(config.params).filter(([_, v]) => v != null && v !== "")
+      );
+      config.params = humps.decamelizeKeys(config.params);
+    }
 
     return config;
   },

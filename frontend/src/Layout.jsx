@@ -1,10 +1,5 @@
 import { Outlet } from "react-router-dom";
 import Menu from "./components/Menu";
-import { ModalProvider } from './context/ModalProvider.jsx';
-import { CategoriesProvider } from './context/CategoriesProvider.jsx';
-import { TransactionsProvider } from './context/TransactionsProvider.jsx';
-import { ConfirmationProvider } from './context/ConfirmationProvider.jsx';
-import { AccountProvider } from './context/AccountProvider.jsx';
 
 const Layout = () => {
   return (

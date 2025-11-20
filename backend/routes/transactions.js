@@ -8,57 +8,68 @@ const allowedFields = ["name", "price", "timestamp", "category_id"]
 router.get('/', async (req, res) => {
   try {
     const uid = req.user.uid;
-    const page = Number(req.query.page) || 1;
+    const { from, to, filter, total } = req.query;
 
-    if (page < 1) {
-      logger.warn('Invalid page number requested', { uid, page });
-      return res.status(400).json({ message: "Page must be greater than 0" });
+    logger.debug('Fetching transactions', { uid, total });
+    const params = [uid], cond = ["t.user_uid = $1"];
+
+    if (from) {
+      params.push(from);
+      cond.push(`t.timestamp >= $${params.length}`);
+    }
+    if (to) {
+      params.push(to);
+      cond.push(`t.timestamp <= $${params.length}`);
+    }
+    if (filter) {
+      params.push(`%${filter}%`);
+      cond.push(`LOWER(t.name) LIKE LOWER($${params.length})`);
     }
 
-    logger.debug('Fetching transactions', { uid, page });
+    const offset = Number(total ?? 0);
+    params.push(pageSize + 1);
+    params.push(offset);
 
-    const offset = (page - 1) * pageSize;
-    const result = await db.query(
-      `SELECT t.id,
-              t.timestamp,
-              t.created_at,
-              t.updated_at,
-              t.name,
-              t.price,
-              json_build_object(
-                      'id', c.id,
-                      'name', c.name,
-                      'color', c.color
-              ) as category
-       FROM transactions t
-                LEFT JOIN categories c ON t.category_id = c.id
-       WHERE t.user_uid = $1
-       ORDER BY t.timestamp DESC
-       LIMIT $2 OFFSET $3;`,
-      [uid, pageSize + 1, offset]
-    );
+    const query = `
+        SELECT t.id,
+               t.timestamp,
+               t.created_at,
+               t.updated_at,
+               t.name,
+               t.price,
+               json_build_object(
+                       'id', c.id,
+                       'name', c.name,
+                       'color', c.color
+               ) AS category
+        FROM transactions t
+                 LEFT JOIN categories c ON t.category_id = c.id
+            where ${cond.join(' AND ')}
+        ORDER BY t.timestamp DESC
+        LIMIT $${params.length - 1}
+        OFFSET $${params.length};
+    `;
+
+    const result = await db.query(query, params);
 
     const isLastPage = result.rows.length <= pageSize;
     const transactions = result.rows.slice(0, pageSize);
 
     logger.info('Transactions retrieved successfully', {
       uid,
-      page,
       count: transactions.length,
       isLastPage
     });
 
     return res.status(200).json({
       data: transactions,
-      page: page,
       is_last_page: isLastPage
     });
   } catch (error) {
     logger.error('Failed to retrieve transactions', {
       error: error.message,
       stack: error.stack,
-      uid: req.user.uid,
-      page: req.query.page
+      uid: req.user.uid
     });
     res.status(500).json({ message: "Failed to retrieve transactions" });
   }

@@ -120,7 +120,7 @@ export const createTimeFilters = (setValues) => {
 
   const formOption = (label) => {
     const {from, to} = getDateRange(label);
-    setValues(prev => ({ ...prev, from, to }))
+    setValues(from, to);
   }
 
   return [

@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useState } from 'react';
+import { createContext, useCallback, useContext, useEffect, useState } from 'react';
 import { formToast, getDate, groupBy, sanitizeData } from '../helpers/transformers.jsx';
 import _ from 'lodash';
 import { toast } from 'react-toastify';
@@ -48,18 +48,57 @@ const formStateInsert = (keys, newMonthTrans, newMonth, newTrans) => {
   }
 }
 
+const defaultQueryParams = {
+  filter: "",
+  from: "",
+  to: "",
+};
 const defaultValue = { keys: [], data: {}, total: 0 };
+
 const TransactionsContext = createContext({});
 const TransactionsProvider = ({ children }) => {
-  const [transactions, setTransactions] = useState(defaultValue)
+  const [transactions, setTransactions] = useState(defaultValue);
+  const [queryParams, setQueryParams] = useState(defaultQueryParams);
+
+  const fetchTransactions = useCallback(async () => {
+    const { data: newTransactions, message } = await api.get('/transactions', { ...queryParams, total: 0 });
+
+    if (!newTransactions) {
+      toast.error(formToast(message));
+      return false;
+    }
+
+    const { keys, groups: data } = groupBy(newTransactions.data, "timestamp", (date) => getDate(date, {
+      year: 'numeric',
+      month: 'long'
+    }));
+    setTransactions({ keys, data, total: newTransactions.data.length });
+
+    return true;
+  }, [queryParams]);
 
   useEffect(() => {
     (async () => {
-      if (!await fetchTransactions({})) setTransactions(defaultValue);
+      if (!await fetchTransactions()) setTransactions(defaultValue);
     })();
+  }, [fetchTransactions]); //transitively depends on queryParams
+
+  const updateQueryParams = useCallback((values) => {
+    setQueryParams(prev => {
+      const next = { ...prev };
+
+      Object.keys(defaultQueryParams).forEach(key => {
+        if (values[key] != null) next[key] = values[key];
+      });
+      return next;
+    });
   }, []);
 
-  const addTransaction = async (data) => {
+  const resetQueryParams = useCallback(() => {
+    setQueryParams(defaultQueryParams);
+  }, []);
+
+  const addTransaction = useCallback(async (data) => {
     const { data: newTrans, message } = await api.post('/transactions', sanitizeData(data));
     if (!newTrans) {
       toast.error(formToast(message));
@@ -79,9 +118,9 @@ const TransactionsProvider = ({ children }) => {
 
     toast.success(toastBody(newTrans.name, newTrans.timestamp, "created"))
     return newTrans;
-  }
+  }, [transactions])
 
-  const editTransaction = async (oldMonth, id, data) => {
+  const editTransaction = useCallback(async (oldMonth, id, data) => {
     const { data: newTrans, message } = await api.put(`/transactions/${id}`, sanitizeData(data));
 
     if (!newTrans) {
@@ -128,9 +167,9 @@ const TransactionsProvider = ({ children }) => {
 
     toast.success(toastBody(newTrans.name, newTrans.timestamp, "edited"));
     return newTrans;
-  };
+  }, [transactions]);
 
-  const deleteTransaction = async (month, id) => {
+  const deleteTransaction = useCallback(async (month, id) => {
     const { status, message } = await api.delete(`/transactions/${id}`);
     if (status !== 204) {
       toast.error(formToast(message));
@@ -156,28 +195,10 @@ const TransactionsProvider = ({ children }) => {
     }))
 
     toast.success(toastBody(categoryToDelete.name, categoryToDelete.timestamp, "deleted"))
-  }
+  }, [transactions]);
 
-  const fetchTransactions = async (queryParams) => {
-    const { data: newTransactions, message } = await api.get('/transactions', { params: queryParams });
-
-    if (!newTransactions) {
-      toast.error(formToast(message));
-      return false;
-    }
-
-    const { keys, groups: data } = groupBy(newTransactions.data, "timestamp", (date) => getDate(date, {
-      year: 'numeric',
-      month: 'long'
-    }));
-    setTransactions({ keys, data, total: newTransactions.data.length });
-
-    return true;
-  }
-
-  const getMoreTransactions = async (queryParams) => {
-    queryParams = { ...queryParams, total: transactions.total };
-    const { data: newTransactions, message } = await api.get('/transactions', { params: queryParams });
+  const getMoreTransactions = useCallback(async () => {
+    const { data: newTransactions, message } = await api.get('/transactions', { ...queryParams, total: transactions.total });
 
     if (!newTransactions) {
       toast.error(formToast(message));
@@ -191,7 +212,7 @@ const TransactionsProvider = ({ children }) => {
     let newState = { ...transactions, total: transactions.total + newTransactions.data.length };
 
     for (const curMonth of keys) {
-      if (curMonth in newState.keys) newState[curMonth] = newState[curMonth].concat(data[curMonth]);
+      if (newState.keys.includes(curMonth)) newState[curMonth] = newState[curMonth].concat(data[curMonth]);
       else {
         const ind = _.sortedIndexBy(keys, curMonth, (t) => -new Date(t))
         newState.keys = [...newState.slice(0, ind), curMonth, ...newState.slice(ind)];
@@ -200,7 +221,7 @@ const TransactionsProvider = ({ children }) => {
     }
 
     setTransactions(newState);
-  }
+  }, [transactions, queryParams]);
 
   return (
     <TransactionsContext.Provider value={{
@@ -209,7 +230,10 @@ const TransactionsProvider = ({ children }) => {
       deleteTransaction,
       editTransaction,
       fetchTransactions,
-      getMoreTransactions
+      getMoreTransactions,
+      updateQueryParams,
+      resetQueryParams,
+      queryParams
     }}>
       {children}
     </TransactionsContext.Provider>
