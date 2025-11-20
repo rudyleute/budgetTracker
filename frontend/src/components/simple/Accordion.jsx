@@ -1,7 +1,7 @@
 import { twMerge } from 'tailwind-merge';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCaretDown, faCaretUp } from '@fortawesome/free-solid-svg-icons';
-import { useState } from 'react';
+import React, { useState } from 'react';
 
 const Accordion = ({ hClassName, bClassName, label, children }) => {
   const [isOpen, setIsOpen] = useState(true);
@@ -29,4 +29,4 @@ const Accordion = ({ hClassName, bClassName, label, children }) => {
   );
 }
 
-export default Accordion;
+export default React.memo(Accordion);
