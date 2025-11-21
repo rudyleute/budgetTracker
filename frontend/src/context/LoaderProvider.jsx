@@ -25,7 +25,7 @@ const LoaderProvider = ({ children }) => {
     {
       loader.loading && createPortal(<div className={"fixed gap-[15px] overlay z-[4000] flex flex-col justify-center items-center"}>
         <GridLoader size={30} color={"#D91656"}/>
-        {loader.message && <span className={"t-color font-bold"}>{loader.message}</span>}
+        {loader.message && <span className={"text-[var(--color-third)] font-bold"}>{loader.message}</span>}
       </div>, document.body)
     }
   </LoaderContext.Provider>;

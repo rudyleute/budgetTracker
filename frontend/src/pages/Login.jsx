@@ -14,9 +14,9 @@ const Login = () => {
   const { logIn } = useAccount();
 
   return (
-    <div className={"w-full h-screen comp-b-color relative"}>
+    <div className={"w-full h-screen bg-[var(--color-comp)] relative"}>
       <div
-        className={"w-[350px] flex flex-col gap-[10px] window-center relative t-b-color rounded-[15px] p-[15px_20px]"}>
+        className={"w-[350px] flex flex-col gap-[10px] window-center relative bg-[var(--color-third)] rounded-[15px] p-[15px_20px]"}>
         <Input lClassName={"!text-[1.1rem]"} wClassName={"!text-[1.1rem]"}
                onChange={(e) => setData(prev => ({ ...prev, email: e.target.value }))} value={data.email} type={"text"}
                label={"Email"}/>
@@ -24,9 +24,9 @@ const Login = () => {
                onChange={(e) => setData(prev => ({ ...prev, password: e.target.value }))} value={data.password}
                type={"password"} label={"Password"}/>
         <div className={"flex items-center gap-[2px] absolute right-0 pr-[20px] -translate-y-1/3"}>
-          <IconButton title={"Sign up"} iconClassName={"comp-color"} onClick={() => navigate("/signup")}
+          <IconButton title={"Sign up"} iconClassName={"text-[var(--color-comp)]"} onClick={() => navigate("/signup")}
                       icon={faCircleUser}/>
-          <IconButton title={"Log in"} iconClassName={"comp-color"} onClick={() => logIn(data)} icon={faRightToBracket}/>
+          <IconButton title={"Log in"} iconClassName={"text-[var(--color-comp)]"} onClick={() => logIn(data)} icon={faRightToBracket}/>
         </div>
       </div>
     </div>

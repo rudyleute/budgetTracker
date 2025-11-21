@@ -33,8 +33,7 @@ body {
 }
 
 .btn-rounded {
-    background-color: #D91656;
-    @apply p-[5px_10px] text-white font-bold h-full w-fit first:rounded-l-[15px] last:rounded-r-[15px];
+    @apply p-[5px_10px] bg-[var(--color-btn-bg)] text-[var(--color-text)] font-bold h-full w-fit first:rounded-l-[15px] last:rounded-r-[15px];
 }
 
 .transition-500 {
@@ -51,13 +50,13 @@ body {
 }
 
 .s-scroll::-webkit-scrollbar-thumb {
-    background-color: #D91656;
+    background-color: var(--color-scrollbar);
     border-left: 1px solid transparent;
     background-clip: content-box;
 }
 
 .s-scroll-comp::-webkit-scrollbar-thumb {
-    @apply bg-[#FFB200];
+    @apply bg-[var(--color-scrollbar-alt)];
 }
 
 .s-scroll::-webkit-scrollbar-thumb:hover {
@@ -65,7 +64,7 @@ body {
 }
 
 .label {
-    @apply capitalize font-bold h-fit text-white text-xl
+    @apply capitalize font-bold h-fit text-[var(--color-text)] text-xl
 }
 
 .field-wrapper {
@@ -73,7 +72,7 @@ body {
 }
 
 .field {
-    @apply bg-white rounded-[15px] h-[40px] p-[5px] pl-[20px] w-full font-bold text-black
+    @apply bg-[var(--color-input-bg)] rounded-[15px] h-[40px] p-[5px] pl-[20px] w-full font-bold text-[var(--color-input-text)]
 }
 
 .text-clipped {
@@ -84,36 +83,38 @@ body {
     @apply hover:cursor-pointer absolute right-[10px] w-[30px] top-[50%] translate-y-[-50%]
 }
 
-.m-color {
-    color: #FFB200;
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
-.m-b-color {
-    background-color: #FFB200;
+.animate-fade-in {
+    animation: fadeIn 0.5s ease-out;
 }
 
-.s-color {
-    color: #EB5B00
-}
-
-.s-b-color {
-    background-color: #EB5B00;
-}
-
-.t-color {
-    color: #D91656
-}
-
-.t-b-color {
-    background-color: #D91656;
-}
-
-.comp-color {
-    color: #640D5F;
-}
-
-.comp-b-color {
-    background-color: #640D5F;
+:root {
+    --color-main: #FFB200;
+    --color-sec: #EB5B00;
+    --color-third: #D91656;
+    --color-comp: #640D5F;
+    --color-input-bg: white;
+    --color-input-text: black;
+    --color-text: white;
+    --color-btn-bg: #D91656;
+    --color-btn-text: white;
+    --color-btn-icon: #D91656;
+    --color-btn-icon-act: #640D5F;
+    --color-bg-highlight: #640D5F;
+    --color-opt-bg-hov: gray;
+    --color-opt-bg: white;
+    --color-scrollbar: #640D5F;
+    --color-scrollbar-alt: #FFB200;
 }
 
 .icon-b {

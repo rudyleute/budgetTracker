@@ -99,7 +99,7 @@ const TransactionsForm = ({ ref, name, categoryId, price, timestamp }) => {
         <Select curValue={fields.categoryId ? formLabel(catDataMap[fields.categoryId]) : ""}
                 lClassName={"flex items-center"} label={<>
           <span className={"mr-[3px]"}>Category</span>
-          <IconButton onClick={handleCatCreate} className={"leading-0"} iconClassName={"!text-white"}
+          <IconButton onClick={handleCatCreate} className={"leading-0"} iconClassName={"!text-[var(--color-text)]"}
                       title={"Add category"} icon={faFolderPlus}/>
         </>} onOptionClick={({ label, ...rest }) => setFields(prev => ({ ...prev, categoryId: rest.id }))}
                 options={options}/>
