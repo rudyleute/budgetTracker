@@ -5,11 +5,11 @@ const Layout = () => {
   return (
     <div className={"flex justify-start"}>
       <Menu/>
-      <div className={"grid grid-cols-[9fr_2fr] bg-[var(--color-main)] h-screen grow"}>
+      <div className={"grid grid-cols-[9fr_2fr] bg-[var(--color-third)] h-screen grow"}>
         <div className={"s-scroll p-[30px] overflow-y-auto"}>
           <Outlet/>
         </div>
-        <div className={"w-full h-full overflow-y-auto bg-[var(--color-comp)]"}>
+        <div className={"w-full h-full overflow-y-auto bg-[var(--color-sec)]"}>
         </div>
       </div>
     </div>

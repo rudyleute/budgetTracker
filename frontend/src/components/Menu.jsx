@@ -9,7 +9,7 @@ const Menu = () => {
 
   return (
     <aside
-      className={"flex flex-col justify-between bg-[var(--color-comp)] min-w-[100px] max-w-[130px] w-[10vw] h-screen shadow-sm pt-[15px] pb-[10px]"}>
+      className={"flex flex-col justify-between bg-[var(--color-sec)] min-w-[100px] max-w-[130px] w-[10vw] h-screen shadow-sm pt-[15px] pb-[10px]"}>
       <div className={"flex flex-col gap-[15px] items-center w-full"}>
         <IconButton onClick={() => navigate("/")} title={"Home"} icon={faHouse} iconClassName={"icon-b"}/>
         <IconButton onClick={() => navigate("/dashboard")} title={"Dashboard"} icon={faChartPie}

@@ -16,8 +16,8 @@ const SignUp = () => {
   const { signUp } = useAccount();
 
   return (
-    <div className={"w-full h-screen bg-[var(--color-comp)] relative"}>
-      <div className={"w-[350px] flex flex-col gap-[10px] window-center relative bg-[var(--color-third)] rounded-[15px] p-[15px_20px]"}>
+    <div className={"w-full h-screen bg-[var(--color-sec)] relative"}>
+      <div className={"w-[350px] flex flex-col gap-[10px] window-center relative bg-[var(--color-main)] rounded-[15px] p-[15px_20px]"}>
         <Input lClassName={"!text-[1.1rem]"} wClassName={"!text-[1.1rem]"} onChange={(e) => setData(prev => ({ ...prev, email: e.target.value }))}
                value={data.email} type={"text"} label={"Email"}/>
         <Input lClassName={"!text-[1.1rem]"} wClassName={"!text-[1.1rem]"} onChange={(e) => setData(prev => ({ ...prev, username: e.target.value }))}
@@ -27,9 +27,9 @@ const SignUp = () => {
         <Input lClassName={"!text-[1.1rem]"} wClassName={"!text-[1.1rem]"} onChange={(e) => setData(prev => ({ ...prev, rPassword: e.target.value }))}
                value={data.rPassword} type={"password"} label={"Repeat password"}/>
         <div className={"flex align-middle absolute right-0 pr-[20px] -translate-y-1/3"}>
-          <IconButton title={"Log in"} iconClassName={"text-[var(--color-comp)]"} onClick={() => navigate("/login")}
+          <IconButton title={"Log in"} iconClassName={"text-[var(--color-sec)]"} onClick={() => navigate("/login")}
                       icon={faIdBadge}/>
-          <IconButton title={"Sign up"} iconClassName={"text-[var(--color-comp)]"} onClick={async () => await signUp(data)}
+          <IconButton title={"Sign up"} iconClassName={"text-[var(--color-sec)]"} onClick={async () => await signUp(data)}
                       icon={faRightToBracket}/>
         </div>
       </div>

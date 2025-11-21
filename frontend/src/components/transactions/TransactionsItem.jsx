@@ -33,7 +33,7 @@ const TransactionsItem = ({ data, month }) => {
 
   return (
     <div
-      className={twMerge("grid grid-cols-[1fr_3fr_18fr_2fr_1fr] text-[var(--color-text)] font-bold items-center text-xl gap-[10px] pt-[10px] first:pt-[5px] pb-[10px] last:pb-[5px] border-b-2 border-white last:border-b-0 animate-fade-in")}>
+      className={twMerge("grid grid-cols-[1fr_3fr_18fr_2fr_1fr] text-[var(--color-text)] items-center text-xl gap-[10px] pt-[10px] first:pt-[5px] pb-[10px] last:pb-[5px] border-b-1 border-b-[var(--color-text)] border-solid last:border-b-0 animate-fade-in")}>
       <div className={"flex flex-col items-center text-[var(--color-text)] font-bold gap-[10px]"}>
         <span className={"leading-3"}>{transMonth}</span>
         <span className={"text-3xl leading-3"}>{transDay}</span>
@@ -44,11 +44,11 @@ const TransactionsItem = ({ data, month }) => {
         </span>
       </div>
       <div className={"text-clipped"}>{name}</div>
-      <div className={"text-right bg-[var(--color-bg-highlight)]/90 text-[var(--color-text)] font-bold px-3 py-1 rounded-md"}>{price} €</div>
+      <div className={"text-right bg-[var(--color-sec)]/90 text-[var(--color-text)] px-3 py-1 rounded-md"}>{price} €</div>
       <div className={"text-center leading-0 flex gap-[3px]"}>
-        <IconButton title={"Edit"} iconClassName={"icon-xs !text-[var(--color-btn-icon-act)]"} onClick={handleEditing}
+        <IconButton title={"Edit"} iconClassName={"icon-xs !text-[var(--color-sec)]"} onClick={handleEditing}
                     icon={faPenToSquare}/>
-        <IconButton title={"Delete"} iconClassName={"icon-xs !text-[var(--color-btn-icon-act)]"} onClick={
+        <IconButton title={"Delete"} iconClassName={"icon-xs !text-[var(--color-sec)]"} onClick={
           () => showConfirmation(
             () => deleteTransaction(month, id),
             `transaction: "${name}" on ${transDay} ${transMonth} in category "${category.name}"`

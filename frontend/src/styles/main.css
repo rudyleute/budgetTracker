@@ -5,7 +5,7 @@ body {
 }
 
 .text-hbg {
-    @apply px-1 py-1 rounded-[5px] bg-[#640D5F]/70;
+    @apply px-1 py-1 rounded-[5px] bg-[var(--color-sec)]/50;
 }
 
 .form {
@@ -17,7 +17,7 @@ body {
 }
 
 .overlay {
-    @apply fixed top-0 left-0 w-screen h-screen bg-black/80;
+    @apply fixed top-0 left-0 w-screen h-screen bg-[var(--color-sec)]/80;
 }
 
 .jump-1 {
@@ -33,7 +33,7 @@ body {
 }
 
 .btn-rounded {
-    @apply p-[5px_10px] bg-[var(--color-btn-bg)] text-[var(--color-text)] font-bold h-full w-fit first:rounded-l-[15px] last:rounded-r-[15px];
+    @apply p-[5px_10px] bg-[var(--color-main)] text-[var(--color-text)] font-bold h-full w-fit first:rounded-l-[15px] last:rounded-r-[15px];
 }
 
 .transition-500 {
@@ -50,13 +50,13 @@ body {
 }
 
 .s-scroll::-webkit-scrollbar-thumb {
-    background-color: var(--color-scrollbar);
+    background-color: var(--color-main);
     border-left: 1px solid transparent;
     background-clip: content-box;
 }
 
 .s-scroll-comp::-webkit-scrollbar-thumb {
-    @apply bg-[var(--color-scrollbar-alt)];
+    @apply bg-[var(--color-third)];
 }
 
 .s-scroll::-webkit-scrollbar-thumb:hover {
@@ -72,7 +72,7 @@ body {
 }
 
 .field {
-    @apply bg-[var(--color-input-bg)] rounded-[15px] h-[40px] p-[5px] pl-[20px] w-full font-bold text-[var(--color-input-text)]
+    @apply bg-[var(--color-text)] rounded-[15px] h-[40px] p-[5px] pl-[20px] w-full font-bold text-[var(--color-input-text)]
 }
 
 .text-clipped {
@@ -99,22 +99,11 @@ body {
 }
 
 :root {
-    --color-main: #FFB200;
-    --color-sec: #EB5B00;
-    --color-third: #D91656;
-    --color-comp: #640D5F;
-    --color-input-bg: white;
-    --color-input-text: black;
+    --color-main: #000000;
+    --color-sec: #323232;
+    --color-third: #FF1E56;
     --color-text: white;
-    --color-btn-bg: #D91656;
-    --color-btn-text: white;
-    --color-btn-icon: #D91656;
-    --color-btn-icon-act: #640D5F;
-    --color-bg-highlight: #640D5F;
-    --color-opt-bg-hov: gray;
-    --color-opt-bg: white;
-    --color-scrollbar: #640D5F;
-    --color-scrollbar-alt: #FFB200;
+    --color-input-text: black;
 }
 
 .icon-b {

@@ -16,7 +16,7 @@ const TransactionsList = () => {
       return <TransactionsItem data={item} key={item.id} month={key}/>;
     });
 
-    return <Accordion className={"animate-fade-in"} hClassName={"bg-[var(--color-comp)] text-[var(--color-text)]"} bClassName={"bg-[var(--color-third)] p-[5px]"} label={
+    return <Accordion className={"animate-fade-in"} hClassName={"bg-[var(--color-sec)] text-[var(--color-text)]"} bClassName={"bg-[var(--color-main)] p-[5px]"} label={
       <span className={"w-full flex justify-between"}>
         <span className={"text-clipped grow"}>{key} </span>
         <span>{total} €</span>
@@ -31,7 +31,7 @@ const TransactionsList = () => {
   return (
     <div className={"w-full flex flex-col gap-[5px] items-center"}>
       {transactionsMap.length > 0 ? transactionsMap : <div
-        className={"flex rounded-[15px] bg-[var(--color-comp)] flex-col gap-[10px] font-bold items-center text-[var(--color-text)] p-[25px_10px]"}>
+        className={"flex rounded-[15px] bg-[var(--color-sec)] flex-col gap-[10px] font-bold items-center text-[var(--color-text)] p-[25px_10px] w-full"}>
         <FontAwesomeIcon size={"2xl"} icon={faWineGlassEmpty}/>
         No transactions found
       </div>}

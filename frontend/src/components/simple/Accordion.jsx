@@ -9,7 +9,7 @@ const Accordion = ({ hClassName, className, bClassName, label, children }) => {
   return (
     <div className={twMerge("w-full", className)}>
       <div className="w-full overflow-hidden rounded-[10px]">
-        <div className={twMerge("relative flex items-center pl-[20px] font-bold", hClassName)}>
+        <div className={twMerge("relative flex items-center pl-[20px]", hClassName)}>
           <span className="w-full text-clipped inline-block pr-[45px]">{label}</span>
           <FontAwesomeIcon
             className="end-adornment cursor-pointer"

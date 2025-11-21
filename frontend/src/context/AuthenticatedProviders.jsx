@@ -10,8 +10,8 @@ const AuthenticatedProviders = ({ children }) => {
 
   if (loading) {
     return (
-      <div className="w-full h-screen bg-[var(--color-third)] flex items-center justify-center">
-        <GridLoader size={30} color={"#640D5F"} />
+      <div className="w-full h-screen bg-[var(--color-main)] flex items-center justify-center">
+        <GridLoader size={30} color={"var(--color-third)"} />
       </div>
     );
   }

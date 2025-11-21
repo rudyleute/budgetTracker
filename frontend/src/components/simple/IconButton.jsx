@@ -6,7 +6,7 @@ const IconButton = ({ icon, iconClassName, size, ...rest }) => {
   return (
     <Button {...rest}>
       <FontAwesomeIcon icon={icon} size={size}
-                       className={twMerge("text-[var(--color-third)] jump-1", iconClassName)}/>
+                       className={twMerge("text-[var(--color-main)] jump-1", iconClassName)}/>
     </Button>
   )
 }
