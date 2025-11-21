@@ -4,7 +4,7 @@ import { twMerge } from 'tailwind-merge';
 import { faCircleXmark, faPenToSquare } from '@fortawesome/free-regular-svg-icons';
 import { useConfirmation } from '../../context/ConfirmationProvider.jsx';
 import { useTransactions } from '../../context/TransactionsProvider.jsx';
-import { useRef } from 'react';
+import React, { useRef } from 'react';
 import TransactionsForm from './TransactionsForm.jsx';
 import { useModal } from '../../context/ModalProvider.jsx';
 
@@ -58,4 +58,4 @@ const TransactionsItem = ({ data, month }) => {
   )
 }
 
-export default TransactionsItem;
+export default React.memo(TransactionsItem);

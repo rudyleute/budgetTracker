@@ -1,6 +1,5 @@
 import Accordion from '../simple/Accordion.jsx';
 import TransactionsItem from './TransactionsItem.jsx';
-import { v4 as uuidv4 } from 'uuid';
 import { useTransactions } from '../../context/TransactionsProvider.jsx';
 import React from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -11,9 +10,20 @@ const TransactionsList = () => {
   const { transactions, getMoreTransactions } = useTransactions();
 
   const transactionsMap = transactions.keys.map(key => {
-    return <Accordion hClassName={"comp-b-color text-white"} bClassName={"t-b-color p-[5px]"} label={key}
-                      key={uuidv4()}>
-      {transactions.data[key].map((item) => <TransactionsItem data={item} key={item.id} month={key}/>)}
+    let total = 0;
+    const items = transactions.data[key].map(item => {
+      total += Number(item.price);
+      return <TransactionsItem data={item} key={item.id} month={key}/>;
+    });
+
+    return <Accordion hClassName={"comp-b-color text-white"} bClassName={"t-b-color p-[5px]"} label={
+      <span className={"w-full flex justify-between"}>
+        <span className={"text-clipped grow"}>{key} </span>
+        <span>{total} €</span>
+      </span>
+    }
+                      key={key}>
+      {items}
     </Accordion>
   });
 
@@ -25,7 +35,7 @@ const TransactionsList = () => {
         <FontAwesomeIcon size={"2xl"} icon={faWineGlassEmpty}/>
         No transactions found
       </div>}
-      {!transactions.isLastPage && <IconButton onClick={getMoreTransactions} title={"Show more"} icon={faCircleDown} />}
+      {!transactions.isLastPage && <IconButton onClick={getMoreTransactions} title={"Show more"} icon={faCircleDown}/>}
     </div>
   )
 }
