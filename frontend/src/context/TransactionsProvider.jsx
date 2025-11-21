@@ -136,7 +136,7 @@ const TransactionsProvider = ({ children }) => {
     const updTransData = { ...transactions.data }, hasMonthChanged = newMonth !== oldMonth;
 
     //Remove old month of the element if the new month is different and there are no other transactions in the old month
-    if (hasMonthChanged && updTransData[oldMonth].length === 1) {
+    if (updTransData[oldMonth].length === 1) {
       delete updTransData[oldMonth];
       newKeys = newKeys.filter(k => k !== oldMonth);
     } else updTransData[oldMonth] = updTransData[oldMonth].filter(item => item.id !== newTrans.id);
