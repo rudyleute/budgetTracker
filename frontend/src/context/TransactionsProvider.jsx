@@ -53,7 +53,7 @@ const defaultQueryParams = {
   from: "",
   to: "",
 };
-const defaultValue = { keys: [], data: {}, total: 0 };
+const defaultValue = { keys: [], data: {}, total: 0, isLastPage: true };
 
 const TransactionsContext = createContext({});
 const TransactionsProvider = ({ children }) => {
@@ -72,7 +72,7 @@ const TransactionsProvider = ({ children }) => {
       year: 'numeric',
       month: 'long'
     }));
-    setTransactions({ keys, data, total: newTransactions.data.length });
+    setTransactions({ keys, data, total: newTransactions.data.length, isLastPage: newTransactions.isLastPage });
 
     return true;
   }, [queryParams]);
@@ -90,12 +90,14 @@ const TransactionsProvider = ({ children }) => {
       Object.keys(defaultQueryParams).forEach(key => {
         if (values[key] != null) next[key] = values[key];
       });
-      return next;
+      return !_.isEqual(prev, next) ? next : prev
     });
   }, []);
 
   const resetQueryParams = useCallback(() => {
-    setQueryParams(defaultQueryParams);
+    setQueryParams(prev => {
+      return !_.isEqual(prev, defaultQueryParams) ? defaultQueryParams : prev;
+    });
   }, []);
 
   const addTransaction = useCallback(async (data) => {
@@ -113,8 +115,8 @@ const TransactionsProvider = ({ children }) => {
     const newMonthTrans = transactions.data[newMonth] ?? [];
     if (shouldStateInsert(transactions.keys, newTrans, transactions.data[newMonth] ?? [], newMonthTrans, newMonth)) {
       const res = formStateInsert(transactions.keys, transactions.data, newMonth, newTrans);
-      setTransactions({ ...res, total: transactions.total + 1 });
-    }
+      setTransactions(prev => ({ ...prev, ...res, total: transactions.total + 1 }));
+    } else setTransactions(prev => ({...prev, isLastPage: false}))
 
     toast.success(toastBody(newTrans.name, newTrans.timestamp, "created"))
     return newTrans;
@@ -143,16 +145,16 @@ const TransactionsProvider = ({ children }) => {
     if (shouldStateInsert(newKeys, newTrans, newMonthTrans, updTransData, newMonth)) {
       if (hasMonthChanged) {
         const res = formStateInsert(newKeys, updTransData, newMonth, newTrans);
-        setTransactions({ ...res, total: transactions.total });
+        setTransactions(prev => ({ ...prev, ...res, total: transactions.total }));
       } else {
         const ind = _.sortedIndexBy(newMonthTrans, newTrans, t => -new Date(t.timestamp));
         setTransactions(prev => ({
+          ...prev,
           keys: prev.keys,
           data: {
             ...prev.data,
             [newMonth]: [...newMonthTrans.slice(0, ind), newTrans, ...newMonthTrans.slice(ind)]
-          },
-          total: prev.total
+          }
         }));
       }
     } else {
@@ -161,7 +163,8 @@ const TransactionsProvider = ({ children }) => {
       setTransactions({
         keys: newKeys,
         data: updTransData,
-        total: transactions.total - 1
+        total: transactions.total - 1,
+        isLastPage: false
       });
     }
 
@@ -191,7 +194,8 @@ const TransactionsProvider = ({ children }) => {
         ...prev.data,
         [month]: newData
       },
-      total: prev.total - 1
+      total: prev.total - 1,
+      isLastPage: prev.isLastPage
     }))
 
     toast.success(toastBody(categoryToDelete.name, categoryToDelete.timestamp, "deleted"))
@@ -209,13 +213,13 @@ const TransactionsProvider = ({ children }) => {
       year: 'numeric',
       month: 'long'
     }));
-    let newState = { ...transactions, total: transactions.total + newTransactions.data.length };
+    let newState = { ...transactions, total: transactions.total + newTransactions.data.length, isLastPage: newTransactions.isLastPage };
 
     for (const curMonth of keys) {
-      if (newState.keys.includes(curMonth)) newState[curMonth] = newState[curMonth].concat(data[curMonth]);
+      if (newState.keys.includes(curMonth)) newState.data[curMonth] = newState.data[curMonth].concat(data[curMonth]);
       else {
-        const ind = _.sortedIndexBy(keys, curMonth, (t) => -new Date(t))
-        newState.keys = [...newState.slice(0, ind), curMonth, ...newState.slice(ind)];
+        const ind = _.sortedIndexBy(newState.keys, curMonth, (t) => -new Date(t))
+        newState.keys = [...newState.keys.slice(0, ind), curMonth, ...newState.keys.slice(ind)];
         newState.data[curMonth] = data[curMonth]
       }
     }

@@ -15,17 +15,32 @@ import TransactionsForm from '../components/transactions/TransactionsForm.jsx';
 import { useTransactions } from '../context/TransactionsProvider.jsx';
 import { v4 as uuidv4 } from 'uuid';
 import { createTimeFilters } from '../helpers/transformers.jsx';
+import _ from 'lodash';
 
 
 const defaultOption = { label: "---Select filter---" }
 const Main = () => {
   const [option, setOption] = useState(defaultOption);
-  const { addTransaction,  queryParams, updateQueryParams, resetQueryParams } = useTransactions();
+  const [searchValue, setSearchValue] = useState("");
+  const { addTransaction, queryParams, updateQueryParams, resetQueryParams } = useTransactions();
   const { showModal, hideModal } = useModal();
   const formRef = useRef(null);
 
+  const debouncedSearch = useCallback(
+    _.debounce((value) => {
+      updateQueryParams({ filter: value })
+    }, 500),
+    [updateQueryParams]
+  );
+
+  const handleSearchChange = (e) => {
+    const value = e.target.value;
+    setSearchValue(value);
+    debouncedSearch(value);
+  }
+
   const setValues = useCallback((from, to) => {
-    updateQueryParams({from, to});
+    updateQueryParams({ from, to });
   }, [updateQueryParams]);
 
   const options = useMemo(() => createTimeFilters(setValues, uuidv4), [setValues]);
@@ -47,8 +62,8 @@ const Main = () => {
     <>
       <div className={"grid grid-cols-[8fr_2fr] gap-[20px] mb-[10px]"}>
         <div className={"flex flex-col gap-[10px] min-w-0"}>
-          <Input placeholder={"Search by name..."} type={"text"} value={queryParams.filter}
-                 onChange={(e) => updateQueryParams({ filter: e.target.value })}/>
+          <Input placeholder={"Search by name..."} type={"text"} value={searchValue}
+                 onChange={handleSearchChange}/>
           <div className={"grid grid-cols-2 items-center gap-[10px]"}>
             <PillButtons className={"justify-self-end"} buttons={[
               { content: <FontAwesomeIcon icon={faCartPlus}/>, title: "Add new entry", onClick: handleCreation },
@@ -63,7 +78,7 @@ const Main = () => {
               }
             ]}/>
             <Select curValue={option.label} onOptionClick={(option) => setOption(option)}
-                    options={ options.filter(opt => opt.label !== option?.label) }/>
+                    options={options.filter(opt => opt.label !== option?.label)}/>
           </div>
         </div>
         <div className={"flex flex-col gap-[10px]"}>
@@ -81,7 +96,7 @@ const Main = () => {
           />
         </div>
       </div>
-      <TransactionsList />
+      <TransactionsList/>
     </>
   )
 }
