@@ -1,5 +1,5 @@
 import { createContext, useCallback, useContext, useEffect, useState } from 'react';
-import { formToast, getDate, groupBy, sanitizeData } from '../helpers/transformers.jsx';
+import { formToast, getDate, groupBy } from '../helpers/transformers.jsx';
 import _ from 'lodash';
 import { toast } from 'react-toastify';
 import api from '../services/axios.js';
@@ -101,7 +101,7 @@ const TransactionsProvider = ({ children }) => {
   }, []);
 
   const addTransaction = useCallback(async (data) => {
-    const { data: newTrans, message } = await api.post('/transactions', sanitizeData(data));
+    const { data: newTrans, message } = await api.post('/transactions', data);
     if (!newTrans) {
       toast.error(formToast(message));
       return;
@@ -123,7 +123,7 @@ const TransactionsProvider = ({ children }) => {
   }, [transactions])
 
   const editTransaction = useCallback(async (oldMonth, id, data) => {
-    const { data: newTrans, message } = await api.put(`/transactions/${id}`, sanitizeData(data));
+    const { data: newTrans, message } = await api.put(`/transactions/${id}`, data);
 
     if (!newTrans) {
       toast.error(formToast(message));

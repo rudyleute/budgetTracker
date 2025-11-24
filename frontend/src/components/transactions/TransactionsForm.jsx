@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef } from 'react';
 import Input from '../simple/Input.jsx';
 import Select from '../simple/Select.jsx';
 import { useCategories } from '../../context/CategoriesProvider.jsx';
@@ -10,6 +10,8 @@ import CategoriesForm from '../categories/CategoriesForm.jsx';
 import { faPenToSquare, faXmarkCircle } from '@fortawesome/free-regular-svg-icons';
 import { useConfirmation } from '../../context/ConfirmationProvider.jsx';
 import { getDatetime } from '../../helpers/transformers.jsx';
+import { useForm } from 'react-hook-form';
+import { transactionResolver } from '../../schemas/transactionSchema.js';
 
 const TransactionsForm = ({ ref, name, categoryId, price, timestamp }) => {
   const { categories, addCategory, editCategory, deleteCategory } = useCategories();
@@ -18,12 +20,36 @@ const TransactionsForm = ({ ref, name, categoryId, price, timestamp }) => {
   const { showModal, hideModal } = useModal();
   const catFormRef = useRef(null);
 
-  const [fields, setFields] = useState({
-    name: name || "",
-    categoryId: categoryId || "",
-    price: price || null,
-    timestamp: getDatetime(new Date(timestamp || Date.now()))
+  const {
+    register,
+    trigger,
+    getValues,
+    formState: { errors },
+    setValue,
+    clearErrors,
+    watch
+  } = useForm({
+    resolver: transactionResolver,
+    defaultValues: {
+      name: name || "",
+      categoryId: categoryId || "",
+      price: price || "",
+      timestamp: getDatetime(new Date(timestamp || Date.now()))
+    }
   });
+
+  const fields = watch();
+
+  useEffect(() => {
+    if (ref) ref.current = {
+      getData: async () => {
+        const isValid = await trigger();
+
+        if (!isValid) return null;
+        return getValues();
+      }
+    }
+  }, [ref, fields, trigger, getValues]);
 
   const formLabel = ({ id, name, color }) => {
     return <span className={"flex items-center justify-between gap-[10px]"}>
@@ -44,7 +70,7 @@ const TransactionsForm = ({ ref, name, categoryId, price, timestamp }) => {
             showConfirmation(
               () => {
                 deleteCategory(id)
-                if (id === fields.categoryId) setFields(prev => ({ ...prev, categoryId: "" }))
+                if (id === fields.categoryId) setValue("categoryId", "")
               },
               `'${name}' category`
             )
@@ -54,26 +80,30 @@ const TransactionsForm = ({ ref, name, categoryId, price, timestamp }) => {
   }
 
   const handleCatEdit = async (id) => {
-    const category = await editCategory(id, catFormRef.current.getData());
+    const data = await catFormRef.current.getData();
 
-    if (category) {
-      if (category.id === fields.categoryId) setFields(prev => ({ ...prev, categoryId: category.id }));
-      hideModal();
+    if (data) {
+      const category = await editCategory(id, data);
+
+      if (category) {
+        if (category.id === fields.categoryId) setValue("categoryId", category.id);
+        hideModal();
+      }
     }
   }
 
   const handleCatSave = async () => {
-    const category = await addCategory(catFormRef.current.getData());
+    const data = await catFormRef.current.getData();
 
-    if (category) {
-      setFields(prev => ({ ...prev, categoryId: category.id }));
-      hideModal();
+    if (data) {
+      const category = await addCategory(data);
+
+      if (category) {
+        setValue("categoryId", category.id);
+        hideModal();
+      }
     }
   }
-
-  useEffect(() => {
-    if (ref) ref.current = { getData: () => fields }
-  }, [ref, fields]);
 
   const options = catData.filter(cat => cat.id !== fields.categoryId).map(item => ({ label: formLabel(item), ...item }))
   const handleCatCreate = () => {
@@ -85,27 +115,48 @@ const TransactionsForm = ({ ref, name, categoryId, price, timestamp }) => {
     )
   }
 
-  const handleOnChange = (e) => setFields(prev => ({ ...prev, [e.target.name]: e.target.value }));
   return (
     <div className={"form"}>
-      <Input label={"Name"} name={"name"} type={"text"} onChange={handleOnChange} value={fields.name}/>
+      <Input label={"Name"} name={"name"} type={"text"}{...register("name", {
+        onChange: () => clearErrors("name")
+      })} error={errors.name?.message}/>
+
       <div className={"grid grid-cols-[2fr_1fr] gap-[10px]"}>
-        <Input label={"Time"} name={"timestamp"} type={"datetime-local"} onChange={handleOnChange}
-               value={fields.timestamp}/>
-        <Input label={"Price"} name={"price"} type={"number"} min={0} step={0.10} onChange={handleOnChange}
-               value={fields.price ?? ""}/>
+        <Input label={"Timestamp"} name={"timestamp"} type={"datetime-local"} {...register("timestamp", {
+          onChange: () => clearErrors("timestamp")
+        })}
+               error={errors.timestamp?.message}/>
+        <Input label={"Price"} name={"price"} type={"number"} min={0} step={0.01} {...register("price", {
+          onChange: () => clearErrors("price")
+        })}
+               error={errors.price?.message}/>
       </div>
+
       <div className={"flex gap-[10px] items-end"}>
-        <Select curValue={fields.categoryId ? formLabel(catDataMap[fields.categoryId]) : ""}
-                lClassName={"flex items-center"} label={<>
-          <span className={"mr-[3px]"}>Category</span>
-          <IconButton onClick={handleCatCreate} className={"leading-0"} iconClassName={"!text-[var(--color-text)]"}
-                      title={"Add category"} icon={faFolderPlus}/>
-        </>} onOptionClick={({ label, ...rest }) => setFields(prev => ({ ...prev, categoryId: rest.id }))}
-                options={options}/>
+        <Select
+          curValue={fields.categoryId ? formLabel(catDataMap[fields.categoryId]) : ""}
+          lClassName={"flex items-center"}
+          label={
+            <>
+              <span className={"mr-[3px]"}>Category</span>
+              <IconButton
+                onClick={handleCatCreate}
+                className={"leading-0"}
+                iconClassName={"!text-[var(--color-text)]"}
+                title={"Add category"}
+                icon={faFolderPlus}
+              />
+            </>
+          }
+          onOptionClick={({ id }) => setValue("categoryId", id, {
+            shouldValidate: true
+          })}
+          options={options}
+          error={errors.categoryId?.message}
+        />
       </div>
     </div>
-  )
+  );
 };
 
 export default TransactionsForm;

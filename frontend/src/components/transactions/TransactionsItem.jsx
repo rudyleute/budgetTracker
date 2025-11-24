@@ -23,9 +23,13 @@ const TransactionsItem = ({ data, month }) => {
       "Edit transaction",
       <TransactionsForm ref={formRef} name={name} categoryId={category.id} timestamp={timestamp} price={price}/>,
       async () => {
-        const res = await editTransaction(month, id, formRef.current.getData());
+        const data = await formRef.current.getData();
 
-        if (res) hideModal();
+        if (data) {
+          const res = await editTransaction(month, id, data);
+
+          if (res) hideModal();
+        }
       },
       false
     )

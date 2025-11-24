@@ -1,4 +1,5 @@
 import DOMPurify from 'dompurify';
+import { zodResolver } from '@hookform/resolvers/zod';
 
 export const groupBy = (data, columnName, functor = null) => {
   const keys = [];
@@ -142,7 +143,7 @@ export const formToast = (text) => {
   </span>)
 }
 
-export const sanitizeData = (value) => {
+const sanitizeData = (value) => {
   if (typeof value === "string") return DOMPurify.sanitize(value);
   if (Array.isArray(value)) return value.map(sanitizeData);
 
@@ -154,3 +155,8 @@ export const sanitizeData = (value) => {
 
   return value;
 };
+
+export const sanitizedZodResolver = (schema) => async (values, context, options) => {
+  const sanitized = sanitizeData(values);
+  return zodResolver(schema)(sanitized, context, options);
+}

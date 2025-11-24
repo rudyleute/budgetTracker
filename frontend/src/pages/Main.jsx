@@ -50,9 +50,13 @@ const Main = () => {
       "New transaction",
       <TransactionsForm ref={formRef}/>,
       async () => {
-        const res = await addTransaction(formRef.current.getData())
+        const fields = await formRef.current.getData();
 
-        if (res) hideModal();
+        if (fields) {
+          const res = await addTransaction(fields);
+
+          if (res) hideModal();
+        }
       },
       false
     )

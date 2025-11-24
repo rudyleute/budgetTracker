@@ -1,28 +1,47 @@
-import { useEffect, useState } from 'react';
-import { HuePicker } from 'react-color';
+import { useEffect } from 'react';
 import Input from '../simple/Input.jsx';
-import Color from '../simple/Color.jsx';
+import ColorPicker from '../simple/ColorPicker.jsx';
+import { useForm } from 'react-hook-form';
+import { categoryResolver } from '../../schemas/categorySchema.js';
 
 const CategoriesForm = ({ ref, color, name }) => {
-  const [data, setData] = useState({
-    color: color || "#1100ff",
-    name: name || ""
-  });
+  const {
+    register,
+    trigger,
+    getValues,
+    formState: { errors },
+    setValue,
+    clearErrors,
+    watch
+  } = useForm({
+    resolver: categoryResolver,
+    defaultValues: {
+      name: name || "",
+      color: color || "#1100ff"
+    }
+  })
+
+  const fields = watch();
 
   useEffect(() => {
-    if (ref) ref.current = { getData: () => data }
-  }, [ref, data]);
+    if (ref) ref.current = {
+      getData: async () => {
+        const isValid = await trigger();
+
+        if (!isValid) return null;
+        return getValues();
+      }
+    }
+  }, [ref, fields, getValues, trigger]);
 
   return (
     <div ref={ref} className={"form"}>
-      <Input label={"name"} value={data.name} onChange={(e) => setData(prev => ({ ...prev, "name": e.target.value }))}/>
-      <div>
-        <label className={"label"}>Color</label>
-        <div className={"p-[10px] rounded-[10px] bg-black/60 shadow-md flex justify-between items-center"}>
-          <Color className={"w-[25px]"} value={data.color}/>
-          <HuePicker width={"90%"} color={data.color} onChange={(newColor) => setData(prev => ({ ...prev, color: newColor?.hex }))}/>
-        </div>
-      </div>
+      <Input {...register("name", {
+        onChange: () => clearErrors("name")
+      })} error={errors.name?.message} label={"name"}/>
+      <ColorPicker error={errors.color?.message} value={fields.color} onChange={(newColor) => setValue("color", newColor, {
+        shouldValidate: true
+      })}/>
     </div>
   )
 }
