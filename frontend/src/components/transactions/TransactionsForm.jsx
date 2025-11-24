@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 import Input from '../simple/Input.jsx';
 import Select from '../simple/Select.jsx';
 import { useCategories } from '../../context/CategoriesProvider.jsx';
@@ -12,8 +12,9 @@ import { useConfirmation } from '../../context/ConfirmationProvider.jsx';
 import { getDatetime } from '../../helpers/transformers.jsx';
 import { useForm } from 'react-hook-form';
 import { transactionResolver } from '../../schemas/transactionSchema.js';
+import Button from '../simple/Button.jsx';
 
-const TransactionsForm = ({ ref, name, categoryId, price, timestamp }) => {
+const TransactionsForm = ({ ref, name, categoryId, price, timestamp, onSubmit }) => {
   const { categories, addCategory, editCategory, deleteCategory } = useCategories();
   const { data: catData, dataMap: catDataMap } = categories;
   const { showConfirmation } = useConfirmation();
@@ -35,21 +36,39 @@ const TransactionsForm = ({ ref, name, categoryId, price, timestamp }) => {
       categoryId: categoryId || "",
       price: price || "",
       timestamp: getDatetime(new Date(timestamp || Date.now()))
-    }
+    },
+    mode: "onSubmit",
+    reValidateMode: "onSubmit"
   });
 
   const fields = watch();
+  const validate = useCallback(async () => {
+    const isValid = await trigger();
+
+    if (!isValid) return null;
+    return getValues();
+  }, [trigger, getValues])
 
   useEffect(() => {
     if (ref) ref.current = {
-      getData: async () => {
-        const isValid = await trigger();
-
-        if (!isValid) return null;
-        return getValues();
-      }
+      getData: validate
     }
-  }, [ref, fields, trigger, getValues]);
+  }, [ref, validate]);
+
+  const editCat = async (id, data) => {
+    const category = await editCategory(id, data);
+
+    if (category) {
+      if (category.id === fields.categoryId) setValue("categoryId", category.id);
+      hideModal();
+    }
+  }
+
+  const handleCatEdit = async (id) => {
+    const data = await catFormRef.current.getData();
+    if (!data) await editCat(id, data);
+  }
+
 
   const formLabel = ({ id, name, color }) => {
     return <span className={"flex items-center justify-between gap-[10px]"}>
@@ -61,7 +80,7 @@ const TransactionsForm = ({ ref, name, categoryId, price, timestamp }) => {
           <IconButton title={"Edit category"} size={"xs"} icon={faPenToSquare} onClick={() => {
             showModal(
               "Edit category",
-              <CategoriesForm ref={catFormRef} name={name} color={color}/>,
+              <CategoriesForm onSubmit={(data) => editCat(id, data)} ref={catFormRef} name={name} color={color}/>,
               () => handleCatEdit(id),
               false
             )
@@ -79,57 +98,54 @@ const TransactionsForm = ({ ref, name, categoryId, price, timestamp }) => {
       </span>
   }
 
-  const handleCatEdit = async (id) => {
-    const data = await catFormRef.current.getData();
+  const addCat = async (data) => {
+    const category = await addCategory(data);
 
-    if (data) {
-      const category = await editCategory(id, data);
-
-      if (category) {
-        if (category.id === fields.categoryId) setValue("categoryId", category.id);
-        hideModal();
-      }
+    if (category) {
+      setValue("categoryId", category.id);
+      hideModal();
     }
   }
 
   const handleCatSave = async () => {
     const data = await catFormRef.current.getData();
 
-    if (data) {
-      const category = await addCategory(data);
-
-      if (category) {
-        setValue("categoryId", category.id);
-        hideModal();
-      }
-    }
+    if (data) await addCat(data);
   }
 
   const options = catData.filter(cat => cat.id !== fields.categoryId).map(item => ({ label: formLabel(item), ...item }))
   const handleCatCreate = () => {
     showModal(
       "Add category",
-      <CategoriesForm ref={catFormRef}/>,
+      <CategoriesForm onSubmit={addCat} ref={catFormRef}/>,
       handleCatSave,
       false
     )
   }
 
   return (
-    <div className={"form"}>
-      <Input label={"Name"} name={"name"} type={"text"}{...register("name", {
+    <form onSubmit={async (e) => {
+      e.preventDefault();
+      if (onSubmit) {
+        const data = await validate();
+
+        if (data) onSubmit(data);
+      }
+    }} className={"form"}>
+      <Input label={"Name"} id={"name"} type={"text"}{...register("name", {
         onChange: () => clearErrors("name")
-      })} error={errors.name?.message}/>
+      })} error={errors.name?.message}
+      />
 
       <div className={"grid grid-cols-[2fr_1fr] gap-[10px]"}>
-        <Input label={"Timestamp"} name={"timestamp"} type={"datetime-local"} {...register("timestamp", {
+        <Input label={"Timestamp"} id={"timestamp"} type={"datetime-local"} {...register("timestamp", {
           onChange: () => clearErrors("timestamp")
-        })}
-               error={errors.timestamp?.message}/>
-        <Input label={"Price"} name={"price"} type={"number"} min={0} step={0.01} {...register("price", {
+        })} error={errors.timestamp?.message}
+        />
+        <Input label={"Price"} id={"price"} type={"number"} min={0} step={0.01} {...register("price", {
           onChange: () => clearErrors("price")
-        })}
-               error={errors.price?.message}/>
+        })} error={errors.price?.message}
+        />
       </div>
 
       <div className={"flex gap-[10px] items-end"}>
@@ -155,7 +171,8 @@ const TransactionsForm = ({ ref, name, categoryId, price, timestamp }) => {
           error={errors.categoryId?.message}
         />
       </div>
-    </div>
+      <Button type={"submit"} className={"hidden"} aria-hidden={"true"} tabIndex={-1}/>
+    </form>
   );
 };
 

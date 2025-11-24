@@ -45,19 +45,20 @@ const Main = () => {
 
   const options = useMemo(() => createTimeFilters(setValues, uuidv4), [setValues]);
 
+  const addTrans = async (data) => {
+    if (await addTransaction(data)) hideModal();
+  }
+
+  const onSubmitCreate = async () => {
+    const fields = await formRef.current.getData();
+    if (fields) await addTrans(fields);
+  }
+
   const handleCreation = () => {
     showModal(
       "New transaction",
-      <TransactionsForm ref={formRef}/>,
-      async () => {
-        const fields = await formRef.current.getData();
-
-        if (fields) {
-          const res = await addTransaction(fields);
-
-          if (res) hideModal();
-        }
-      },
+      <TransactionsForm onSubmit={addTrans} ref={formRef}/>,
+      onSubmitCreate,
       false
     )
   }
