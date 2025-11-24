@@ -18,8 +18,10 @@ router.get('/', async (req, res) => {
       cond.push(`t.timestamp >= $${params.length}`);
     }
     if (to) {
-      params.push(to);
-      cond.push(`t.timestamp <= $${params.length}`);
+      const nextDay = new Date(to);
+      nextDay.setDate(nextDay.getDate() + 1);
+      params.push(nextDay.toISOString());
+      cond.push(`t.timestamp < $${params.length}`);
     }
     if (filter) {
       params.push(`%${filter}%`);
