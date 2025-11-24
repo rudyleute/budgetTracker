@@ -10,7 +10,7 @@ const Input = ({ label, id, className, lClassName, endAdornment, wClassName, err
           className={twMerge(`field ${endAdornment ? '!pr-[45px]' : '!pr-[20px]'} font-bold`, className)} {...rest} />
         {endAdornment ? <span className={"end-adornment"}>{endAdornment}</span> : null}
       </div>
-      {error && <span className={"text-xs text-red-600"}>{error}</span>}
+      {error && <span className={"text-xs text-[var(--color-error)]"}>{error}</span>}
     </div>);
 }
 

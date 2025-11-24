@@ -1,6 +1,7 @@
 import { HuePicker } from 'react-color';
 import Color from './Color.jsx';
 import { twMerge } from 'tailwind-merge';
+import React from 'react';
 
 
 const ColorPicker = ({value, onChange, error, className}) => {
@@ -12,7 +13,7 @@ const ColorPicker = ({value, onChange, error, className}) => {
         <HuePicker width={"90%"} color={value}
                    onChange={(newColor) => onChange(newColor?.hex)}/>
       </div>
-      {error && <span className={"text-xs text-red-600"}>{error}</span>}
+      {error && <span className={"text-xs text-[var(--color-error)]"}>{error}</span>}
     </div>
   )
 }

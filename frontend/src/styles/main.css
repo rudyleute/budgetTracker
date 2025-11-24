@@ -104,6 +104,7 @@ body {
     --color-third: #FF1E56;
     --color-text: white;
     --color-input-text: black;
+    --color-error: red;
 }
 
 .icon-b {
