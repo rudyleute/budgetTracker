@@ -6,7 +6,7 @@ import { useAccount } from './AccountProvider.jsx';
 import { GridLoader } from 'react-spinners';
 
 const AuthenticatedProviders = ({ children }) => {
-  const { loading } = useAccount();
+  const { isAuthenticated, loading } = useAccount();
 
   if (loading) {
     return (
@@ -15,6 +15,8 @@ const AuthenticatedProviders = ({ children }) => {
       </div>
     );
   }
+
+  if (!isAuthenticated) return children;
 
   return (
     <TransactionsProvider>
