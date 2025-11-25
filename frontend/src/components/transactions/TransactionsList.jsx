@@ -1,22 +1,40 @@
 import Accordion from '../simple/Accordion.jsx';
 import TransactionsItem from './TransactionsItem.jsx';
 import { useTransactions } from '../../context/TransactionsProvider.jsx';
-import React from 'react';
+import React, { useMemo } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faWineGlassEmpty, faCircleDown } from '@fortawesome/free-solid-svg-icons';
 import IconButton from '../simple/IconButton.jsx';
+import { getDate, groupBy } from '../../helpers/transformers.jsx';
 
 const TransactionsList = () => {
   const { transactions, getMoreTransactions } = useTransactions();
 
-  const transactionsMap = transactions.keys.map(key => {
+  const grouped = useMemo(() => {
+    if (!transactions.data.length) return { keys: [], groups: {} };
+
+    const { keys, groups } = groupBy(
+      transactions.data,
+      'timestamp',
+      (date) =>
+        getDate(date, {
+          year: 'numeric',
+          month: 'long'
+        })
+    );
+
+    return { keys, groups };
+  }, [transactions.data]);
+
+  const transactionsMap = useMemo(() => grouped.keys.map(key => {
     let total = 0;
-    const items = transactions.data[key].map(item => {
+    const items = grouped.groups[key].map(item => {
       total += Number(item.price);
       return <TransactionsItem data={item} key={item.id} month={key}/>;
     });
 
-    return <Accordion className={"animate-fade-in"} hClassName={"bg-[var(--color-sec)] text-[var(--color-text)]"} bClassName={"bg-[var(--color-main)] p-[5px]"} label={
+    return <Accordion className={"animate-fade-in"} hClassName={"bg-[var(--color-sec)] text-[var(--color-text)]"}
+                      bClassName={"bg-[var(--color-main)] p-[5px]"} label={
       <span className={"w-full flex justify-between"}>
         <span className={"text-clipped grow"}>{key} </span>
         <span>{total} €</span>
@@ -25,7 +43,7 @@ const TransactionsList = () => {
                       key={key}>
       {items}
     </Accordion>
-  });
+  }), [grouped]);
 
 
   return (

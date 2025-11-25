@@ -7,9 +7,8 @@ import { useTransactions } from '../../context/TransactionsProvider.jsx';
 import React, { useRef } from 'react';
 import TransactionsForm from './TransactionsForm.jsx';
 import { useModal } from '../../context/ModalProvider.jsx';
-import { validate } from 'uuid';
 
-const TransactionsItem = ({ data, month }) => {
+const TransactionsItem = ({ data }) => {
   const { id, timestamp, name, category, price } = data;
   const { showConfirmation } = useConfirmation();
   const { deleteTransaction, editTransaction } = useTransactions();
@@ -19,20 +18,20 @@ const TransactionsItem = ({ data, month }) => {
   const transMonth = getDate(timestamp, { month: "short" });
   const transDay = getDate(timestamp, { day: "2-digit" });
 
-  const editTrans = async (month, id, data) => {
-    if (await editTransaction(month, id, data)) hideModal();
+  const editTrans = async (id, data) => {
+    if (await editTransaction(id, data)) hideModal();
   }
 
   const onSubmitEdit = async () => {
     const data = await formRef.current.getData();
 
-    if (data) await editTrans(month, id, data);
+    if (data) await editTrans(id, data);
   }
 
   const handleEditing = () => {
     showModal(
       "Edit transaction",
-      <TransactionsForm onSubmit={(values) => editTrans(month, id, values)} ref={formRef} name={name} categoryId={category.id} timestamp={timestamp} price={price}/>,
+      <TransactionsForm onSubmit={(values) => editTrans(id, values)} ref={formRef} name={name} categoryId={category.id} timestamp={timestamp} price={price}/>,
       onSubmitEdit,
       false
     )
@@ -57,7 +56,7 @@ const TransactionsItem = ({ data, month }) => {
                     icon={faPenToSquare}/>
         <IconButton title={"Delete"} iconClassName={"icon-xs !text-[var(--color-sec)]"} onClick={
           () => showConfirmation(
-            () => deleteTransaction(month, id),
+            () => deleteTransaction(id),
             `transaction: "${name}" on ${transDay} ${transMonth} in category "${category.name}"`
           )} icon={faCircleXmark}/>
       </div>

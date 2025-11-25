@@ -8,9 +8,9 @@ const allowedFields = ["name", "price", "timestamp", "category_id"]
 router.get('/', async (req, res) => {
   try {
     const uid = req.user.uid;
-    const { from, to, filter, total } = req.query;
+    const { from, to, filter, offset } = req.query;
 
-    logger.debug('Fetching transactions', { uid, total });
+    logger.debug('Fetching transactions', { uid, offset });
     const params = [uid], cond = ["t.user_uid = $1"];
 
     if (from) {
@@ -28,9 +28,8 @@ router.get('/', async (req, res) => {
       cond.push(`LOWER(t.name) LIKE LOWER($${params.length})`);
     }
 
-    const offset = Number(total ?? 0);
     params.push(pageSize + 1);
-    params.push(offset);
+    params.push(Number(offset ?? 0));
 
     const query = `
         SELECT t.id,
