@@ -9,14 +9,16 @@ const Menu = () => {
 
   return (
     <aside
-      className={"flex flex-col justify-between bg-[var(--color-sec)] min-w-[100px] max-w-[130px] w-[10vw] h-screen shadow-sm pt-[15px] pb-[10px]"}>
-      <div className={"flex flex-col gap-[15px] items-center w-full"}>
+      className={"flex items-center justify-between bg-[var(--color-sec)] h-full w-full shadow-sm " +
+        "mid:flex-col mid:p-[15px_15px] " +
+        "max-mid:p-[10px_25px] max-mid:fixed max-mid:top-0 max-mid:left-0 max-mid:h-[var(--menu-height)] max-mid:z-[1000]"}>
+      <div className={"flex mid:flex-col gap-[15px] items-center w-full"}>
         <IconButton onClick={() => navigate("/")} title={"Home"} icon={faHouse} iconClassName={"icon-b"}/>
         <IconButton onClick={() => navigate("/dashboard")} title={"Dashboard"} icon={faChartPie}
                     iconClassName={"icon-b"}/>
       </div>
 
-      <div className={"flex justify-center gap-[10px]"}>
+      <div className={"flex max-mid:flex-col justify-center gap-[5px] mid:gap-[10px]"}>
         <IconButton onClick={() => navigate("/profile")} title={"Profile"} icon={faCircleUser}
                     iconClassName={"icon-s"}/>
         <IconButton onClick={() => logOut()} title={"Log out"} icon={faRightFromBracket}
