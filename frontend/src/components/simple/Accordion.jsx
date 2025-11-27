@@ -12,9 +12,10 @@ const Accordion = ({ hClassName, className, bClassName, label, children }) => {
         <div className={twMerge("relative flex items-center pl-[20px]", hClassName)}>
           <span className="w-full text-clipped inline-block pr-[45px]">{label}</span>
           <FontAwesomeIcon
-            className="end-adornment cursor-pointer"
+            className="end-adornment cursor-pointer max-sml:icon-s"
             onClick={() => setIsOpen(prev => !prev)}
             icon={isOpen ? faCaretUp : faCaretDown}
+            size={"lg"}
           />
         </div>
 

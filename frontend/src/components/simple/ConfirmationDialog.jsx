@@ -3,7 +3,7 @@ import Button from './Button.jsx';
 
 const ConfirmationDialog = ({ onReject, onAccept, text }) => {
   return createPortal(
-    <div className={"bg-[var(--color-main)] z-[3000] w-[400px] h-[250px] window-center rounded-[15px] flex flex-col text-[var(--color-text)] font-bold"}>
+    <div className={"bg-[var(--color-main)] z-[3000] w-[100%] max-w-[400px] h-[250px] window-center rounded-[15px] flex flex-col text-[var(--color-text)] font-bold"}>
       <div className={"h-[80%] p-[10px_15px]"}>
         <span>Are you sure that you want to delete {text}?</span>
       </div>

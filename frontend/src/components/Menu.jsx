@@ -10,15 +10,15 @@ const Menu = () => {
   return (
     <aside
       className={"flex items-center justify-between bg-[var(--color-sec)] h-full w-full shadow-sm " +
-        "mid:flex-col mid:p-[15px_15px] " +
-        "max-mid:p-[10px_25px] max-mid:fixed max-mid:top-0 max-mid:left-0 max-mid:h-[var(--menu-height)] max-mid:z-[1000]"}>
-      <div className={"flex mid:flex-col gap-[15px] items-center w-full"}>
+        "lrg:flex-col lrg:p-[15px_15px] " +
+        "max-lrg:p-[10px_25px] max-lrg:fixed max-lrg:top-0 max-lrg:left-0 max-lrg:h-[var(--menu-height)] max-lrg:z-[1000]"}>
+      <div className={"flex lrg:flex-col gap-[15px] items-center w-full"}>
         <IconButton onClick={() => navigate("/")} title={"Home"} icon={faHouse} iconClassName={"icon-b"}/>
         <IconButton onClick={() => navigate("/dashboard")} title={"Dashboard"} icon={faChartPie}
                     iconClassName={"icon-b"}/>
       </div>
 
-      <div className={"flex max-mid:flex-col justify-center gap-[5px] mid:gap-[10px]"}>
+      <div className={"flex max-lrg:flex-col justify-center gap-[5px] lrg:gap-[10px]"}>
         <IconButton onClick={() => navigate("/profile")} title={"Profile"} icon={faCircleUser}
                     iconClassName={"icon-s"}/>
         <IconButton onClick={() => logOut()} title={"Log out"} icon={faRightFromBracket}

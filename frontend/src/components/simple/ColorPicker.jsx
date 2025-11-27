@@ -13,7 +13,7 @@ const ColorPicker = ({value, onChange, error, className}) => {
         <HuePicker width={"90%"} color={value}
                    onChange={(newColor) => onChange(newColor?.hex)}/>
       </div>
-      {error && <span className={"text-xs text-[var(--color-error)]"}>{error}</span>}
+      {error && <span className={"max-modal:text-xl modal:text-xs text-[var(--color-error)]"}>{error}</span>}
     </div>
   )
 }

@@ -1,8 +1,11 @@
 @import "tailwindcss";
 
 @theme {
-    --breakpoint-sml: 640px;
-    --breakpoint-mid: 1420px;
+    --breakpoint-modal: 440px;
+    --breakpoint-esml: 560px;
+    --breakpoint-sml: 750px;
+    --breakpoint-mid: 850px;
+    --breakpoint-lrg: 1420px;
 }
 
 @keyframes fadeIn {
@@ -61,8 +64,8 @@ body {
     @apply font-[Quicksand] text-2xl overflow-hidden
 }
 
-.text-hbg {
-    @apply px-1 py-1 rounded-[5px] bg-[var(--color-sec)]/50;
+@utility text-hbg {
+    @apply px-1 py-1 rounded-[5px] bg-[var(--color-sec)]/60;
 }
 
 .form {

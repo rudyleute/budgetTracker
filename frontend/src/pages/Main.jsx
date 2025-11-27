@@ -65,41 +65,59 @@ const Main = () => {
 
   return (
     <>
-      <div className={"grid grid-cols-[8fr_2fr] gap-[20px] mb-[10px]"}>
-        <div className={"flex flex-col gap-[10px] min-w-0"}>
-          <Input placeholder={"Search by name..."} type={"text"} value={searchValue}
-                 onChange={handleSearchChange}/>
-          <div className={"grid grid-cols-2 items-center gap-[10px]"}>
-            <PillButtons className={"justify-self-end"} buttons={[
-              { content: <FontAwesomeIcon icon={faCartPlus}/>, title: "Add new entry", onClick: handleCreation },
-              { content: <FontAwesomeIcon icon={faRotate}/>, title: "Refresh" },
-              { content: <FontAwesomeIcon icon={faFileCsv}/>, title: "Export into CSV" },
-              { content: <FontAwesomeIcon icon={faFilePdf}/>, title: "Export into PDF" },
-              {
-                content: <FontAwesomeIcon icon={faBroom}/>, title: "Reset all filters", onClick: async () => {
-                  resetQueryParams();
-                  setOption(defaultOption);
-                }
+      <div className={"grid mid:grid-cols-[4fr_4fr_2fr] max-mid:grid-cols-2 gap-[10px] mb-[10px]"}>
+        <Input
+          wClassName={"mid:col-start-1 mid:row-start-1 col-span-2"}
+          placeholder={"Search by name..."}
+          type={"text"}
+          value={searchValue}
+          onChange={handleSearchChange}
+        />
+
+        <Select
+          className={"mid:row-start-2 mid:col-start-2 max-mid:row-start-2 max-mid:col-start-1 max-sml:row-start-2 max-sml:col-span-2"}
+          curValue={option.label}
+          onOptionClick={(option) => setOption(option)}
+          options={options.filter(opt => opt.label !== option?.label)}
+        />
+
+        <Input
+          label={<FontAwesomeIcon icon={faHourglassEnd}/>}
+          lClassName={"!text-black"}
+          wClassName={"!flex-row items-center mid:row-start-1 mid:col-start-3 max-mid:row-start-2 max-mid:col-start-2 max-sml:row-start-3 max-sml:col-start-1 max-esml:row-start-3 max-esml:col-start-1 max-esml:col-span-2"}
+          name={"to"}
+          type={"date"}
+          value={queryParams.to}
+          onChange={(e) => updateQueryParams({ to: e.target.value })}
+        />
+
+        <Input
+          label={<FontAwesomeIcon icon={faHourglassStart}/>}
+          lClassName={"!text-black"}
+          wClassName={"!flex-row items-center mid:row-start-2 mid:col-start-3 max-mid:row-start-3 max-mid:col-start-2 max-sml:row-start-3 max-sml:col-start-2 max-esml:col-start-1 max-esml:col-span-2 max-esml:row-start-4"}
+          name={"from"}
+          type={"date"}
+          value={queryParams.from}
+          onChange={(e) => updateQueryParams({ from: e.target.value })}
+        />
+
+        <PillButtons
+          className={"mid:row-start-2 mid:col-start-1 justify-self-end max-mid:row-start-3 max-sml:row-start-4 max-sml:col-start-2 max-esml:row-start-5 max-esml:col-start-1 max-esml:col-span-2"}
+          buttons={[
+            { content: <FontAwesomeIcon icon={faCartPlus}/>, title: "Add new entry", onClick: handleCreation },
+            { content: <FontAwesomeIcon icon={faRotate}/>, title: "Refresh" },
+            { content: <FontAwesomeIcon icon={faFileCsv}/>, title: "Export into CSV" },
+            { content: <FontAwesomeIcon icon={faFilePdf}/>, title: "Export into PDF" },
+            {
+              content: <FontAwesomeIcon icon={faBroom}/>,
+              title: "Reset all filters",
+              onClick: async () => {
+                resetQueryParams();
+                setOption(defaultOption);
               }
-            ]}/>
-            <Select curValue={option.label} onOptionClick={(option) => setOption(option)}
-                    options={options.filter(opt => opt.label !== option?.label)}/>
-          </div>
-        </div>
-        <div className={"flex flex-col gap-[10px]"}>
-          <Input label={
-            <FontAwesomeIcon icon={faHourglassStart}/>
-          } lClassName={"!text-black"} wClassName={"!flex-row items-center"} name={"from"} type={"date"}
-                 value={queryParams.from}
-                 onChange={(e) => updateQueryParams({ from: e.target.value })}
-          />
-          <Input label={
-            <FontAwesomeIcon icon={faHourglassEnd}/>
-          } lClassName={"!text-black"} wClassName={"!flex-row items-center"} name={"to"} type={"date"}
-                 value={queryParams.to}
-                 onChange={(e) => updateQueryParams({ to: e.target.value })}
-          />
-        </div>
+            }
+          ]}
+        />
       </div>
       <TransactionsList/>
     </>

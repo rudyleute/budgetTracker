@@ -27,10 +27,10 @@ const SignUp = () => {
   const { signUp } = useAccount();
 
   return (
-    <form onSubmit={handleSubmit((values) => signUp(values))}
+    <div onSubmit={handleSubmit((values) => signUp(values))}
           className={"w-full h-screen bg-[var(--color-sec)] relative"}>
-      <div
-        className={"w-[350px] flex flex-col window-center gap-[15px] relative bg-[var(--color-main)] rounded-[15px] p-[20px_20px_35px_20px]"}
+      <form
+        className={"w-[350px] max-esml:w-[95%] flex flex-col window-center gap-[15px] relative bg-[var(--color-main)] rounded-[15px] p-[20px_20px_35px_20px]"}
       >
         <div className={"flex items-center justify-between"}>
           <IconButton size={"xl"} title={"Sign in"} iconClassName={"text-[var(--color-sec)]"}
@@ -46,7 +46,7 @@ const SignUp = () => {
         <div className={"flex flex-col gap-[10px]"}>
           <Input error={errors.email?.message} {...register("email", {
             onChange: () => clearErrors("email")
-          })} lClassName={"!text-[1.1rem]"} wClassName={"!text-[1.1rem]"} type={"text"}
+          })} lClassName={"!text-[1.2rem]"} wClassName={"!text-[1.1rem]"} type={"text"}
                  label={"Email"} id={"email"} autoComplete={"true"}
           />
           <Input error={errors.password?.message} lClassName={"!text-[1.1rem]"}
@@ -61,8 +61,8 @@ const SignUp = () => {
           })} type={"password"} label={"Confirm password"} id={"confirmPassword"}
           />
         </div>
-      </div>
-    </form>
+      </form>
+    </div>
   )
 }
 

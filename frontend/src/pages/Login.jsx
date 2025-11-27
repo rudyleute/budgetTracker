@@ -26,9 +26,9 @@ const Login = () => {
   const { logIn } = useAccount();
 
   return (
-    <form onSubmit={handleSubmit((values) => logIn(values))} className={"w-full h-screen bg-[var(--color-sec)] relative"}>
-      <div
-        className={"w-[350px] flex flex-col window-center gap-[15px] relative bg-[var(--color-main)] rounded-[15px] p-[20px_20px_35px_20px]"}
+    <div onSubmit={handleSubmit((values) => logIn(values))} className={"w-full h-screen bg-[var(--color-sec)] relative"}>
+      <form
+        className={"w-[350px] max-esml:w-[95%] flex flex-col window-center gap-[15px] relative bg-[var(--color-main)] rounded-[15px] p-[20px_20px_35px_20px]"}
       >
         <div className={"flex items-center justify-between"}>
           <IconButton size={"xl"} title={"Sign up"} iconClassName={"text-[var(--color-sec)]"}
@@ -53,8 +53,8 @@ const Login = () => {
           })} type={"password"} label={"Password"} id={"password"}
           />
         </div>
-      </div>
-    </form>
+      </form>
+    </div>
   )
 }
 

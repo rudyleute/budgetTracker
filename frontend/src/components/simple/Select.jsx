@@ -40,7 +40,7 @@ const Select = ({ curValue, options, onOptionClick, className, label, error, lCl
           </ul>
         </div>}
       </div>
-      {error && <span className={"text-xs text-[var(--color-error)]"}>{error}</span>}
+      {error && <span className={"max-modal:text-xl modal:text-xs text-[var(--color-error)]"}>{error}</span>}
     </div>
   )
 }

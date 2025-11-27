@@ -131,46 +131,42 @@ const TransactionsForm = ({ ref, name, categoryId, price, timestamp, onSubmit })
 
         if (data) onSubmit(data);
       }
-    }} className={"form"}>
-      <Input label={"Name"} id={"name"} type={"text"}{...register("name", {
+    }} className={"grid max-modal:grid-cols-1 modal:grid-cols-[2fr_1fr] gap-[10px]"}>
+      <Input wClassName={"modal:col-span-2 modal:row-start-1"} label={"Name"} id={"name"} type={"text"} {...register("name", {
         onChange: () => clearErrors("name")
       })} error={errors.name?.message}
       />
+      <Input label={"Timestamp"} id={"timestamp"} type={"datetime-local"} {...register("timestamp", {
+        onChange: () => clearErrors("timestamp")
+      })} error={errors.timestamp?.message}
+      />
+      <Input label={"Price"} id={"price"} type={"number"} min={0} step={0.01} {...register("price", {
+        onChange: () => clearErrors("price")
+      })} error={errors.price?.message}
+      />
 
-      <div className={"grid grid-cols-[2fr_1fr] gap-[10px]"}>
-        <Input label={"Timestamp"} id={"timestamp"} type={"datetime-local"} {...register("timestamp", {
-          onChange: () => clearErrors("timestamp")
-        })} error={errors.timestamp?.message}
-        />
-        <Input label={"Price"} id={"price"} type={"number"} min={0} step={0.01} {...register("price", {
-          onChange: () => clearErrors("price")
-        })} error={errors.price?.message}
-        />
-      </div>
-
-      <div className={"flex gap-[10px] items-end"}>
-        <Select
-          curValue={fields.categoryId ? formLabel(catDataMap[fields.categoryId]) : ""}
-          lClassName={"flex items-center"}
-          label={
-            <>
-              <span className={"mr-[3px]"}>Category</span>
-              <IconButton
-                onClick={handleCatCreate}
-                className={"leading-0"}
-                iconClassName={"!text-[var(--color-text)]"}
-                title={"Add category"}
-                icon={faFolderPlus}
-              />
-            </>
-          }
-          onOptionClick={({ id }) => setValue("categoryId", id, {
-            shouldValidate: true
-          })}
-          options={options}
-          error={errors.categoryId?.message}
-        />
-      </div>
+      <Select
+        className={"modal:col-span-2"}
+        curValue={fields.categoryId ? formLabel(catDataMap[fields.categoryId]) : ""}
+        lClassName={"flex items-center"}
+        label={
+          <>
+            <span className={"mr-[3px]"}>Category</span>
+            <IconButton
+              onClick={handleCatCreate}
+              className={"leading-0"}
+              iconClassName={"!text-[var(--color-text)]"}
+              title={"Add category"}
+              icon={faFolderPlus}
+            />
+          </>
+        }
+        onOptionClick={({ id }) => setValue("categoryId", id, {
+          shouldValidate: true
+        })}
+        options={options}
+        error={errors.categoryId?.message}
+      />
       <Button type={"submit"} className={"hidden"} aria-hidden={"true"} tabIndex={-1}/>
     </form>
   );
