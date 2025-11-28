@@ -10,7 +10,7 @@ router.get('/', async (req, res) => {
     const uid = req.user.uid;
     const { from, to, filter, offset } = req.query;
 
-    logger.debug('Fetching transactions', { uid, offset });
+    logger.debug('Fetching transactions', { uid, offset, from, to, filter });
     const params = [uid], cond = ["t.user_uid = $1"];
 
     if (from) {

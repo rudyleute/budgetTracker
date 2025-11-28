@@ -37,7 +37,7 @@ CREATE TABLE IF NOT EXISTS counterparties
 (
     id         UUID PRIMARY KEY                  DEFAULT uuid_generate_v4(),
     name       VARCHAR(100)             NOT NULL CHECK (LENGTH(name) >= 3),
-    email      VARCHAR(255) UNIQUE      NOT NULL CHECK ( LENGTH(email) >= 5 ),
+    email      VARCHAR(255) UNIQUE CHECK ( LENGTH(email) >= 5 ),
     created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP CHECK (updated_at <= NOW()),
     user_uid   VARCHAR(128)             NOT NULL REFERENCES users (uid) ON DELETE CASCADE
@@ -45,15 +45,16 @@ CREATE TABLE IF NOT EXISTS counterparties
 
 CREATE TABLE IF NOT EXISTS loans
 (
-    id         UUID PRIMARY KEY                  DEFAULT uuid_generate_v4(),
-    name       VARCHAR(100)             NOT NULL CHECK (LENGTH(name) >= 3),
-    timestamp  TIMESTAMP WITH TIME ZONE NOT NULL CHECK ( timestamp <= NOW() ),
-    deadline   TIMESTAMP WITH TIME ZONE,
-    type       loan_types               NOT NULL,
-    priority   priority_types,
-    created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP CHECK (created_at <= NOW()),
-    counterparty_id  UUID                     NOT NULL REFERENCES counterparties (id) ON DELETE CASCADE,
-    user_uid   VARCHAR(128)             NOT NULL REFERENCES users (uid) ON DELETE CASCADE
+    id              UUID PRIMARY KEY                  DEFAULT uuid_generate_v4(),
+    name            VARCHAR(100)             NOT NULL CHECK (LENGTH(name) >= 3),
+    timestamp       TIMESTAMP WITH TIME ZONE NOT NULL CHECK ( timestamp <= NOW() ),
+    deadline        TIMESTAMP WITH TIME ZONE,
+    type            loan_types               NOT NULL,
+    priority        priority_types,
+    price           NUMERIC(10, 2)           NOT NULL CHECK (price > 0),
+    created_at      TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP CHECK (created_at <= NOW()),
+    counterparty_id UUID                     NOT NULL REFERENCES counterparties (id) ON DELETE CASCADE,
+    user_uid        VARCHAR(128)             NOT NULL REFERENCES users (uid) ON DELETE CASCADE
 );
 
 CREATE INDEX idx_loans_user_uid ON loans (user_uid);

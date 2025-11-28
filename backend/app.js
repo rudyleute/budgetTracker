@@ -18,12 +18,19 @@ apiRouter.use(authenticateUser);
 const users = require('./routes/users');
 const transactions = require('./routes/transactions');
 const categories = require('./routes/categories');
+const loans = require('./routes/loans');
+const counterparties = require('./routes/counterparties');
 
 apiRouter.use("/users", users);
 apiRouter.use("/transactions", transactions);
 apiRouter.use("/categories", categories);
+apiRouter.use("/loans", loans);
+apiRouter.use("/counterparties", counterparties);
 
 app.use('/api', apiRouter);
+app.use((req, res) => {
+  res.status(404).json({ message: "Route not found" });
+});
 
 app.use((err, req, res) => {
   if (err.message === 'Not allowed by CORS') {
