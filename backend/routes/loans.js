@@ -40,6 +40,70 @@ router.get('/priorities', async (req, res) => {
   }
 });
 
+router.get('/due', async (req, res) => {
+  try {
+    const uid = req.user.uid;
+    logger.debug('Fetching upcoming loans', { uid });
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    const twoWeeksFromNow = new Date();
+    twoWeeksFromNow.setDate(twoWeeksFromNow.getDate() + 14);
+    twoWeeksFromNow.setHours(23, 59, 59, 999);
+
+    const query = `
+        SELECT l.id,
+               l.name,
+               l.timestamp,
+               l.deadline,
+               l.type,
+               l.priority,
+               json_build_object(
+                       'id', cp.id,
+                       'name', cp.name,
+                       'email', cp.email,
+                       'note', cp.note,
+                       'phone', cp.phone
+               ) AS counterparty
+        FROM loans l
+                 LEFT JOIN counterparties cp ON l.counterparty_id = cp.id
+        WHERE l.user_uid = $1 and l.type = 'borrowed'
+          AND (
+            l.priority = 'high'
+                OR (l.deadline IS NOT NULL AND DATE(l.deadline) <= DATE($2))
+            )
+        ORDER BY CASE WHEN DATE(l.deadline) < DATE($3) THEN 0 ELSE 1 END,
+                 CASE WHEN l.priority = 'high' THEN 0 ELSE 1 END,
+                 DATE(l.deadline) NULLS LAST,
+                 CASE
+                     WHEN l.priority = 'high' THEN 1
+                     WHEN l.priority = 'medium' THEN 2
+                     WHEN l.priority = 'low' THEN 3
+                     ELSE 4
+                     END;
+    `;
+
+    const result = await db.query(query, [uid, twoWeeksFromNow.toISOString(), today.toISOString()]);
+
+    logger.info('Upcoming loans retrieved successfully', {
+      uid,
+      count: result.rows.length
+    });
+
+    return res.status(200).json({
+      data: result.rows
+    });
+  } catch (error) {
+    logger.error('Failed to retrieve upcoming loans', {
+      error: error.message,
+      stack: error.stack,
+      uid: req.user.uid
+    });
+    res.status(500).json({ message: "Failed to retrieve upcoming loans" });
+  }
+});
+
 router.get('/', async (req, res) => {
   try {
     const uid = req.user.uid;
@@ -91,7 +155,9 @@ router.get('/', async (req, res) => {
           json_build_object(
             'id', cp.id,
             'name', cp.name,
-            'email', cp.email
+            'email', cp.email,
+            'note', cp.note,
+            'phone', cp.phone
           ) AS counterparty
       FROM loans l
       LEFT JOIN counterparties cp ON l.counterparty_id = cp.id
@@ -171,7 +237,9 @@ function buildLoanQuery({ fields, values, uid, id, isUpdate }) {
              json_build_object(
                'id', cp.id,
                'name', cp.name,
-               'email', cp.email
+               'email', cp.email,
+               'note', cp.note,
+               'phone', cp.phone
              ) AS counterparty
       FROM updated
       LEFT JOIN counterparties cp ON updated.counterparty_id = cp.id;
@@ -199,7 +267,9 @@ function buildLoanQuery({ fields, values, uid, id, isUpdate }) {
              json_build_object(
                'id', cp.id,
                'name', cp.name,
-               'email', cp.email
+               'email', cp.email,
+               'note', cp.note,
+               'phone', cp.phone
              ) AS counterparty
       FROM inserted
       LEFT JOIN counterparties cp ON inserted.counterparty_id = cp.id;

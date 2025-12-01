@@ -2,20 +2,47 @@ const express = require('express');
 const router = express.Router();
 const db = require('../db');
 const logger = require('../logger');
-const { log } = require('winston');
 const handleUpsert = require('../helpers/validator');
 
 const reqAllowedFields = ["name"]
-const optAllowedFields = ["email"]
+const optAllowedFields = ["email", "phone", "note"]
 router.get('/', async (req, res) => {
   try {
     const uid = req.user.uid;
 
-    logger.debug('Fetching counterparties', { uid });
-    const result = await db.query(
-      "SELECT id, name, email FROM counterparties WHERE user_uid = $1 ORDER BY name;",
-      [uid]
-    );
+    const includeBalance = req.query.balance === 'true';
+    logger.debug('Fetching counterparties', { uid, includeBalance });
+
+    let query;
+    if (includeBalance) {
+      query = `
+          SELECT
+              cp.id,
+              cp.name,
+              cp.email,
+              cp.phone,
+              cp.note,
+              COALESCE(
+                SUM(CASE WHEN l.type = 'borrowed' THEN l.price ELSE 0 END) -
+                SUM(CASE WHEN l.type = 'lent' THEN l.price ELSE 0 END),
+                0
+              ) AS balance
+          FROM counterparties cp
+                   LEFT JOIN loans l ON cp.id = l.counterparty_id AND l.user_uid = $1
+          WHERE cp.user_uid = $1
+          GROUP BY cp.id
+          ORDER BY balance DESC;
+      `;
+    } else {
+      query = `
+        SELECT id, name, email, note, phone
+        FROM counterparties 
+        WHERE user_uid = $1 
+        ORDER BY name;
+      `;
+    }
+
+    const result = await db.query(query, [uid]);
 
     logger.info('Counterparties retrieved successfully', { uid, count: result.rows.length });
     return res.status(200).json({ data: result.rows });
@@ -56,7 +83,7 @@ function buildCounterpartyQuery({ fields, values, uid, id, isUpdate }) {
       UPDATE counterparties
       SET ${setClauses.join(", ")}, updated_at = CURRENT_TIMESTAMP
       WHERE user_uid = $${idx} AND id = $${idx + 1}
-      RETURNING id, name, email;
+      RETURNING id, name, email, note, phone;
     `;
 
     return { query, queryValues: [...values, uid, id] };
@@ -68,7 +95,7 @@ function buildCounterpartyQuery({ fields, values, uid, id, isUpdate }) {
     const query = `
       INSERT INTO counterparties (${allFields.join(", ")})
       VALUES (${placeholders})
-      RETURNING id, name, email
+      RETURNING id, name, email, note, phone
     `;
 
     return { query, queryValues: allValues };

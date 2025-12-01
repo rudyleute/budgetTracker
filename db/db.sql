@@ -37,10 +37,14 @@ CREATE TABLE IF NOT EXISTS counterparties
 (
     id         UUID PRIMARY KEY                  DEFAULT uuid_generate_v4(),
     name       VARCHAR(100)             NOT NULL CHECK (LENGTH(name) >= 3),
-    email      VARCHAR(255) UNIQUE CHECK ( LENGTH(email) >= 5 ),
+    email      VARCHAR(255) CHECK ( LENGTH(email) >= 5 ),
+    phone      VARCHAR(15) CHECK (phone ~ '^[1-9][0-9]{6,14}$'),
+    note       VARCHAR(200),
     created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP CHECK (updated_at <= NOW()),
-    user_uid   VARCHAR(128)             NOT NULL REFERENCES users (uid) ON DELETE CASCADE
+    user_uid   VARCHAR(128)             NOT NULL REFERENCES users (uid) ON DELETE CASCADE,
+    UNIQUE (user_uid, email),
+    UNIQUE (user_uid, phone)
 );
 
 CREATE TABLE IF NOT EXISTS loans
