@@ -42,9 +42,7 @@ CREATE TABLE IF NOT EXISTS counterparties
     note       VARCHAR(200),
     created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP CHECK (updated_at <= NOW()),
-    user_uid   VARCHAR(128)             NOT NULL REFERENCES users (uid) ON DELETE CASCADE,
-    UNIQUE (user_uid, email),
-    UNIQUE (user_uid, phone)
+    user_uid   VARCHAR(128)             NOT NULL REFERENCES users (uid) ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS loans
