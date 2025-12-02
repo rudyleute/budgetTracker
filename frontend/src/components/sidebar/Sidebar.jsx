@@ -3,7 +3,7 @@ import axios from '../../services/axios.js';
 import { toast } from 'react-toastify';
 import { daysUntilDateOnly, formatTimestamp, formToast } from '../../helpers/transformers.jsx';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faAt, faFlag, faPhone } from '@fortawesome/free-solid-svg-icons';
+import { faAt, faFlag, faPhone, faVault, faWallet } from '@fortawesome/free-solid-svg-icons';
 import { Link } from 'react-router-dom';
 import SidebarComponent from './SidebarComponent.jsx';
 
@@ -19,7 +19,7 @@ const Sidebar = () => {
 
   useEffect(() => {
     (async () => {
-      const { data: newLoans, message: loansMsg } = await axios.get("/loans/due");
+      const { data: newLoans, message: loansMsg } = await axios.get("/loans", { due: true });
 
       if (!newLoans) {
         toast.error(formToast(loansMsg))
@@ -57,6 +57,9 @@ const Sidebar = () => {
             <FontAwesomeIcon size={"xs"} icon={faFlag} style={{ color: priorityColorMap[loan.priority] }}/>
           </span> : <span/>
         }
+        <span title={loan.type}>
+          <FontAwesomeIcon size={"xs"} icon={loan.type === "borrowed" ? faVault : faWallet} />
+        </span>
         {
           loan.deadline ? (() => {
             const days = daysUntilDateOnly(loan.deadline);
@@ -103,7 +106,7 @@ const Sidebar = () => {
   return (<div
     className={"flex flex-col gap-[15px] s-scroll s-scroll-alt-color w-full h-fit bg-[var(--color-sec)] lrg:overflow-y-auto lrg:h-screen p-[15px_15px]"}>
     <SidebarComponent items={data.loans} title={"Upcoming Deadlines"} emptyText={"No urgent loans found"}
-                      getItemLink={getLoansLink} renderItem={renderLoanItem} gridCols={"grid-cols-[1fr_3fr_4fr_4fr]"}
+                      getItemLink={getLoansLink} renderItem={renderLoanItem} gridCols={"grid-cols-[1fr_1fr_3fr_4fr_4fr]"}
                       iwClass={"items-center text-[var(--color-text)] !pt-[5px] !pb-[5px]"}/>
     <SidebarComponent items={data.balance} title={"Balance"} emptyText={"No counterparties found"}
                       getItemLink={getCounterLink} renderItem={renderCounterItem} gridCols={"grid-cols-[2fr_5fr_5fr]"}/>
