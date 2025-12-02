@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import axios from '../services/axios.js';
 import { toast } from 'react-toastify';
 import { formToast } from '../helpers/transformers.jsx';
+import CounterpartiesBalance from './counterparties/CounterpartiesBalance.jsx';
 
 const defaultValue = { loans: [], balance: [] }
 const Sidebar = () => {
@@ -37,8 +38,9 @@ const Sidebar = () => {
   }, []);
 
   return (<div
-    className={"flex flex-col gap-[10px] w-full h-fit bg-[var(--color-sec)] lrg:overflow-y-auto lrg:h-screen p-[10px_5px]"}>
+    className={"flex flex-col gap-[15px] s-scroll s-scroll-alt-color w-full h-fit bg-[var(--color-sec)] lrg:overflow-y-auto lrg:h-screen p-[15px_15px]"}>
     <LoansUrgent loans={data.loans} />
+    <CounterpartiesBalance balance={data.balance} />
   </div>)
 }
 

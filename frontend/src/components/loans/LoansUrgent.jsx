@@ -14,7 +14,7 @@ const LoansUrgent = ({loans}) => {
 
   const content = loans.map((loan) => {
     return <div onClick={() => navigate(`/loans?id=${loan.id}`)}
-                className={"grid grid-cols-[1fr_3fr_4fr_4fr] text-xl gap-[5px] items-center items-border text-[var(--color-text)] !pt-[5px] !pb-[5px] lift-scale"}
+                className={"hover:cursor-pointer grid grid-cols-[1fr_3fr_4fr_4fr] text-xl gap-[5px] items-center items-border text-[var(--color-text)] !pt-[5px] !pb-[5px] lift-scale"}
                 key={loan.id}>
       {
         loan.priority ?
@@ -46,11 +46,11 @@ const LoansUrgent = ({loans}) => {
 
   return (
     <div
-      className={"hover:cursor-pointer flex flex-col justify-center bg-[var(--color-main)] p-[10px] animate-fade-in rounded-[15px]"}>
+      className={"flex flex-col justify-center bg-[var(--color-main)] p-[10px] animate-fade-in rounded-[15px]"}>
       {
         content.length > 0 ?
           <>
-            <span className={"text-[var(--color-text)] uppercase font-bold mb-[5px] align-middle self-center"}>Upcoming Deadlines</span>
+            <span className={"text-[var(--color-text)] text-xl uppercase font-bold mb-[5px] align-middle self-center"}>Upcoming Deadlines</span>
             <div>{content}</div>
           </> :
           <Empty bgColor={"var(--color-main)"} text={"No urgent loans"}/>

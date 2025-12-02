@@ -22,6 +22,10 @@ function App() {
           <Route path={"loans"}>
             <Route index element={<div>Loans</div>} />
           </Route>
+          <Route path={"counterparties"}>
+            <Route index element={<div>Counterparties</div>} />
+            <Route path={":id"} element={<div>Counterparty</div>} />
+          </Route>
           <Route path={"profile"} element={<Profile/>}/>
           <Route path={"login"} element={<Navigate to="/" replace/>}/>
           <Route path={"signup"} element={<Navigate to="/" replace/>}/>

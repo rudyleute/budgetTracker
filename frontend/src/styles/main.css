@@ -39,7 +39,7 @@
     --color-input-text: black;
     --color-error: red;
 
-    --menu-height: 110px;
+    --menu-height: 70px;
 }
 
 @utility s-scroll {
@@ -59,6 +59,12 @@
 
     &::-webkit-scrollbar-thumb:hover {
         @apply brightness-90;
+    }
+}
+
+@utility s-scroll-alt-color {
+    &::-webkit-scrollbar-thumb {
+        @apply bg-[var(--color-third)];
     }
 }
 
@@ -128,14 +134,14 @@ body {
     @apply hover:cursor-pointer absolute right-[10px] w-[30px] top-[50%] translate-y-[-50%]
 }
 
-.icon-b {
-    @apply w-auto h-[60px];
+ @utility icon-b {
+    @apply text-[60px];
 }
 
-.icon-s {
-    @apply w-auto h-[40px];
+@utility icon-s {
+    @apply text-[40px];
 }
 
-.icon-xs {
-    @apply w-auto h-[25px];
+@utility icon-xs {
+    @apply text-[25px];
 }

@@ -54,7 +54,7 @@ const TransactionsItem = ({ data }) => {
           {name}
         </span>
       </div>
-      <div className={"text-right flex items-center justify-end max-esml:row-start-3 max-esml:row-span-2 max-esml:col-start-3 bg-[var(--color-sec)]/90 text-[var(--color-text)] px-3 py-1 rounded-md h-full"}>{price} €</div>
+      <div className={"text-right shrink-0 whitespace-nowrap flex items-center justify-end max-esml:row-start-3 max-esml:row-span-2 max-esml:col-start-3 bg-[var(--color-sec)]/90 text-[var(--color-text)] px-3 py-1 rounded-md h-full"}>{price} €</div>
       <div className={"leading-0 flex justify-center max-esml:row-start-4 max-esml:col-start-1 gap-[3px] max-esml:gap-[10px] max-esml:p-[0_5px]"}>
         <IconButton title={"Edit"} iconClassName={"icon-xs max-esml:!text-[var(--color-third)] esml:!text-[var(--color-sec)]"} onClick={handleEditing}
                     icon={faPenToSquare}/>
