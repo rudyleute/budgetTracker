@@ -39,7 +39,7 @@ const TransactionsItem = ({ data }) => {
 
   return (
     <div
-      className={twMerge("grid mid:grid-cols-[1fr_4fr_23fr_6fr_1fr] max-mid:grid-cols-[1fr_8fr_18fr_10fr_1fr] max-esml:grid-cols-[1fr_4fr_3fr] text-[var(--color-text)] items-center text-xl esml:gap-[10px] max-esml:gap-[5px] pt-[10px] first:pt-[5px] pb-[10px] last:pb-[5px] border-b-1 border-b-[var(--color-text)] border-solid last:border-b-0 animate-fade-in")}>
+      className={twMerge("grid mid:grid-cols-[1fr_4fr_23fr_6fr_1fr] max-mid:grid-cols-[1fr_8fr_18fr_10fr_1fr] max-esml:grid-cols-[1fr_4fr_3fr] text-[var(--color-text)] items-center text-xl esml:gap-[10px] max-esml:gap-[5px] items-border animate-fade-in")}>
       <div className={"flex flex-col max-esml:p-[15px_0] max-esml:justify-center max-esml:row-span-3 items-center text-[var(--color-text)] font-bold gap-[10px]"}>
         <span className={"leading-3 max-esml:text-[30px] max-esml:leading-4"}>{transMonth}</span>
         <span className={"text-3xl max-esml:text-[40px] leading-3 max-esml:leading-6"}>{transDay}</span>

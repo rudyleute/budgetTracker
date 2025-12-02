@@ -1,5 +1,7 @@
 import { Outlet } from "react-router-dom";
 import Menu from "./components/Menu";
+import LoansUrgent from './components/loans/LoansUrgent.jsx';
+import Sidebar from './components/Sidebar.jsx';
 
 const Layout = () => {
   return (
@@ -9,8 +11,7 @@ const Layout = () => {
       <div className={"max-lrg:grow max-lrg:w-full mid:p-[15px_30px] max-mid:p-[15px_10px] max-sml:p-[15px_2px] bg-[var(--color-third)] lrg:s-scroll lrg:overflow-y-auto"}>
         <Outlet/>
       </div>
-      <div className={"w-full h-fit bg-[var(--color-sec)] lrg:overflow-y-auto lrg:h-screen"}>
-      </div>
+      <Sidebar/>
     </div>
   );
 }

@@ -31,6 +31,10 @@ export const getDatetime = (date) => {
 
 export const getDate = (date, options = {}) => { return (new Date(date)).toLocaleDateString("en-CA", {hour12: false, ...options})}
 
+export const formatTimestamp = (timestamp, options) => {
+  return new Date(timestamp).toLocaleString("en-UK", { hour12: false, ...options })
+}
+
 export const createTimeFilters = (setValues) => {
   const getDateRange = (label) => {
     const today = new Date();
@@ -141,6 +145,18 @@ export const formToast = (text) => {
   return (<span className={"text-xs text-black"}>
     {text}
   </span>)
+}
+
+export function daysUntilDateOnly(dateString) {
+  const now = new Date();
+  const target = new Date(dateString);
+
+  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  const targetDay = new Date(target.getFullYear(), target.getMonth(), target.getDate());
+
+  const diffMs = targetDay - today;
+
+  return Math.floor(diffMs / (1000 * 60 * 60 * 24));
 }
 
 const sanitizeData = (value) => {

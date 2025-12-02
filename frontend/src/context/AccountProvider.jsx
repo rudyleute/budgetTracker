@@ -16,7 +16,7 @@ import { debounce } from 'lodash';
 import { useLoader } from './LoaderProvider.jsx';
 import api from '../services/axios.js';
 
-const AccountContext = createContext();
+const AccountContext = createContext({});
 const useAccount = () => useContext(AccountContext);
 
 const AccountProvider = ({ children }) => {

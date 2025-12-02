@@ -2,10 +2,10 @@ import Accordion from '../simple/Accordion.jsx';
 import TransactionsItem from './TransactionsItem.jsx';
 import { useTransactions } from '../../context/TransactionsProvider.jsx';
 import React, { useMemo } from 'react';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faWineGlassEmpty, faCircleDown } from '@fortawesome/free-solid-svg-icons';
+import { faCircleDown } from '@fortawesome/free-solid-svg-icons';
 import IconButton from '../simple/IconButton.jsx';
 import { getDate, groupBy } from '../../helpers/transformers.jsx';
+import Empty from '../simple/Empty.jsx';
 
 const TransactionsList = () => {
   const { transactions, getMoreTransactions } = useTransactions();
@@ -48,11 +48,7 @@ const TransactionsList = () => {
 
   return (
     <div className={"w-full flex flex-col gap-[5px] max-esml:gap-[20px] items-center"}>
-      {transactionsMap.length > 0 ? transactionsMap : <div
-        className={"flex rounded-[15px] bg-[var(--color-sec)] flex-col gap-[10px] font-bold items-center text-[var(--color-text)] p-[25px_10px] w-full"}>
-        <FontAwesomeIcon size={"2xl"} icon={faWineGlassEmpty}/>
-        No transactions found
-      </div>}
+      {transactionsMap.length > 0 ? transactionsMap : <Empty text={"No transactions found"} size={"2xl"} />}
       {!transactions.isLastPage && <IconButton onClick={getMoreTransactions} title={"Show more"} icon={faCircleDown}/>}
     </div>
   )

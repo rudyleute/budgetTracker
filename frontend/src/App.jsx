@@ -19,6 +19,9 @@ function App() {
         <Route path="/" element={<Layout/>}>
           <Route index element={<Main/>}/>
           <Route path={"dashboard"} element={<Dashboard/>}/>
+          <Route path={"loans"}>
+            <Route index element={<div>Loans</div>} />
+          </Route>
           <Route path={"profile"} element={<Profile/>}/>
           <Route path={"login"} element={<Navigate to="/" replace/>}/>
           <Route path={"signup"} element={<Navigate to="/" replace/>}/>
