@@ -40,81 +40,32 @@ router.get('/priorities', async (req, res) => {
   }
 });
 
-router.get('/due', async (req, res) => {
+router.get('/', async (req, res) => {
   try {
     const uid = req.user.uid;
-    logger.debug('Fetching upcoming loans', { uid });
+    const { type: reqType, priority, sort, order = "DESC", from, to, offset, due } = req.query;
 
+    logger.debug('Fetching loans', { uid, offset, reqType, priority, sort, order, from, to, due });
+    const params = [];
+
+    params.push(uid);
+
+    //Calculate all the deadlines that are due to within 2 weeks
     const today = new Date();
     today.setHours(0, 0, 0, 0);
 
     const twoWeeksFromNow = new Date();
     twoWeeksFromNow.setDate(twoWeeksFromNow.getDate() + 14);
     twoWeeksFromNow.setHours(23, 59, 59, 999);
+    params.push(twoWeeksFromNow.toISOString());
 
-    const query = `
-        SELECT l.id,
-               l.name,
-               l.timestamp,
-               l.deadline,
-               l.type,
-               l.priority,
-               l.price,
-               json_build_object(
-                       'id', cp.id,
-                       'name', cp.name,
-                       'email', cp.email,
-                       'note', cp.note,
-                       'phone', cp.phone
-               ) AS counterparty
-        FROM loans l
-                 LEFT JOIN counterparties cp ON l.counterparty_id = cp.id
-        WHERE l.user_uid = $1 and l.type = 'borrowed'
-          AND (
-            l.priority = 'high'
-                OR (l.deadline IS NOT NULL AND DATE(l.deadline) <= DATE($2))
-            )
-        ORDER BY CASE WHEN DATE(l.deadline) < DATE($3) THEN 0 ELSE 1 END,
-                 DATE(l.deadline) NULLS LAST,
-                 CASE WHEN l.priority = 'high' THEN 0 ELSE 1 END,
-                 CASE
-                     WHEN l.priority = 'high' THEN 1
-                     WHEN l.priority = 'medium' THEN 2
-                     WHEN l.priority = 'low' THEN 3
-                     ELSE 4
-                 END;
-    `;
-
-    const result = await db.query(query, [uid, twoWeeksFromNow.toISOString(), today.toISOString()]);
-
-    logger.info('Upcoming loans retrieved successfully', {
-      uid,
-      count: result.rows.length
-    });
-
-    return res.status(200).json({
-      data: result.rows
-    });
-  } catch (error) {
-    logger.error('Failed to retrieve upcoming loans', {
-      error: error.message,
-      stack: error.stack,
-      uid: req.user.uid
-    });
-    res.status(500).json({ message: "Failed to retrieve upcoming loans" });
-  }
-});
-
-router.get('/', async (req, res) => {
-  try {
-    const uid = req.user.uid;
-    const { type, priority, sort, order = "DESC", from, to, offset } = req.query;
-
-    const params = [uid];
     const cond = ["l.user_uid = $1"];
 
-    logger.debug('Fetching loans', { uid, offset, type, priority, sort, order, from, to });
-
+    //'borrowed' or 'lent'
+    if (reqType) {
+      params.push(reqType);
+      cond.push(`l.type = $${params.length}`);
+    }
     if (from) {
       params.push(from);
       cond.push(`l.timestamp >= $${params.length}`);
@@ -125,58 +76,85 @@ router.get('/', async (req, res) => {
       params.push(nextDay.toISOString());
       cond.push(`l.timestamp < $${params.length}`);
     }
-    if (type) {
-      params.push(type);
-      cond.push(`l.type = $${params.length}`);
-    }
     if (priority) {
       params.push(priority);
       cond.push(`l.priority = $${params.length}`);
     }
+    //In this case we are only interested in the overdue and soon-to-be overdue deadlines
+    if (due === "true") cond.push(`(l.priority = 'high' OR (l.deadline IS NOT NULL AND DATE(l.deadline) <= DATE($2)))`)
 
-    const sortable = [ "timestamp", "deadline", "name", "priority", "type"];
-    let orderClause = `ORDER BY l.timestamp DESC`;
+    let query = `
+      SELECT
+        l.id,
+        l.name,
+        l.timestamp,
+        l.deadline,
+        l.type,
+        l.priority,
+        l.price,
+        json_build_object(
+          'id', cp.id,
+          'name', cp.name,
+          'email', cp.email,
+          'note', cp.note,
+          'phone', cp.phone
+        ) AS counterparty,
+        (CASE
+             WHEN l.priority = 'high' THEN true
+             WHEN l.deadline IS NOT NULL AND DATE(l.deadline) <= DATE($2) THEN true
+             ELSE false
+        END) AS is_due /* All overdue loans and loans that will be overdue max in 2 weeks */
+      FROM loans l
+      LEFT JOIN counterparties cp ON l.counterparty_id = cp.id
+      WHERE ${cond.join(' AND ')}
+    `;
+
+    let orderClause = ``;
+    const sortable = ["timestamp", "deadline", "name", "priority", "type"];
+
+    //It should be possible to overwrite the default sorting by overdue, deadline and stuff via sort param
     if (sort && sortable.includes(sort)) {
-      const dir = order.toUpperCase() === "ASC" ? "ASC" : "DESC";
-      orderClause = `ORDER BY l.${sort} ${dir}`;
+      const dir = order.toUpperCase() === 'ASC' ? 'ASC' : 'DESC';
+      orderClause = `ORDER BY l.${sort} ${dir} NULLS LAST`;
+    } else {
+      /*Default sorting
+      1 - overdue deadlines are on top
+      2 - deadlines with the least time to be met/the most overdue ones are on top
+      3 - deadlines in the order of importance from the most important to the least important/not set are on top
+      4 - the most recently added loans are on top
+      */
+      orderClause = `
+        ORDER BY
+          CASE WHEN DATE(l.deadline) < CURRENT_DATE THEN 0 ELSE 1 END,
+          DATE(l.deadline) NULLS LAST,
+          CASE
+            WHEN l.priority = 'high' THEN 1
+            WHEN l.priority = 'medium' THEN 2
+            WHEN l.priority = 'low' THEN 3
+            ELSE 4
+          END,
+          CASE WHEN l.deadline IS NULL THEN l.timestamp END DESC
+      `;
     }
 
     params.push(pageSize + 1);
     params.push(Number(offset ?? 0));
 
-    const query = `
-      SELECT 
-          l.id,
-          l.name,
-          l.timestamp,
-          l.deadline,
-          l.type,
-          l.priority,
-          l.price,
-          json_build_object(
-            'id', cp.id,
-            'name', cp.name,
-            'email', cp.email,
-            'note', cp.note,
-            'phone', cp.phone
-          ) AS counterparty
-      FROM loans l
-      LEFT JOIN counterparties cp ON l.counterparty_id = cp.id
-      WHERE ${cond.join(' AND ')}
+    query += `\n
       ${orderClause}
       LIMIT $${params.length - 1}
       OFFSET $${params.length};
     `;
 
     const result = await db.query(query, params);
-
     const isLastPage = result.rows.length <= pageSize;
     const loans = result.rows.slice(0, pageSize);
 
     logger.info('Loans retrieved successfully', {
       uid,
       count: loans.length,
-      isLastPage
+      isLastPage,
+      dueFilter: due === 'true'
     });
 
     return res.status(200).json({
