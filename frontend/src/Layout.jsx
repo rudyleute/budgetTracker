@@ -1,6 +1,6 @@
 import { Outlet } from "react-router-dom";
 import Menu from "./components/Menu";
-import Sidebar from './components/Sidebar.jsx';
+import Sidebar from './components/sidebar/Sidebar.jsx';
 
 const Layout = () => {
   return (

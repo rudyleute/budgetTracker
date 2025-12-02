@@ -134,6 +134,10 @@ body {
     @apply hover:cursor-pointer absolute right-[10px] w-[30px] top-[50%] translate-y-[-50%]
 }
 
+.price-wrapper {
+    @apply text-right shrink-0 whitespace-nowrap block bg-[var(--color-sec)]/90 w-full rounded-[5px]
+}
+
  @utility icon-b {
     @apply text-[60px];
 }
