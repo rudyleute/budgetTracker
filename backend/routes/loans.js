@@ -59,6 +59,7 @@ router.get('/due', async (req, res) => {
                l.deadline,
                l.type,
                l.priority,
+               l.price,
                json_build_object(
                        'id', cp.id,
                        'name', cp.name,
@@ -74,14 +75,14 @@ router.get('/due', async (req, res) => {
                 OR (l.deadline IS NOT NULL AND DATE(l.deadline) <= DATE($2))
             )
         ORDER BY CASE WHEN DATE(l.deadline) < DATE($3) THEN 0 ELSE 1 END,
-                 CASE WHEN l.priority = 'high' THEN 0 ELSE 1 END,
                  DATE(l.deadline) NULLS LAST,
+                 CASE WHEN l.priority = 'high' THEN 0 ELSE 1 END,
                  CASE
                      WHEN l.priority = 'high' THEN 1
                      WHEN l.priority = 'medium' THEN 2
                      WHEN l.priority = 'low' THEN 3
                      ELSE 4
-                     END;
+                 END;
     `;
 
     const result = await db.query(query, [uid, twoWeeksFromNow.toISOString(), today.toISOString()]);
