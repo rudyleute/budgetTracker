@@ -1,26 +1,4 @@
-import DOMPurify from 'dompurify';
-import { zodResolver } from '@hookform/resolvers/zod';
-
-export const groupBy = (data, columnName, functor = null) => {
-  const keys = [];
-  const groups = {};
-  const getKey = functor || ((value) => value);
-
-  data.forEach(item => {
-    const newKey = getKey(item[columnName]);
-
-    if (newKey in groups) {
-      groups[newKey].push(item);
-    } else {
-      keys.push(newKey);
-      groups[newKey] = [item];
-    }
-  });
-
-  return { keys, groups };
-};
-
-export const getDatetime = (date) => {
+export const getDatetimeLocal = (date) => {
   const year = date.getFullYear();
   const month = String(date.getMonth() + 1).padStart(2, '0');
   const day = String(date.getDate()).padStart(2, '0');
@@ -29,10 +7,20 @@ export const getDatetime = (date) => {
   return `${year}-${month}-${day}T${hours}:${minutes}`;
 };
 
-export const getDate = (date, options = {}) => { return (new Date(date)).toLocaleDateString("en-CA", {hour12: false, ...options})}
+export const getDate = (date, options = {}) => new Date(date).toLocaleDateString("en-CA", {hour12: false, ...options})
 
-export const formatTimestamp = (timestamp, options) => {
-  return new Date(timestamp).toLocaleString("en-UK", { hour12: false, ...options })
+export const formatTimestamp = (timestamp, options) => new Date(timestamp).toLocaleString("en-UK", { hour12: false, ...options })
+
+export function daysUntilDateOnly(dateString) {
+  const now = new Date();
+  const target = new Date(dateString);
+
+  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  const targetDay = new Date(target.getFullYear(), target.getMonth(), target.getDate());
+
+  const diffMs = targetDay - today;
+
+  return Math.floor(diffMs / (1000 * 60 * 60 * 24));
 }
 
 export const createTimeFilters = (setValues) => {
@@ -139,40 +127,4 @@ export const createTimeFilters = (setValues) => {
     { label: "This year", func: () => formOption("This year") },
     { label: "Last year", func: () => formOption("Last year") },
   ]
-}
-
-export const formToast = (text) => {
-  return (<span className={"text-xs text-black"}>
-    {text}
-  </span>)
-}
-
-export function daysUntilDateOnly(dateString) {
-  const now = new Date();
-  const target = new Date(dateString);
-
-  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-  const targetDay = new Date(target.getFullYear(), target.getMonth(), target.getDate());
-
-  const diffMs = targetDay - today;
-
-  return Math.floor(diffMs / (1000 * 60 * 60 * 24));
-}
-
-const sanitizeData = (value) => {
-  if (typeof value === "string") return DOMPurify.sanitize(value);
-  if (Array.isArray(value)) return value.map(sanitizeData);
-
-  if (value !== null && typeof value === "object") {
-    return Object.fromEntries(
-      Object.entries(value).map(([k, v]) => [k, sanitizeData(v)])
-    );
-  }
-
-  return value;
-};
-
-export const sanitizedZodResolver = (schema) => async (values, context, options) => {
-  const sanitized = sanitizeData(values);
-  return zodResolver(schema)(sanitized, context, options);
 }

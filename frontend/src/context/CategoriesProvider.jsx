@@ -1,6 +1,6 @@
 import { createContext, useContext, useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
-import { formToast } from '../helpers/transformers.jsx';
+import { formToast } from '../helpers/toast.jsx';
 import api from '../services/axios.js';
 
 const toastCatBody = (name, action) => {
@@ -58,7 +58,7 @@ const CategoriesProvider = ({ children }) => {
   }
 
   const editCategory = async (id, data) => {
-    const { data: category, message } = await api.put(`/categories/${id}`, data);
+    const { data: category, message } = await api.patch(`/categories/${id}`, data);
 
     if (!category) {
       toast.error(formToast(message));

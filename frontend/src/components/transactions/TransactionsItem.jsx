@@ -1,5 +1,5 @@
 import IconButton from '../simple/IconButton.jsx';
-import { getDate } from '../../helpers/transformers.jsx';
+import { getDate } from '../../helpers/time.js';
 import { twMerge } from 'tailwind-merge';
 import { faCircleXmark, faPenToSquare } from '@fortawesome/free-regular-svg-icons';
 import { useConfirmation } from '../../context/ConfirmationProvider.jsx';
@@ -31,7 +31,7 @@ const TransactionsItem = ({ data }) => {
   const handleEditing = () => {
     showModal(
       "Edit transaction",
-      <TransactionsForm onSubmit={(values) => editTrans(id, values)} ref={formRef} name={name} categoryId={category.id} timestamp={timestamp} price={price}/>,
+      <TransactionsForm onSubmit={(values) => editTrans(id, values)} ref={formRef} name={name} categoryId={category.id} timestamp={timestamp} price={price} isUpdate={true}/>,
       onSubmitEdit,
       false
     )

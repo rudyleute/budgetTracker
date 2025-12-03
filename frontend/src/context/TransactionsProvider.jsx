@@ -1,20 +1,10 @@
 import { createContext, useCallback, useContext, useEffect, useState } from 'react';
-import { formToast, getDate } from '../helpers/transformers.jsx';
+import { formToast, formToastMain } from '../helpers/toast.jsx';
 import _ from 'lodash';
 import { toast } from 'react-toastify';
 import api from '../services/axios.js';
-
-const toastBody = (name, timestamp, action) => {
-  return formToast(<>
-    Transaction <b>"{name}"</b> at <b>{getDate(timestamp, {
-    hour: '2-digit',
-    minute: '2-digit',
-    month: 'short',
-    year: 'numeric',
-    day: '2-digit'
-  })}</b> has been successfully {action}!
-  </>);
-}
+import { newQueryParams } from '../helpers/utils.js';
+import { fetchHandler } from '../services/api.js';
 
 const defaultQueryParams = {
   filter: "",
@@ -29,15 +19,10 @@ const TransactionsProvider = ({ children }) => {
   const [queryParams, setQueryParams] = useState(defaultQueryParams);
 
   const fetchTransactions = useCallback(async () => {
-    const { data: newTransactions, message } = await api.get('/transactions', { ...queryParams, offset: 0 });
+    const res = await fetchHandler('/transactions', queryParams);
+    if (res === null) return false;
 
-    if (!newTransactions) {
-      toast.error(formToast(message));
-      return false;
-    }
-
-    setTransactions({ data: newTransactions.data, total: newTransactions.data.length, isLastPage: newTransactions.isLastPage });
-
+    setTransactions(res);
     return true;
   }, [queryParams]);
 
@@ -48,14 +33,7 @@ const TransactionsProvider = ({ children }) => {
   }, [fetchTransactions]); //transitively depends on queryParams
 
   const updateQueryParams = useCallback((values) => {
-    setQueryParams(prev => {
-      const next = { ...prev };
-
-      Object.keys(defaultQueryParams).forEach(key => {
-        if (values[key] != null) next[key] = values[key];
-      });
-      return !_.isEqual(prev, next) ? next : prev
-    });
+    setQueryParams(prev => newQueryParams(values, prev, Object.keys(defaultQueryParams)));
   }, []);
 
   const resetQueryParams = useCallback(() => {
@@ -86,12 +64,12 @@ const TransactionsProvider = ({ children }) => {
       } else return {...prev, isLastPage: false}; //The created element is on one of the later pages
     })
 
-    toast.success(toastBody(newTrans.name, newTrans.timestamp, "created"))
+    toast.success(formToastMain('transaction', newTrans.name, newTrans.timestamp, "created"))
     return newTrans;
   }, [])
 
   const editTransaction = useCallback(async (id, data) => {
-    const { data: newTrans, message } = await api.put(`/transactions/${id}`, data);
+    const { data: newTrans, message } = await api.patch(`/transactions/${id}`, data);
 
     if (!newTrans) {
       toast.error(formToast(message));
@@ -110,7 +88,7 @@ const TransactionsProvider = ({ children }) => {
       }
     });
 
-    toast.success(toastBody(newTrans.name, newTrans.timestamp, "edited"));
+    toast.success(formToastMain('transaction', newTrans.name, newTrans.timestamp, "edited"));
     return newTrans;
   }, []);
 

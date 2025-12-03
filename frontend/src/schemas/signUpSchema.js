@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { sanitizedZodResolver } from '../helpers/transformers.jsx';
+import { sanitizedZodResolver } from '../helpers/utils.js';
 
 const signUpSchema = z.object({
   email: z.email("Incorrect email address"),

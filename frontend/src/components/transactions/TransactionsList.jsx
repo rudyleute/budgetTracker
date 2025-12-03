@@ -4,7 +4,8 @@ import { useTransactions } from '../../context/TransactionsProvider.jsx';
 import React, { useMemo } from 'react';
 import { faCircleDown } from '@fortawesome/free-solid-svg-icons';
 import IconButton from '../simple/IconButton.jsx';
-import { getDate, groupBy } from '../../helpers/transformers.jsx';
+import { groupBy } from '../../helpers/utils.js';
+import { getDate } from '../../helpers/time.js';
 import Empty from '../simple/Empty.jsx';
 
 const TransactionsList = () => {

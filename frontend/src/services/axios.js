@@ -104,7 +104,7 @@ const getDefaultMessage = (status) => {
 const api = {
   get: (endpoint, params = {}) => instance.get(endpoint, { params }),
   post: (endpoint, data = {}) => instance.post(endpoint, data),
-  put: (endpoint, data = {}) => instance.put(endpoint, data),
+  patch: (endpoint, data = {}) => instance.patch(endpoint, data),
   delete: (endpoint) => instance.delete(endpoint)
 };
 

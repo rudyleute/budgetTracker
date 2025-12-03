@@ -11,7 +11,7 @@ import {
 import { useNavigate } from "react-router-dom";
 import { processErrors } from '../helpers/firebaseErrors.js';
 import { toast } from 'react-toastify';
-import { formToast } from '../helpers/transformers.jsx';
+import { formToast } from '../helpers/toast.jsx';
 import { debounce } from 'lodash';
 import { useLoader } from './LoaderProvider.jsx';
 import api from '../services/axios.js';

@@ -1,11 +1,13 @@
 import { useEffect, useState } from 'react';
 import axios from '../../services/axios.js';
 import { toast } from 'react-toastify';
-import { daysUntilDateOnly, formatTimestamp, formToast } from '../../helpers/transformers.jsx';
+import { formToast } from '../../helpers/toast.jsx';
+import { daysUntilDateOnly } from '../../helpers/time.js';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faAt, faFlag, faPhone, faVault, faWallet } from '@fortawesome/free-solid-svg-icons';
 import { Link } from 'react-router-dom';
 import SidebarComponent from './SidebarComponent.jsx';
+import { formatTimestamp } from '../../helpers/time.js';
 
 const priorityColorMap = {
   "low": "blue",
@@ -104,7 +106,7 @@ const Sidebar = () => {
   }
 
   return (<div
-    className={"flex flex-col gap-[15px] s-scroll s-scroll-alt-color w-full h-fit bg-[var(--color-sec)] lrg:overflow-y-auto lrg:h-screen p-[15px_15px]"}>
+    className={"flex flex-col gap-[15px] s-scroll s-scroll-alt-color w-full min-h-fit bg-[var(--color-sec)] max-lrg:overflow-visible lrg:overflow-y-auto lrg:h-screen p-[15px_15px]"}>
     <SidebarComponent items={data.loans} title={"Upcoming Deadlines"} emptyText={"No urgent loans found"}
                       getItemLink={getLoansLink} renderItem={renderLoanItem} gridCols={"grid-cols-[1fr_1fr_3fr_4fr_4fr]"}
                       iwClass={"items-center text-[var(--color-text)] !pt-[5px] !pb-[5px]"}/>

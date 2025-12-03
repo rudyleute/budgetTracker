@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef } from 'react';
+import { useEffect, useRef } from 'react';
 import Input from '../simple/Input.jsx';
 import Select from '../simple/Select.jsx';
 import { useCategories } from '../../context/CategoriesProvider.jsx';
@@ -9,12 +9,13 @@ import IconButton from '../simple/IconButton.jsx';
 import CategoriesForm from '../categories/CategoriesForm.jsx';
 import { faPenToSquare, faXmarkCircle } from '@fortawesome/free-regular-svg-icons';
 import { useConfirmation } from '../../context/ConfirmationProvider.jsx';
-import { getDatetime } from '../../helpers/transformers.jsx';
+import { getDatetimeLocal } from '../../helpers/time.js';
 import { useForm } from 'react-hook-form';
 import { transactionResolver } from '../../schemas/transactionSchema.js';
 import Button from '../simple/Button.jsx';
+import { validateFields } from '../../helpers/utils.js';
 
-const TransactionsForm = ({ ref, name, categoryId, price, timestamp, onSubmit }) => {
+const TransactionsForm = ({ ref, name, categoryId, price, timestamp, onSubmit, isUpdate = false }) => {
   const { categories, addCategory, editCategory, deleteCategory } = useCategories();
   const { data: catData, dataMap: catDataMap } = categories;
   const { showConfirmation } = useConfirmation();
@@ -28,6 +29,7 @@ const TransactionsForm = ({ ref, name, categoryId, price, timestamp, onSubmit })
     formState: { errors },
     setValue,
     clearErrors,
+    formState,
     watch
   } = useForm({
     resolver: transactionResolver,
@@ -35,25 +37,25 @@ const TransactionsForm = ({ ref, name, categoryId, price, timestamp, onSubmit })
       name: name || "",
       categoryId: categoryId || "",
       price: price || "",
-      timestamp: getDatetime(new Date(timestamp || Date.now()))
+      timestamp: ""
     },
     mode: "onSubmit",
     reValidateMode: "onSubmit"
   });
 
   const fields = watch();
-  const validate = useCallback(async () => {
-    const isValid = await trigger();
-
-    if (!isValid) return null;
-    return getValues();
-  }, [trigger, getValues])
 
   useEffect(() => {
     if (ref) ref.current = {
-      getData: validate
+      getData: () => validateFields(trigger, getValues(), isUpdate ? formState.dirtyFields : null)
     }
-  }, [ref, validate]);
+  }, [formState.dirtyFields, getValues, isUpdate, ref, trigger]);
+
+  useEffect(() => {
+    //The timestamp should be dirtied up before when creating a new transaction since the default value is generated
+    if (isUpdate) setValue("timestamp", getDatetimeLocal(new Date(timestamp)));
+    else setValue("timestamp", getDatetimeLocal(new Date(Date.now())), { shouldDirty: true });
+  }, [setValue, isUpdate, timestamp]);
 
   const editCat = async (id, data) => {
     const category = await editCategory(id, data);
@@ -66,9 +68,9 @@ const TransactionsForm = ({ ref, name, categoryId, price, timestamp, onSubmit })
 
   const handleCatEdit = async (id) => {
     const data = await catFormRef.current.getData();
-    if (!data) await editCat(id, data);
-  }
 
+    if (data) await editCat(id, data);
+  }
 
   const formLabel = ({ id, name, color }) => {
     return <span className={"flex items-center justify-between gap-[10px]"}>
@@ -80,7 +82,7 @@ const TransactionsForm = ({ ref, name, categoryId, price, timestamp, onSubmit })
           <IconButton title={"Edit category"} size={"xs"} icon={faPenToSquare} onClick={() => {
             showModal(
               "Edit category",
-              <CategoriesForm onSubmit={(data) => editCat(id, data)} ref={catFormRef} name={name} color={color}/>,
+              <CategoriesForm onSubmit={(data) => editCat(id, data)} ref={catFormRef} name={name} color={color} isUpdate={true}/>,
               () => handleCatEdit(id),
               false
             )
@@ -127,7 +129,7 @@ const TransactionsForm = ({ ref, name, categoryId, price, timestamp, onSubmit })
     <form onSubmit={async (e) => {
       e.preventDefault();
       if (onSubmit) {
-        const data = await validate();
+        const data = await validateFields(trigger, getValues(), isUpdate ? formState.dirtyFields : null);
 
         if (data) onSubmit(data);
       }
@@ -162,7 +164,7 @@ const TransactionsForm = ({ ref, name, categoryId, price, timestamp, onSubmit })
           </>
         }
         onOptionClick={({ id }) => setValue("categoryId", id, {
-          shouldValidate: true
+          shouldValidate: true, shouldDirty: true
         })}
         options={options}
         error={errors.categoryId?.message}

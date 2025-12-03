@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { sanitizedZodResolver } from '../helpers/transformers.jsx';
+import { sanitizedZodResolver } from '../helpers/utils.js';
 
 const categorySchema = z.object({
   name: z.string().min(3, "Min 3 symbols are required").max(100, "Max 100 symbols are allowed"),
