@@ -44,9 +44,9 @@ router.get('/priorities', async (req, res) => {
 router.get('/', async (req, res) => {
   try {
     const uid = req.user.uid;
-    const { type: reqType, priority, sort, order = "DESC", from, to, offset, due } = req.query;
+    const { type: reqType, priority, sort, order = "DESC", from, to, offset, due, limit } = req.query;
 
-    logger.debug('Fetching loans', { uid, offset, reqType, priority, sort, order, from, to, due });
+    logger.debug('Fetching loans', { uid, offset, reqType, priority, sort, order, from, to, due, limit });
     const params = [];
 
     params.push(uid);
@@ -138,18 +138,35 @@ router.get('/', async (req, res) => {
       `;
     }
 
-    params.push(pageSize + 1);
+    const rawLimit = Number(limit ?? 0);
+    let effectiveLimit;
+    let includeLimit = true;
+
+    if (isNaN(rawLimit) || rawLimit === 0) effectiveLimit = pageSize;
+    else if (rawLimit > 0) effectiveLimit = rawLimit;
+    else includeLimit = false;
+
+    if (includeLimit) params.push(effectiveLimit + 1);
     params.push(Number(offset ?? 0));
+
+    const limitClause = includeLimit ? `LIMIT $${params.length - 1}` : "";
 
     query += `\n
       ${orderClause}
-      LIMIT $${params.length - 1}
+      ${limitClause}
       OFFSET $${params.length};
     `;
 
     const result = await db.query(query, params);
-    const isLastPage = result.rows.length <= pageSize;
-    const loans = result.rows.slice(0, pageSize);
+
+    let loans, isLastPage;
+    if (includeLimit) {
+      isLastPage = result.rows.length <= effectiveLimit;
+      loans = result.rows.slice(0, effectiveLimit);
+    } else {
+      isLastPage = true;
+      loans = result.rows;
+    }
 
     logger.info('Loans retrieved successfully', {
       uid,

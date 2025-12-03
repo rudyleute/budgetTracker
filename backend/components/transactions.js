@@ -11,9 +11,9 @@ const reqAllowedFields = ["name", "price", "timestamp", "category_id"];
 router.get('/', async (req, res) => {
   try {
     const uid = req.user.uid;
-    const { from, to, filter, offset } = req.query;
+    const { from, to, filter, offset, limit } = req.query;
 
-    logger.debug('Fetching transactions', { uid, offset, from, to, filter });
+    logger.debug('Fetching transactions', { uid, offset, from, to, filter, limit });
     const params = [uid], cond = ["t.user_uid = $1"];
 
     if (from) {
@@ -31,8 +31,19 @@ router.get('/', async (req, res) => {
       cond.push(`LOWER(t.name) LIKE LOWER($${params.length})`);
     }
 
-    params.push(pageSize + 1);
+    const rawLimit = Number(limit ?? 0);
+    let effectiveLimit;
+    let includeLimit = true;
+
+    if (isNaN(rawLimit) || rawLimit === 0) effectiveLimit = pageSize;
+    else if (rawLimit > 0) effectiveLimit = rawLimit;
+    else includeLimit = false;
+
+    if (includeLimit) params.push(effectiveLimit + 1);
     params.push(Number(offset ?? 0));
+
+    const limitClause = includeLimit ? `LIMIT $${params.length - 1}` : "";
+    const offsetClause = `OFFSET $${params.length}`;
 
     const query = `
         SELECT t.id,
@@ -50,14 +61,21 @@ router.get('/', async (req, res) => {
                  LEFT JOIN categories c ON t.category_id = c.id
             where ${cond.join(' AND ')}
         ORDER BY t.timestamp DESC
-        LIMIT $${params.length - 1}
-        OFFSET $${params.length};
+        ${limitClause}
+        ${offsetClause};
     `;
 
     const result = await db.query(query, params);
 
-    const isLastPage = result.rows.length <= pageSize;
-    const transactions = result.rows.slice(0, pageSize);
+    let transactions, isLastPage;
+
+    if (includeLimit) {
+      isLastPage = result.rows.length <= effectiveLimit;
+      transactions = result.rows.slice(0, effectiveLimit);
+    } else {
+      isLastPage = true;
+      transactions = result.rows;
+    }
 
     logger.info('Transactions retrieved successfully', {
       uid,
