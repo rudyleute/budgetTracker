@@ -2,7 +2,8 @@ const express = require('express');
 const db = require('../db');
 const router = express.Router();
 const logger = require('../logger')
-const handleUpsert = require('../helpers/validator');
+const { handleDelete, handleUpsert, validateCounterparty } = require('./generic');
+const { buildPostQuery, buildPatchQuery } = require('../helpers/loans.query');
 
 const pageSize = 30;
 const optAllowedFields = ["deadline", "priority"]
@@ -177,138 +178,27 @@ router.post('/', (req, res) => handleUpsert({
   entityName: 'loan',
   reqAllowedFields,
   optAllowedFields,
-  additionalValidation: validateLoanCounterparty,
-  buildQuery: buildLoanQuery
+  additionalValidation: validateCounterparty,
+  buildQuery: buildPostQuery
 }, db, logger));
 
-router.put('/:id', (req, res) => handleUpsert({
+router.patch('/:id', (req, res) => handleUpsert({
   req,
   res,
   entityName: 'loan',
   reqAllowedFields,
   optAllowedFields,
-  additionalValidation: validateLoanCounterparty,
-  buildQuery: buildLoanQuery
+  buildQuery: buildPatchQuery
 }, db, logger));
 
-function buildLoanQuery({ fields, values, uid, id, isUpdate }) {
-  if (isUpdate) {
-    let idx = 1;
-    const setClauses = fields.map(f => `${f} = $${idx++}`);
-
-    const uidPlaceholder = `$${idx++}`;
-    const idPlaceholder = `$${idx}`;
-
-    const query = `
-      WITH updated AS (
-        UPDATE loans
-        SET ${setClauses.join(', ')}
-        WHERE user_uid = ${uidPlaceholder} AND id = ${idPlaceholder}
-        RETURNING *
-      )
-      SELECT updated.id,
-             updated.name,
-             updated.timestamp,
-             updated.deadline,
-             updated.priority,
-             updated.type,
-             updated.price,
-             json_build_object(
-               'id', cp.id,
-               'name', cp.name,
-               'email', cp.email,
-               'note', cp.note,
-               'phone', cp.phone
-             ) AS counterparty
-      FROM updated
-      LEFT JOIN counterparties cp ON updated.counterparty_id = cp.id;
-    `;
-
-    return { query, queryValues: [...values, uid, id] };
-  } else {
-    const allFields = [...fields, "user_uid"];
-    const allValues = [...values, uid];
-    const placeholders = allValues.map((_, i) => `$${i + 1}`).join(", ");
-
-    const query = `
-      WITH inserted AS (
-        INSERT INTO loans (${allFields.join(', ')})
-        VALUES (${placeholders})
-        RETURNING *
-      )
-      SELECT inserted.id,
-             inserted.name,
-             inserted.timestamp,
-             inserted.deadline,
-             inserted.priority,
-             inserted.type,
-             inserted.price,
-             json_build_object(
-               'id', cp.id,
-               'name', cp.name,
-               'email', cp.email,
-               'note', cp.note,
-               'phone', cp.phone
-             ) AS counterparty
-      FROM inserted
-      LEFT JOIN counterparties cp ON inserted.counterparty_id = cp.id;
-    `;
-
-    return { query, queryValues: allValues };
-  }
-}
-
-async function validateLoanCounterparty(db, req, uid) {
-  if (!req.body["counterparty_id"]) {
-    return {
-      message: "Counterparty is mandatory",
-      context: {}
-    };
-  }
-
-  const cpResult = await db.query(
-    'SELECT id FROM counterparties WHERE id = $1 AND user_uid = $2',
-    [req.body["counterparty_id"], uid]
-  );
-
-  if (cpResult.rows.length === 0) {
-    return {
-      message: "Invalid counterparty",
-      context: { counterpartyId: req.body.counterparty_id }
-    };
-  }
-
-  return null;
-}
-
-router.delete('/:id', async (req, res) => {
-  try {
-    const uid = req.user.uid;
-    const { id } = req.params;
-
-    logger.info('Attempting to delete loan', { uid, loanId: id });
-
-    const result = await db.query(
-      "DELETE FROM loans WHERE user_uid = $1 AND id = $2 RETURNING *;",
-      [uid, id]
-    );
-
-    if (result.rows.length === 0) {
-      logger.warn('Loan not found for deletion', { uid, loanId: id });
-      return res.status(404).json({ message: "Loan not found" });
-    }
-
-    logger.info('Loan deleted successfully', { uid, loanId: id });
-    res.status(204).send();
-  } catch (error) {
-    logger.error('Failed to delete loan', {
-      error: error.message,
-      stack: error.stack,
-      uid: req.user.uid,
-      loanId: req.params.id
-    });
-    res.status(500).json({ message: "Failed to delete loan" });
-  }
-});
+router.delete('/:id', (req, res) =>
+  handleDelete({
+    table: 'loans',
+    idField: 'id',
+    entityName: 'loan',
+    req,
+    res
+  }, db, logger)
+);
 
 module.exports = router;

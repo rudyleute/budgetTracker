@@ -15,11 +15,11 @@ app.use(express.json());
 const apiRouter = express.Router();
 apiRouter.use(authenticateUser);
 
-const users = require('./routes/users');
-const transactions = require('./routes/transactions');
-const categories = require('./routes/categories');
-const loans = require('./routes/loans');
-const counterparties = require('./routes/counterparties');
+const users = require('./components/users');
+const transactions = require('./components/transactions');
+const categories = require('./components/categories');
+const loans = require('./components/loans');
+const counterparties = require('./components/counterparties');
 
 apiRouter.use("/users", users);
 apiRouter.use("/transactions", transactions);

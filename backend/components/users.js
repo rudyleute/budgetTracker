@@ -55,14 +55,12 @@ router.post('/', async (req, res) => {
   }
 });
 
-router.put('/', async (req, res) => {
+router.patch('/', async (req, res) => {
   try {
     const uid = req.user.uid;
     const { email } = req.body;
 
-    if (!email) {
-      return res.status(400).json({ message: "No valid fields have been provided for update" });
-    }
+    if (!email) return res.status(400).json({ message: "No valid fields have been provided for update" });
 
     logger.info('Updating user email', { uid });
 
