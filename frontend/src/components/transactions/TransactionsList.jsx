@@ -9,7 +9,12 @@ import { getDate } from '../../helpers/time.js';
 import Empty from '../simple/Empty.jsx';
 
 const TransactionsList = () => {
-  const { transactions, getMoreTransactions } = useTransactions();
+  const {
+    transactions,
+    getNextTransactionsPage,
+    TransGetLoader,
+    TransChangeLoader
+  } = useTransactions();
 
   const grouped = useMemo(() => {
     if (!transactions.data.length) return { keys: [], groups: {} };
@@ -34,7 +39,8 @@ const TransactionsList = () => {
       return <TransactionsItem data={item} key={item.id} month={key}/>;
     });
 
-    return <Accordion className={"animate-fade-in"} hClassName={"max-sml:h-[50px] bg-[var(--color-sec)] text-[var(--color-text)]"}
+    return <Accordion className={"animate-fade-in"}
+                      hClassName={"max-sml:h-[50px] bg-[var(--color-sec)] text-[var(--color-text)]"}
                       bClassName={"bg-[var(--color-main)] p-[5px]"} label={
       <span className={"w-full flex justify-between"}>
         <span className={"text-clipped grow"}>{key} </span>
@@ -47,10 +53,15 @@ const TransactionsList = () => {
   }), [grouped]);
 
 
+  const isEmpty = transactionsMap.length === 0;
   return (
     <div className={"w-full flex flex-col gap-[5px] max-esml:gap-[20px] items-center"}>
-      {transactionsMap.length > 0 ? transactionsMap : <Empty text={"No transactions found"} size={"2xl"} />}
-      {!transactions.isLastPage && <IconButton onClick={getMoreTransactions} title={"Show more"} icon={faCircleDown}/>}
+      {!isEmpty && transactionsMap}
+      <TransGetLoader>
+        {isEmpty && <Empty text={"No transactions found"} size={"2xl"}/>}
+        {!transactions.isLastPage && <IconButton onClick={getNextTransactionsPage} title={"Show more"} icon={faCircleDown}/>}
+      </TransGetLoader>
+      <TransChangeLoader />
     </div>
   )
 }

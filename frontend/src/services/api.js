@@ -8,11 +8,11 @@ import { formToast } from '../helpers/toast.jsx';
  * @param {String} endpoint
  * @param {Object} queryParams - query parameters for GET request
  * @param {Number} offset
- * @param {Boolean} pagination - use offset "pagination" with limit predefined on the backend if true, retrieve all elements if false
+ * @param {Number} limit
  * @returns {Promise<Object|null>}
  */
-export const fetchHandler = async (endpoint, queryParams, offset = 0, pagination = true) => {
-  const { data: newLoans, message } = await api.get(endpoint, { ...queryParams, offset, pagination });
+export const fetchHandler = async (endpoint, queryParams, offset = 0, limit = 0) => {
+  const { data: newLoans, message } = await api.get(endpoint, { ...queryParams, offset, limit });
 
   if (!newLoans) {
     toast.error(formToast(message));

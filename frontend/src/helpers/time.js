@@ -83,7 +83,7 @@ export const createTimeFilters = (setValues) => {
           to: formatDate(lastMonthEnd)
         };
       }
-      case "Last three months": {
+      case "Last four months": {
         const threeMonthsAgo = new Date(today.getFullYear(), today.getMonth() - 3, 1);
         return {
           from: formatDate(threeMonthsAgo),
@@ -123,7 +123,7 @@ export const createTimeFilters = (setValues) => {
     { label: "Last week", func: () => formOption("Last week") },
     { label: "This month", func: () => formOption("This month") },
     { label: "Last month", func: () => formOption("Last month") },
-    { label: "Last three months", func: () => formOption("Last three months") },
+    { label: "Last four months", func: () => formOption("Last four months") },
     { label: "This year", func: () => formOption("This year") },
     { label: "Last year", func: () => formOption("Last year") },
   ]

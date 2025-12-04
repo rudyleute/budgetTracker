@@ -71,6 +71,7 @@ const Main = () => {
           placeholder={"Search by name..."}
           type={"text"}
           value={searchValue}
+          id={"filter"}
           onChange={handleSearchChange}
         />
 
@@ -88,6 +89,7 @@ const Main = () => {
           name={"to"}
           type={"date"}
           value={queryParams.to}
+          id={"to"}
           onChange={(e) => updateQueryParams({ to: e.target.value })}
         />
 
@@ -97,6 +99,7 @@ const Main = () => {
           wClassName={"!flex-row items-center mid:row-start-2 mid:col-start-3 max-mid:row-start-3 max-mid:col-start-2 max-sml:row-start-3 max-sml:col-start-2 max-esml:col-start-1 max-esml:col-span-2 max-esml:row-start-4"}
           name={"from"}
           type={"date"}
+          id={"for"}
           value={queryParams.from}
           onChange={(e) => updateQueryParams({ from: e.target.value })}
         />

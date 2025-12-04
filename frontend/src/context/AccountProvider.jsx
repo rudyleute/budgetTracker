@@ -13,25 +13,36 @@ import { processErrors } from '../helpers/firebaseErrors.js';
 import { toast } from 'react-toastify';
 import { formToast } from '../helpers/toast.jsx';
 import { debounce } from 'lodash';
-import { useLoader } from './LoaderProvider.jsx';
+import useLoader from '../hooks/useLoader.jsx';
 import api from '../services/axios.js';
+import { CategoriesProvider } from './CategoriesProvider.jsx';
+import { ConfirmationProvider } from './ConfirmationProvider.jsx';
+import { ModalProvider } from './ModalProvider.jsx';
+import { TransactionsProvider } from './TransactionsProvider.jsx';
 
 const AccountContext = createContext({});
 const useAccount = () => useContext(AccountContext);
 
 const AccountProvider = ({ children }) => {
   const [isAuthenticated, setAuthenticated] = useState(false);
-  const [loading, setLoading] = useState(true);
+  const {
+    hideLoader: hideAuthLoader,
+    LoaderElement: AuthLoader
+  } = useLoader({ isLoading: true, overlayColor: "bg-[var(--color-main)]" });
+  const {
+    showLoader: showActionLoader,
+    hideLoader: hideActionLoader,
+    LoaderElement: Loader
+  } = useLoader();
   const navigate = useNavigate();
-  const { showLoader, hideLoader } = useLoader();
 
   useEffect(() => {
+    //Debouncer is needed for enforcing email verification - the user is logged out immediately after signing up successfully
     const debouncedAuthHandler = debounce(async (user) => {
-      if (user) {
-        if (user.emailVerified) setAuthenticated(true);
-        else setAuthenticated(false);
-      } else setAuthenticated(false);
-      setLoading(false);
+      if (user && user.emailVerified) setAuthenticated(true);
+      else setAuthenticated(false);
+
+      hideAuthLoader();
     }, 600);
 
     const unsubscribe = onAuthStateChanged(auth, debouncedAuthHandler);
@@ -42,7 +53,7 @@ const AccountProvider = ({ children }) => {
   }, []);
 
   const signUp = async (data) => {
-    showLoader();
+    showActionLoader();
     try {
       const result = await createUserWithEmailAndPassword(auth, data.email, data.password);
 
@@ -63,12 +74,12 @@ const AccountProvider = ({ children }) => {
     } catch (e) {
       toast.error(formToast(processErrors(e.code)));
     } finally {
-      hideLoader();
+      hideActionLoader();
     }
   }
 
   const logIn = async (data) => {
-    showLoader();
+    showActionLoader();
     try {
       const result = await signInWithEmailAndPassword(auth, data.email, data.password);
       const user = result.user;
@@ -80,25 +91,41 @@ const AccountProvider = ({ children }) => {
     } catch (e) {
       toast.error(formToast(processErrors(e.code)));
     } finally {
-      hideLoader();
+      hideActionLoader();
     }
   }
 
   const logOut = async () => {
-    showLoader();
+    showActionLoader();
 
     try {
       await signOut(auth);
     } catch (e) {
       toast.error(formToast(processErrors(e.code)));
     } finally {
-      hideLoader();
+      hideActionLoader();
     }
   }
 
+  //AuthLoader and Loader render children only when loading is not happening
   return (
-    <AccountContext.Provider value={{ isAuthenticated, signUp, logIn, logOut, loading }}>
-      {children}
+    <AccountContext.Provider value={{ isAuthenticated, signUp, logIn, logOut }}>
+      <AuthLoader>
+        {
+          isAuthenticated ?
+            <TransactionsProvider>
+              <CategoriesProvider>
+                <ConfirmationProvider>
+                  <ModalProvider>
+                    {children}
+                  </ModalProvider>
+                </ConfirmationProvider>
+              </CategoriesProvider>
+            </TransactionsProvider> :
+            children
+        }
+        <Loader/>
+      </AuthLoader>
     </AccountContext.Provider>
   )
 }
