@@ -7,7 +7,7 @@ CREATE TABLE IF NOT EXISTS users
 (
     uid        VARCHAR(128) PRIMARY KEY,
     email      VARCHAR(255) UNIQUE      NOT NULL CHECK ( LENGTH(email) >= 5 ),
-    created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP CHECK ( created_at <= NOW() ),
     updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP CHECK ( updated_at <= NOW() )
 );
 
@@ -16,7 +16,7 @@ CREATE TABLE IF NOT EXISTS categories
     id         UUID PRIMARY KEY                  DEFAULT uuid_generate_v4(),
     name       VARCHAR(100)             NOT NULL CHECK ( LENGTH(name) >= 3 ) unique,
     color      CHAR(7)                  NOT NULL CHECK (color ~ '^#[0-9A-Fa-f]{6}$'),
-    created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP CHECK ( created_at <= NOW() ),
     updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP CHECK ( updated_at <= NOW() ),
     user_uid   VARCHAR(128)             NOT NULL REFERENCES users (uid) ON DELETE CASCADE
 );
@@ -27,7 +27,7 @@ CREATE TABLE IF NOT EXISTS transactions
     name        VARCHAR(255)             NOT NULL CHECK ( LENGTH(name) >= 3 ),
     price       NUMERIC(10, 2)           NOT NULL CHECK (price > 0),
     timestamp   TIMESTAMP                NOT NULL CHECK (timestamp <= NOW()),
-    created_at  TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    created_at  TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP CHECK ( created_at <= NOW() ),
     updated_at  TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP CHECK ( updated_at <= NOW() ),
     user_uid    VARCHAR(128)             NOT NULL REFERENCES users (uid) ON DELETE CASCADE,
     category_id UUID                     REFERENCES categories (id) ON DELETE SET NULL
@@ -40,7 +40,7 @@ CREATE TABLE IF NOT EXISTS counterparties
     email      VARCHAR(255) CHECK ( LENGTH(email) >= 5 ),
     phone      VARCHAR(15) CHECK (phone ~ '^[1-9][0-9]{6,14}$'),
     note       VARCHAR(200),
-    created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP CHECK (created_at <= NOW()),
     updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP CHECK (updated_at <= NOW()),
     user_uid   VARCHAR(128)             NOT NULL REFERENCES users (uid) ON DELETE CASCADE
 );
@@ -55,6 +55,7 @@ CREATE TABLE IF NOT EXISTS loans
     priority        priority_types,
     price           NUMERIC(10, 2)           NOT NULL CHECK (price > 0),
     created_at      TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP CHECK (created_at <= NOW()),
+    updated_at      TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP CHECK (updated_at <= NOW()),
     counterparty_id UUID                     NOT NULL REFERENCES counterparties (id) ON DELETE CASCADE,
     user_uid        VARCHAR(128)             NOT NULL REFERENCES users (uid) ON DELETE CASCADE
 );
