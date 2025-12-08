@@ -65,7 +65,7 @@ const MainPage = () => {
 
   return (
     <>
-      <div className={"grid mid:grid-cols-[4fr_4fr_2fr] max-mid:grid-cols-2 gap-[10px] mb-[10px]"}>
+      <div className={"grid mid:grid-cols-[4fr_4fr_2fr] max-mid:grid-cols-2 gap-[10px]"}>
         <Input
           wClassName={"mid:col-start-1 mid:row-start-1 col-span-2"}
           placeholder={"Search by name..."}

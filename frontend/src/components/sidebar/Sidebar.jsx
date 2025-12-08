@@ -106,7 +106,7 @@ const Sidebar = () => {
   }
 
   return (<div
-    className={"flex flex-col gap-[15px] s-scroll s-scroll-alt-color w-full min-h-fit bg-[var(--color-sec)] max-lrg:overflow-visible lrg:overflow-y-auto lrg:h-screen p-[15px_15px]"}>
+    className={"flex flex-col gap-[15px] s-scroll s-scroll-alt-color w-full max-lrg:min-h-fit bg-[var(--color-sec)] max-lrg:overflow-visible lrg:overflow-y-auto lrg:h-full p-[15px_15px]"}>
     <SidebarComponent items={data.loans} title={"Upcoming Deadlines"} emptyText={"No urgent loans found"}
                       getItemLink={getLoansLink} renderItem={renderLoanItem} gridCols={"grid-cols-[1fr_1fr_3fr_4fr_4fr]"}
                       iwClass={"items-center text-[var(--color-text)] !pt-[5px] !pb-[5px]"}/>
