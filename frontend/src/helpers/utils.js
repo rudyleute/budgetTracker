@@ -64,7 +64,7 @@ export const newQueryParams = (values, prev, params) => {
   params.forEach(key => {
     if (values[key] != null) next[key] = values[key];
   });
-  return !_.isEqual(prev, next) ? next : prev
+  return _.isEqual(prev, next) ? prev : next
 };
 
 /**

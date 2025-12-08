@@ -4,7 +4,7 @@ const Input = ({ label, id, className, lClassName, endAdornment, wClassName, err
   return (
     <div className={twMerge("field-wrapper", wClassName)}>
       {label && <label className={twMerge("label", lClassName)} htmlFor={id}>{label}</label>}
-      <div className={"w-full relative"}>
+      <div className={"input-wrapper"}>
         <input
           id={id}
           className={twMerge(`field ${endAdornment ? '!pr-[45px]' : '!pr-[20px]'} font-bold`, className)} {...rest} />

@@ -55,12 +55,22 @@ export const usePaginatedResource = ({
   }, [fetchItemsFromStart]);
 
   const updateQueryParams = useCallback((values) => {
+    //prev is returned and new requests are not made if none of the fields' values were changed
     setQueryParams(prev => newQueryParams(values, prev, Object.keys(defaultQueryParams)));
   }, [defaultQueryParams]);
 
-  const resetQueryParams = useCallback(() => {
+  const resetQueryParams = useCallback((params = []) => {
     setQueryParams(prev => {
-      return !_.isEqual(prev, defaultQueryParams) ? defaultQueryParams : prev;
+      //if no keys have been provided, reset all of them
+      if (params.length === 0) return _.isEqual(prev, defaultQueryParams) ? prev : defaultQueryParams;
+
+      const normalized = typeof params === "string" ? [params] : params
+
+      const next = {...prev};
+      normalized.forEach((key) => {
+        if (key in defaultQueryParams) next[key] = defaultQueryParams[key];
+      });
+      return _.isEqual(prev, next) ? prev : next;
     });
   }, [defaultQueryParams]);
 
@@ -135,7 +145,6 @@ export const usePaginatedResource = ({
   return {
     items,
     queryParams,
-    fetchItemsFromStart,
     GetLoader,
     ChangeLoader,
     addItem,

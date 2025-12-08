@@ -11,16 +11,13 @@ const TransactionsContext = createContext({});
 const TransactionsProvider = ({ children }) => {
   const {
     items: transactions,
-    queryParams,
-    fetchItems: fetchTransactions,
+    queryParams: queryTransParams,
     addItem: addTransaction,
     editItem: editTransaction,
     deleteItem: deleteTransaction,
     getNextPage: getNextTransactionsPage,
-    updateQueryParams,
-    resetQueryParams,
-    isLoadingChange: transChangeLoading,
-    isLoadingGet: transGetLoading,
+    updateQueryParams: updateTransQueryParams,
+    resetQueryParams: resetTransQueryParams,
     GetLoader: TransGetLoader,
     ChangeLoader: TransChangeLoader
   } = usePaginatedResource({
@@ -35,13 +32,10 @@ const TransactionsProvider = ({ children }) => {
       addTransaction,
       deleteTransaction,
       editTransaction,
-      fetchTransactions,
       getNextTransactionsPage,
-      updateQueryParams,
-      resetQueryParams,
-      queryParams,
-      transChangeLoading,
-      transGetLoading,
+      updateTransQueryParams,
+      resetTransQueryParams,
+      queryTransParams,
       TransGetLoader,
       TransChangeLoader
     }}>

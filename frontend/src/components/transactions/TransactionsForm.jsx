@@ -149,7 +149,7 @@ const TransactionsForm = ({ ref, name, categoryId, price, timestamp, onSubmit, i
 
       <Select
         className={"modal:col-span-2"}
-        curValue={fields.categoryId ? formLabel(catDataMap[fields.categoryId]) : ""}
+        value={fields.categoryId ? formLabel(catDataMap[fields.categoryId]) : ""}
         lClassName={"flex items-center"}
         label={
           <>

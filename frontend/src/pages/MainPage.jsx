@@ -19,18 +19,18 @@ import _ from 'lodash';
 
 
 const defaultOption = { label: "---Select filter---" }
-const Main = () => {
+const MainPage = () => {
   const [option, setOption] = useState(defaultOption);
   const [searchValue, setSearchValue] = useState("");
-  const { addTransaction, queryParams, updateQueryParams, resetQueryParams } = useTransactions();
+  const { addTransaction, queryTransParams, updateTransQueryParams, resetTransQueryParams } = useTransactions();
   const { showModal, hideModal } = useModal();
   const formRef = useRef(null);
 
   const debouncedSearch = useCallback(
     _.debounce((value) => {
-      updateQueryParams({ filter: value })
+      updateTransQueryParams({ filter: value })
     }, 500),
-    [updateQueryParams]
+    [updateTransQueryParams]
   );
 
   const handleSearchChange = (e) => {
@@ -40,8 +40,8 @@ const Main = () => {
   }
 
   const setValues = useCallback((from, to) => {
-    updateQueryParams({ from, to });
-  }, [updateQueryParams]);
+    updateTransQueryParams({ from, to });
+  }, [updateTransQueryParams]);
 
   const options = useMemo(() => createTimeFilters(setValues, uuidv4), [setValues]);
 
@@ -77,7 +77,7 @@ const Main = () => {
 
         <Select
           className={"mid:row-start-2 mid:col-start-2 max-mid:row-start-2 max-mid:col-start-1 max-sml:row-start-2 max-sml:col-span-2"}
-          curValue={option.label}
+          value={option.label}
           onOptionClick={(option) => setOption(option)}
           options={options.filter(opt => opt.label !== option?.label)}
         />
@@ -85,23 +85,23 @@ const Main = () => {
         <Input
           label={<FontAwesomeIcon icon={faHourglassEnd}/>}
           lClassName={"!text-black"}
-          wClassName={"!flex-row items-center mid:row-start-1 mid:col-start-3 max-mid:row-start-2 max-mid:col-start-2 max-sml:row-start-3 max-sml:col-start-1 max-esml:row-start-3 max-esml:col-start-1 max-esml:col-span-2"}
+          wClassName={"field-row mid:row-start-1 mid:col-start-3 max-mid:row-start-2 max-mid:col-start-2 max-sml:row-start-3 max-sml:col-start-1 max-esml:row-start-3 max-esml:col-start-1 max-esml:col-span-2"}
           name={"to"}
           type={"date"}
-          value={queryParams.to}
+          value={queryTransParams.to}
           id={"to"}
-          onChange={(e) => updateQueryParams({ to: e.target.value })}
+          onChange={(e) => updateTransQueryParams({ to: e.target.value })}
         />
 
         <Input
           label={<FontAwesomeIcon icon={faHourglassStart}/>}
           lClassName={"!text-black"}
-          wClassName={"!flex-row items-center mid:row-start-2 mid:col-start-3 max-mid:row-start-3 max-mid:col-start-2 max-sml:row-start-3 max-sml:col-start-2 max-esml:col-start-1 max-esml:col-span-2 max-esml:row-start-4"}
+          wClassName={"field-row mid:row-start-2 mid:col-start-3 max-mid:row-start-3 max-mid:col-start-2 max-sml:row-start-3 max-sml:col-start-2 max-esml:col-start-1 max-esml:col-span-2 max-esml:row-start-4"}
           name={"from"}
           type={"date"}
           id={"for"}
-          value={queryParams.from}
-          onChange={(e) => updateQueryParams({ from: e.target.value })}
+          value={queryTransParams.from}
+          onChange={(e) => updateTransQueryParams({ from: e.target.value })}
         />
 
         <PillButtons
@@ -115,7 +115,7 @@ const Main = () => {
               content: <FontAwesomeIcon icon={faBroom}/>,
               title: "Reset all filters",
               onClick: async () => {
-                resetQueryParams();
+                resetTransQueryParams();
                 setOption(defaultOption);
               }
             }
@@ -127,4 +127,4 @@ const Main = () => {
   )
 }
 
-export default Main;
+export default MainPage;

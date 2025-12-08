@@ -3,7 +3,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faAngleDown, faAngleUp } from '@fortawesome/free-solid-svg-icons';
 import { twMerge } from 'tailwind-merge';
 
-const Select = ({ curValue, options, onOptionClick, className, label, error, lClassName }) => {
+const Select = ({ value, options, onOptionClick, className, label, error, lClassName }) => {
   const [isOpen, setIsOpen] = useState(false);
   const wrapperRef = useRef(null);
 
@@ -17,13 +17,13 @@ const Select = ({ curValue, options, onOptionClick, className, label, error, lCl
       document.removeEventListener('mousedown', handleOutsideClick, true);
     }
   }, [])
-
+  
   return (
     <div ref={wrapperRef} className={twMerge("field-wrapper", className)}>
       {label && <label className={twMerge("label", lClassName)}>{label}</label>}
-      <div className={"relative"}>
+      <div className={"input-wrapper"}>
         <div className={"field relative mb-[1px] bg-[var(--color-text)]"}>
-          <span className={"w-full text-clipped inline-block pr-[45px]"}>{curValue}</span>
+          <span className={"w-full text-clipped inline-block pr-[45px]"}>{value}</span>
           <FontAwesomeIcon className={"end-adornment"} onClick={() => setIsOpen(prev => !prev)}
                            icon={isOpen ? faAngleUp : faAngleDown}/>
         </div>

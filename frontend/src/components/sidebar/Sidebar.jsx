@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react';
-import axios from '../../services/axios.js';
 import { toast } from 'react-toastify';
 import { formToast } from '../../helpers/toast.jsx';
 import { daysUntilDateOnly } from '../../helpers/time.js';
@@ -8,6 +7,7 @@ import { faAt, faFlag, faPhone, faVault, faWallet } from '@fortawesome/free-soli
 import { Link } from 'react-router-dom';
 import SidebarComponent from './SidebarComponent.jsx';
 import { formatTimestamp } from '../../helpers/time.js';
+import api from '../../services/axios.js';
 
 const priorityColorMap = {
   "low": "blue",
@@ -21,7 +21,7 @@ const Sidebar = () => {
 
   useEffect(() => {
     (async () => {
-      const { data: newLoans, message: loansMsg } = await axios.get("/loans", { due: true });
+      const { data: newLoans, message: loansMsg } = await api.get("/loans", { due: true });
 
       if (!newLoans) {
         toast.error(formToast(loansMsg))
@@ -29,7 +29,7 @@ const Sidebar = () => {
         return;
       }
 
-      const { data: newBalance, message: balanceMsg } = await axios.get("/counterparties", { balance: true });
+      const { data: newBalance, message: balanceMsg } = await api.get("/counterparties", { balance: true });
 
       if (!newBalance) {
         toast.error(formToast(balanceMsg))
@@ -48,7 +48,7 @@ const Sidebar = () => {
   }, []);
 
   const getLoansLink = (item) => `/loans?id=${item.id}`;
-  const getCounterLink = (item) => `/counterparties/${item.id}`;
+  const getCounterLink = (item) => `/loans?counterparty=${item.id}`;
 
   const renderLoanItem = (loan) => {
     return (
