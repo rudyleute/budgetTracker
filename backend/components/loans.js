@@ -9,44 +9,12 @@ const pageSize = 30;
 const optAllowedFields = ["deadline", "priority"]
 const reqAllowedFields = ["name", "timestamp", "counterparty_id", "type", "price"];
 
-router.get('/types', async (req, res) => {
-  try {
-    const result = await db.query(`
-      SELECT enumlabel AS type
-      FROM pg_enum 
-      JOIN pg_type ON pg_enum.enumtypid = pg_type.oid
-      WHERE pg_type.typname = 'loan_types'
-      ORDER BY enumsortorder;
-    `);
-    res.status(200).json(result.rows.map(r => r.type));
-  } catch (error) {
-    logger.error("Failed to load loan_types", error);
-    res.status(500).json({ message: "Failed to load loan types" });
-  }
-});
-
-router.get('/priorities', async (req, res) => {
-  try {
-    const result = await db.query(`
-      SELECT enumlabel AS priority
-      FROM pg_enum 
-      JOIN pg_type ON pg_enum.enumtypid = pg_type.oid
-      WHERE pg_type.typname = 'priority_types'
-      ORDER BY enumsortorder;
-    `);
-    res.status(200).json(result.rows.map(r => r.priority));
-  } catch (error) {
-    logger.error("Failed to load priority_types", error);
-    res.status(500).json({ message: "Failed to load priority types" });
-  }
-});
-
 router.get('/', async (req, res) => {
   try {
     const uid = req.user.uid;
-    const { type: reqType, priority, sort, order = "DESC", from, to, offset, due, limit } = req.query;
+    const { type: reqType, priority, sort, order = "DESC", from, to, offset, due, counterparty, limit } = req.query;
 
-    logger.debug('Fetching loans', { uid, offset, reqType, priority, sort, order, from, to, due, limit });
+    logger.debug('Fetching loans', { uid, offset, reqType, priority, sort, order, from, to, due, limit, counterparty });
     const params = [];
 
     params.push(uid);
@@ -80,6 +48,10 @@ router.get('/', async (req, res) => {
     if (priority) {
       params.push(priority);
       cond.push(`l.priority = $${params.length}`);
+    }
+    if (counterparty) {
+      params.push(counterparty);
+      cond.push(`l.counterparty_id = $${params.length}`);
     }
     //In this case we are only interested in the overdue and soon-to-be overdue deadlines
     if (due === "true") cond.push(`(l.priority = 'high' OR (l.deadline IS NOT NULL AND DATE(l.deadline) <= DATE($2)))`)

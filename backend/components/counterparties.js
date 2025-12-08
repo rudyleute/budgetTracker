@@ -10,8 +10,17 @@ const optAllowedFields = ["email", "phone", "note"]
 router.get('/', async (req, res) => {
   try {
     const uid = req.user.uid;
+    const { filter } = req.query;
 
     const includeBalance = req.query.balance === 'true';
+    let params = [], cond = []
+
+    if (filter) {
+      params.push(`%${filter}%`);
+      cond.push(`LOWER(cp.name) LIKE LOWER($${params.length})`);
+    }
+    params.push(uid);
+    cond.push(`cp.user_uid = $${params.length}`)
     logger.debug('Fetching counterparties', { uid, includeBalance });
 
     let query;
@@ -29,21 +38,21 @@ router.get('/', async (req, res) => {
                 0
               ) AS balance
           FROM counterparties cp
-                   LEFT JOIN loans l ON cp.id = l.counterparty_id AND l.user_uid = $1
-          WHERE cp.user_uid = $1
+                   LEFT JOIN loans l ON cp.id = l.counterparty_id AND l.user_uid = $${params.length}
+          WHERE ${cond.join(' AND ')}
           GROUP BY cp.id
           ORDER BY balance DESC;
       `;
     } else {
       query = `
         SELECT id, name, email, note, phone
-        FROM counterparties 
-        WHERE user_uid = $1 
+        FROM counterparties cp
+        WHERE ${cond.join(' AND ')} 
         ORDER BY name;
       `;
     }
 
-    const result = await db.query(query, [uid]);
+    const result = await db.query(query, params);
 
     logger.info('Counterparties retrieved successfully', { uid, count: result.rows.length });
     return res.status(200).json({ data: result.rows });
