@@ -138,6 +138,14 @@ body {
     @apply text-right shrink-0 whitespace-nowrap block bg-[var(--color-sec)]/90 w-full rounded-[5px]
 }
 
+.input-wrapper {
+    @apply grow relative;
+}
+
+.field-row {
+    @apply !flex-row items-center gap-[5px];
+}
+
  @utility icon-b {
     @apply text-[60px];
 }
