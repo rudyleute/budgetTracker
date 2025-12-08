@@ -3,7 +3,7 @@ import {
   faChartPie,
   faRightFromBracket,
   faCircleUser,
-  faCoins, faUserGroup
+  faCoins
 } from '@fortawesome/free-solid-svg-icons';
 import IconButton from './simple/IconButton.jsx';
 import { useNavigate } from 'react-router-dom';

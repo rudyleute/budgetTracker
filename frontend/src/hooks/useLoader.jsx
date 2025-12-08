@@ -39,7 +39,9 @@ const useLoader = ({
           </span>
         )}
       </div>, document.body) :
-      <LoaderComp size={size} color={color}/>;
+      <span>
+        <LoaderComp size={size} color={color}/>
+      </span>;
   }, [color, global, loader, size]);
 
   return {

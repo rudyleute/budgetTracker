@@ -8,12 +8,7 @@ import { Link } from 'react-router-dom';
 import SidebarComponent from './SidebarComponent.jsx';
 import { formatTimestamp } from '../../helpers/time.js';
 import api from '../../services/axios.js';
-
-const priorityColorMap = {
-  "low": "blue",
-  "medium": "yellow",
-  "high": "red"
-};
+import { priorityColorMap } from '../../helpers/variables.js';
 
 const defaultValue = { loans: [], balance: [] }
 const Sidebar = () => {
@@ -60,7 +55,7 @@ const Sidebar = () => {
           </span> : <span/>
         }
         <span title={loan.type}>
-          <FontAwesomeIcon size={"xs"} icon={loan.type === "borrowed" ? faVault : faWallet} />
+          <FontAwesomeIcon size={"xs"} icon={loan.type === "borrowed" ? faVault : faWallet}/>
         </span>
         {
           loan.deadline ? (() => {
@@ -108,7 +103,8 @@ const Sidebar = () => {
   return (<div
     className={"flex flex-col gap-[15px] s-scroll s-scroll-alt-color w-full max-lrg:min-h-fit bg-[var(--color-sec)] max-lrg:overflow-visible lrg:overflow-y-auto lrg:h-full p-[15px_15px]"}>
     <SidebarComponent items={data.loans} title={"Upcoming Deadlines"} emptyText={"No urgent loans found"}
-                      getItemLink={getLoansLink} renderItem={renderLoanItem} gridCols={"grid-cols-[1fr_1fr_3fr_4fr_4fr]"}
+                      getItemLink={getLoansLink} renderItem={renderLoanItem}
+                      gridCols={"grid-cols-[1fr_1fr_3fr_4fr_4fr]"}
                       iwClass={"items-center text-[var(--color-text)] !pt-[5px] !pb-[5px]"}/>
     <SidebarComponent items={data.balance} title={"Balance"} emptyText={"No counterparties found"}
                       getItemLink={getCounterLink} renderItem={renderCounterItem} gridCols={"grid-cols-[2fr_5fr_5fr]"}/>

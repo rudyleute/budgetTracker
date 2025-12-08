@@ -30,9 +30,9 @@ const Autocomplete = ({
   }, [])
 
   return (
-    <div ref={wrapperRef} className={twMerge("field-wrapper", className)}>
+    <div className={twMerge("field-wrapper", className)}>
       {label && <label htmlFor={id} className={twMerge("label", lClassName)}>{label}</label>}
-      <div className={"input-wrapper"}>
+      <div ref={wrapperRef} className={"input-wrapper"}>
         <Input ref={inputRef} id={id} {...rest} onChange={e => onChange(e.target.value)}
                onFocus={() => setIsOpen(true)}
                />

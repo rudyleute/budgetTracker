@@ -2,7 +2,6 @@ import { useLoans } from '../context/LoansProvider.jsx'
 import Select from '../components/simple/Select.jsx';
 import {
   faArrowDownWideShort,
-  faFolderPlus,
   faHourglassEnd,
   faHourglassStart,
   faMoneyBillTransfer,
@@ -13,17 +12,13 @@ import Input from '../components/simple/Input.jsx';
 import useAutocomplete from '../hooks/useAutocomplete.jsx'
 import Autocomplete from '../components/simple/Autocomplete.jsx';
 import IconButton from '../components/simple/IconButton.jsx';
+import LoansList from '../components/loans/LoansList.jsx';
 
 const LoansPage = () => {
   const {
-    loans,
     loansQueryParams,
-    addLoan,
-    getNextLoansPage,
     updateLoansQueryParams,
     resetLoansQueryParams,
-    LoansGetLoader,
-    LoansChangeLoader,
     priorities,
     types
   } = useLoans();
@@ -43,7 +38,7 @@ const LoansPage = () => {
   );
 
   return (
-    <div>
+    <>
       <div className={"grid gap-[10px] grid-cols-[1fr_1fr_1fr] items-end"}>
         <Autocomplete
           {...restAutocompleteProps}
@@ -97,7 +92,8 @@ const LoansPage = () => {
           value={loansQueryParams.type || "--Select type--"}
         />
       </div>
-    </div>
+      <LoansList />
+    </>
   )
 }
 
