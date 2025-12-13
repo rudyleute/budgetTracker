@@ -72,18 +72,15 @@ export const newQueryParams = (values, prev, params) => {
  *
  * @param {Function} trigger - trigger function of react-hook-form
  * @param {Object} values - values of the react-hook-form
- * @param {?Object} dirtyFields - react-hook-form's formState.dirtyFields
+ * @param {Object} dirtyFields - react-hook-form's formState.dirtyFields
  * @returns {?Object} - changed values if all (changed) fields are valid, null otherwise
  **/
-export const validateFields = async (trigger, values, dirtyFields = null) => {
-  const changedFields = Object.keys(dirtyFields ?? values)
-
-  if (changedFields.length === 0) return null;
-
-  const isValid = await trigger(changedFields);
+export const validateFields = async (trigger, values, dirtyFields) => {
+  const isValid = await trigger(); //validate all values
   if (!isValid) return null;
 
-  return changedFields.reduce((acc, key) => {
+  //return only changed validated values
+  return Object.keys(dirtyFields).reduce((acc, key) => {
     acc[key] = values[key];
     return acc;
   }, {});

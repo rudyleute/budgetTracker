@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import Input from '../simple/Input.jsx';
 import ColorPicker from '../simple/ColorPicker.jsx';
 import { useForm } from 'react-hook-form';
-import { categoryResolver } from '../../schemas/categorySchema.js';
+import { categoryResolver } from '../../resolvers/categoryResolver.js';
 import Button from '../simple/Button.jsx';
 import { validateFields } from '../../helpers/utils.js';
 
@@ -30,7 +30,7 @@ const CategoriesForm = ({ ref, color, name, onSubmit, isUpdate = false }) => {
 
   useEffect(() => {
     if (ref) ref.current = {
-      getData: () => validateFields(trigger, getValues(), isUpdate ? formState.dirtyFields : null)
+      getData: () => validateFields(trigger, getValues(), formState.dirtyFields)
     }
   }, [formState.dirtyFields, getValues, isUpdate, ref, trigger]);
 
@@ -44,7 +44,7 @@ const CategoriesForm = ({ ref, color, name, onSubmit, isUpdate = false }) => {
     <form onSubmit={async (e) => {
       e.preventDefault();
       if (onSubmit) {
-        const res = await validateFields(trigger, getValues(), isUpdate ? formState.dirtyFields : null);
+        const res = await validateFields(trigger, getValues(), formState.dirtyFields);
         if (res) onSubmit(res);
       }
     }} ref={ref} className={"form"}>

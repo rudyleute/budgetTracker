@@ -5,7 +5,7 @@ const defaultQueryParams = {
   from: "", to: "", type: "", priority: "", sort: "", order: "", counterparty: ""
 };
 const sortByOptions = [
-  "name", "timestamp", "price", "deadline", "type", "priority"
+  "name", "timestamp", "sum", "deadline", "type", "priority"
 ]
 const priorities = ['high', 'medium', 'low'];
 const types = ["borrowed", "lent"]

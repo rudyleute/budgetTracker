@@ -11,7 +11,7 @@ import { faPenToSquare, faXmarkCircle } from '@fortawesome/free-regular-svg-icon
 import { useConfirmation } from '../../context/ConfirmationProvider.jsx';
 import { getDatetimeLocal } from '../../helpers/time.js';
 import { useForm } from 'react-hook-form';
-import { transactionResolver } from '../../schemas/transactionSchema.js';
+import { transactionResolver } from '../../resolvers/transactionResolver.js';
 import Button from '../simple/Button.jsx';
 import { validateFields } from '../../helpers/utils.js';
 
@@ -47,7 +47,7 @@ const TransactionsForm = ({ ref, name, categoryId, price, timestamp, onSubmit, i
 
   useEffect(() => {
     if (ref) ref.current = {
-      getData: () => validateFields(trigger, getValues(), isUpdate ? formState.dirtyFields : null)
+      getData: () => validateFields(trigger, getValues(), formState.dirtyFields)
     }
   }, [formState.dirtyFields, getValues, isUpdate, ref, trigger]);
 
@@ -129,12 +129,12 @@ const TransactionsForm = ({ ref, name, categoryId, price, timestamp, onSubmit, i
     <form onSubmit={async (e) => {
       e.preventDefault();
       if (onSubmit) {
-        const data = await validateFields(trigger, getValues(), isUpdate ? formState.dirtyFields : null);
+        const data = await validateFields(trigger, getValues(), formState.dirtyFields);
 
         if (data) onSubmit(data);
       }
     }} className={"grid max-modal:grid-cols-1 modal:grid-cols-[2fr_1fr] gap-[10px]"}>
-      <Input wClassName={"modal:col-span-2 modal:row-start-1"} label={"Name"} id={"name"} type={"text"} {...register("name", {
+      <Input wClassName={"col-span-full modal:row-start-1"} label={"Name"} id={"name"} type={"text"} {...register("name", {
         onChange: () => clearErrors("name")
       })} error={errors.name?.message}
       />
@@ -148,7 +148,7 @@ const TransactionsForm = ({ ref, name, categoryId, price, timestamp, onSubmit, i
       />
 
       <Select
-        className={"modal:col-span-2"}
+        className={"col-span-full"}
         value={fields.categoryId ? formLabel(catDataMap[fields.categoryId]) : ""}
         lClassName={"flex items-center"}
         label={

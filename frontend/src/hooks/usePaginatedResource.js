@@ -80,6 +80,7 @@ export const usePaginatedResource = ({
     const { data: newItem, message } = await api.post(endpoint, data);
     if (!newItem) {
       toast.error(formToast(message));
+      hideChangeLoader();
       return null;
     }
 
@@ -97,6 +98,7 @@ export const usePaginatedResource = ({
 
     if (!updatedItem) {
       toast.error(formToast(message));
+      hideChangeLoader();
       return null;
     }
 
@@ -114,6 +116,7 @@ export const usePaginatedResource = ({
     const { status, message } = await api.delete(`${endpoint}/${id}`);
     if (status !== 204) {
       toast.error(formToast(message));
+      hideChangeLoader();
       return false;
     }
 

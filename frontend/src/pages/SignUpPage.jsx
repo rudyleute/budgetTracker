@@ -3,7 +3,7 @@ import Input from '../components/simple/Input.jsx';
 import IconButton from '../components/simple/IconButton.jsx';
 import { faRightToBracket, faIdBadge } from '@fortawesome/free-solid-svg-icons';
 import { useAccount } from '../context/AccountProvider.jsx';
-import { signUpResolver } from '../schemas/signUpSchema.js';
+import { signUpResolver } from '../resolvers/signUpResolver.js';
 import { useForm } from 'react-hook-form';
 
 const SignUpPage = () => {

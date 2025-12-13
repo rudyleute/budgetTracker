@@ -77,7 +77,7 @@ const Sidebar = () => {
           })() : <span/>
         }
         <span title={loan.counterparty.name} className={"text-clipped"}>{loan.name}</span>
-        <span className={"price-wrapper"}>{loan.price} €</span>
+        <span className={"price-wrapper"}>{loan.sum} €</span>
       </>
     )
   }

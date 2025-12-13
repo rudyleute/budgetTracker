@@ -8,11 +8,7 @@ import { faCircleRight } from '@fortawesome/free-solid-svg-icons';
 const LoansList = () => {
   const {
     loans,
-    loansQueryParams,
-    addLoan,
     getNextLoansPage,
-    updateLoansQueryParams,
-    resetLoansQueryParams,
     LoansGetLoader,
     LoansChangeLoader
   } = useLoans();

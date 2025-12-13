@@ -3,7 +3,7 @@ import { faRightToBracket, faCircleUser } from '@fortawesome/free-solid-svg-icon
 import IconButton from '../components/simple/IconButton.jsx';
 import { useNavigate } from 'react-router-dom';
 import { useAccount } from '../context/AccountProvider.jsx';
-import { loginResolver } from '../schemas/loginSchema.js';
+import { loginResolver } from '../resolvers/loginResolver.js';
 import { useForm } from 'react-hook-form';
 
 const LoginPage = () => {
