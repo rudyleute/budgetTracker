@@ -7,7 +7,7 @@ const { buildPostQuery, buildPatchQuery } = require('../helpers/loans.query');
 
 const pageSize = 30;
 const optAllowedFields = ["deadline", "priority"]
-const reqAllowedFields = ["name", "timestamp", "counterparty_id", "type", "price"];
+const reqAllowedFields = ["name", "timestamp", "counterparty_id", "type", "sum"];
 
 router.get('/', async (req, res) => {
   try {
@@ -64,7 +64,7 @@ router.get('/', async (req, res) => {
         l.deadline,
         l.type,
         l.priority,
-        l.price,
+        l.sum,
         json_build_object(
           'id', cp.id,
           'name', cp.name,

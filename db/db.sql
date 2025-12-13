@@ -53,7 +53,7 @@ CREATE TABLE IF NOT EXISTS loans
     deadline        TIMESTAMP WITH TIME ZONE,
     type            loan_types               NOT NULL,
     priority        priority_types,
-    price           NUMERIC(10, 2)           NOT NULL CHECK (price > 0),
+    sum           NUMERIC(10, 2)           NOT NULL CHECK (sum > 0),
     created_at      TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP CHECK (created_at <= NOW()),
     updated_at      TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP CHECK (updated_at <= NOW()),
     counterparty_id UUID                     NOT NULL REFERENCES counterparties (id) ON DELETE CASCADE,

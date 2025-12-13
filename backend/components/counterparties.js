@@ -33,8 +33,8 @@ router.get('/', async (req, res) => {
               cp.phone,
               cp.note,
               COALESCE(
-                SUM(CASE WHEN l.type = 'borrowed' THEN l.price ELSE 0 END) -
-                SUM(CASE WHEN l.type = 'lent' THEN l.price ELSE 0 END),
+                SUM(CASE WHEN l.type = 'borrowed' THEN l.sum ELSE 0 END) -
+                SUM(CASE WHEN l.type = 'lent' THEN l.sum ELSE 0 END),
                 0
               ) AS balance
           FROM counterparties cp

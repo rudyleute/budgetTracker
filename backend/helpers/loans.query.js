@@ -15,7 +15,7 @@ function buildPostQuery({ fields, values, uid }) {
              inserted.deadline,
              inserted.priority,
              inserted.type,
-             inserted.price,
+             inserted.sum,
              json_build_object(
                      'id', cp.id,
                      'name', cp.name,
@@ -50,7 +50,7 @@ function buildPatchQuery({ fields, values, uid, id }) {
              updated.deadline,
              updated.priority,
              updated.type,
-             updated.price,
+             updated.sum,
              json_build_object(
                      'id', cp.id,
                      'name', cp.name,
