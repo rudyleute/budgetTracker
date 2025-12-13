@@ -11,6 +11,10 @@ import UnauthorizedPage from './pages/UnauthorizedPage.jsx';
 import SignUpPage from './pages/SignUpPage.jsx';
 import { LoansProvider } from './context/LoansProvider.jsx';
 import LoansPage from './pages/LoansPage.jsx';
+import { TransactionsProvider } from './context/TransactionsProvider.jsx';
+import { CategoriesProvider } from './context/CategoriesProvider.jsx';
+import { ModalProvider } from './context/ModalProvider.jsx';
+import { ConfirmationProvider } from './context/ConfirmationProvider.jsx';
 
 function App() {
   const { isAuthenticated } = useAccount();
@@ -19,12 +23,28 @@ function App() {
     <Routes>
       {isAuthenticated ?
         <Route path="/" element={<Layout/>}>
-          <Route index element={<MainPage/>}/>
+          <Route index element={
+            <TransactionsProvider>
+              <CategoriesProvider>
+                <ModalProvider>
+                  <ConfirmationProvider>
+                    <MainPage/>
+                  </ConfirmationProvider>
+                </ModalProvider>
+              </CategoriesProvider>
+            </TransactionsProvider>
+          }/>
           <Route path={"dashboard"} element={<DashboardPage/>}/>
-          <Route path={"loans"} element={<LoansProvider>
-            <Outlet/>
-          </LoansProvider>}>
-            <Route index element={<LoansPage />} />
+          <Route path={"loans"} element={
+            <LoansProvider>
+              <ModalProvider>
+                <ConfirmationProvider>
+                  <Outlet/>
+                </ConfirmationProvider>
+              </ModalProvider>
+            </LoansProvider>
+          }>
+            <Route index element={<LoansPage/>}/>
           </Route>
           <Route path={"profile"} element={<ProfilePage/>}/>
           <Route path={"login"} element={<Navigate to="/" replace/>}/>

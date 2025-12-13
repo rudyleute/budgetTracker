@@ -15,10 +15,8 @@ import { formToast } from '../helpers/toast.jsx';
 import { debounce } from 'lodash';
 import useLoader from '../hooks/useLoader.jsx';
 import api from '../services/axios.js';
-import { CategoriesProvider } from './CategoriesProvider.jsx';
 import { ConfirmationProvider } from './ConfirmationProvider.jsx';
 import { ModalProvider } from './ModalProvider.jsx';
-import { TransactionsProvider } from './TransactionsProvider.jsx';
 
 const AccountContext = createContext({});
 const useAccount = () => useContext(AccountContext);
@@ -111,19 +109,7 @@ const AccountProvider = ({ children }) => {
   return (
     <AccountContext.Provider value={{ isAuthenticated, signUp, logIn, logOut }}>
       <AuthLoader>
-        {
-          isAuthenticated ?
-            <TransactionsProvider>
-              <CategoriesProvider>
-                <ConfirmationProvider>
-                  <ModalProvider>
-                    {children}
-                  </ModalProvider>
-                </ConfirmationProvider>
-              </CategoriesProvider>
-            </TransactionsProvider> :
-            children
-        }
+        {children}
         <Loader/>
       </AuthLoader>
     </AccountContext.Provider>
