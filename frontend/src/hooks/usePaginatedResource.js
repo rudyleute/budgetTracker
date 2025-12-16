@@ -52,7 +52,7 @@ export const usePaginatedResource = ({
       if (!await fetchItemsFromStart()) setItems(defaultValue);
       hideGetLoader();
     })();
-  }, [fetchItemsFromStart]);
+  }, [fetchItemsFromStart, hideGetLoader, showGetLoader]);
 
   const updateQueryParams = useCallback((values) => {
     //prev is returned and new requests are not made if none of the fields' values were changed
@@ -90,7 +90,7 @@ export const usePaginatedResource = ({
     hideChangeLoader();
 
     return res;
-  }, [endpoint, entityName, fetchItemsFromStart, items.total]);
+  }, [endpoint, entityName, fetchItemsFromStart, hideChangeLoader, items.total, showChangeLoader]);
 
   const editItem = useCallback(async (id, data, timeColName = "timestamp") => {
     showChangeLoader();
@@ -108,7 +108,7 @@ export const usePaginatedResource = ({
     hideChangeLoader();
 
     return res;
-  }, [endpoint, entityName, fetchItemsFromStart, items.total]);
+  }, [endpoint, entityName, fetchItemsFromStart, hideChangeLoader, items.total, showChangeLoader]);
 
   const deleteItem = useCallback(async (id) => {
     showChangeLoader();
@@ -126,7 +126,7 @@ export const usePaginatedResource = ({
     hideChangeLoader();
 
     return res;
-  }, [endpoint, fetchItemsFromStart, items.total]);
+  }, [endpoint, fetchItemsFromStart, hideChangeLoader, items.total, showChangeLoader]);
 
   const getNextPage = useCallback(async () => {
     showGetLoader();
@@ -143,7 +143,7 @@ export const usePaginatedResource = ({
     }));
 
     return true;
-  }, [endpoint, queryParams, items.total]);
+  }, [showGetLoader, endpoint, queryParams, items.total, hideGetLoader]);
 
   return {
     items,

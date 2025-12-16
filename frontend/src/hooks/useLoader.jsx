@@ -27,7 +27,7 @@ const useLoader = ({
 
   const hideLoader = useCallback(() => setLoader(defaultState), []);
 
-  const LoaderElement = useCallback(({children}) => {
+  const LoaderElement = ({children}) => {
     if (!loader.loading) return <>{children}</>;
 
     return global ? createPortal(<div
@@ -42,7 +42,7 @@ const useLoader = ({
       <span>
         <LoaderComp size={size} color={color}/>
       </span>;
-  }, [color, global, loader, size]);
+  };
 
   return {
     showLoader,

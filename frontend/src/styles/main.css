@@ -6,9 +6,11 @@
     --breakpoint-sml: 750px;
     --breakpoint-mid: 850px;
     --breakpoint-lrg: 1420px;
-    --breakpoint-cards-lrg: 1150px;
-    --breakpoint-cards-mid: 800px;
-    --breakpoint-cards-sml: 560px;
+    --breakpoint-loans-lrg: 1150px;
+    --breakpoint-loans-mid: 800px;
+    --breakpoint-loans-sml: 560px;
+    --breakpoint-loans-fil-lrg: 1050px;
+    --breakpoint-loans-fil-mid: 620px;
 }
 
 @keyframes fadeIn {
@@ -28,6 +30,10 @@
 
 @utility lift-scale {
     @apply transition-transform duration-300 hover:scale-[1.05] origin-center
+}
+
+@utility lift-scale-small {
+    @apply transition-transform duration-300 hover:scale-[1.01] origin-center
 }
 
 .items-border {
@@ -98,7 +104,7 @@ body {
 }
 
 .overlay {
-    @apply fixed top-0 left-0 w-screen h-screen bg-[var(--color-main)]/80;
+    @apply fixed top-0 left-0 w-screen h-screen bg-[var(--color-sec)]/80;
 }
 
 .jump-1 {
@@ -130,7 +136,7 @@ body {
 }
 
 .field-wrapper {
-    @apply flex flex-col w-full justify-start
+    @apply flex flex-col w-full justify-start h-full
 }
 
 .field {
@@ -146,11 +152,11 @@ body {
 }
 
 .price-wrapper {
-    @apply text-right shrink-0 whitespace-nowrap block bg-[var(--color-sec)]/90 w-full rounded-[5px]
+    @apply shrink-0 whitespace-nowrap bg-[var(--color-sec)]/90 w-full rounded-[5px] inline-flex items-center justify-end
 }
 
 .input-wrapper {
-    @apply grow relative;
+    @apply grow relative min-w-0 h-full;
 }
 
 .field-row {

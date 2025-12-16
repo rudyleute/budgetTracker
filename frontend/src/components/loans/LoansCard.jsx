@@ -13,6 +13,12 @@ import IconButton from '../simple/IconButton.jsx';
 import { faCircleXmark } from '@fortawesome/free-regular-svg-icons';
 import { useConfirmation } from '../../context/ConfirmationProvider.jsx';
 
+const IconCell = ({ children, className, ...rest }) => (
+  <span className={twMerge("w-6 h-6 flex items-center justify-center", className)} {...rest}>
+    {children}
+  </span>
+);
+
 const LoansCard = ({ loan }) => {
   const { showModal, hideModal } = useModal();
   const { editLoan, deleteLoan } = useLoans();
@@ -30,18 +36,6 @@ const LoansCard = ({ loan }) => {
     []);
 
   const timestamp = useMemo(() => formatTimestamp(loan.timestamp), [loan.timestamp])
-
-  const deadline = loan.deadline ? (() => {
-    const days = daysUntilDateOnly(loan.deadline);
-    const color = days < 0 ? 'red' : 'green';
-
-    return (
-      <span className={"font-b text-clipped"}
-            title={getTimestamp(loan.deadline)} style={{ color }}>
-                {Math.abs(days)} day{Math.abs(days) !== 1 ? 's' : ''}
-            </span>
-    );
-  })() : <span/>;
 
   const editLoanWithHide = useCallback(async (data) => {
     if (await editLoan(loan.id, data)) hideModal();
@@ -62,37 +56,49 @@ const LoansCard = ({ loan }) => {
   }, [editLoanWithHide, loan, onSubmitEdit, showModal]);
 
   return (
-    <Button className={"w-full h-fit sml:lift-scale"} title={"Edit loan"} onClick={handleOnEdit}>
+    <div className={"w-full h-fit hover:cursor-pointer sml:lift-scale"} title={"Edit loan"} onClick={handleOnEdit}>
       <div
-        className={twMerge('w-full h-full font-bold grid grid-cols-[1fr_10fr_1fr] animate-fade-in text-[var(--color-text)] bg-[var(--color-main)] rounded-[30px] p-[20px_10px] max-cards-sml:p-[30px_30px]', `${loan.isDue && 'due'}`)}>
+        className={twMerge('relative w-full h-full items-center font-bold grid grid-cols-[1fr_10fr_1fr] animate-fade-in text-[var(--color-text)] bg-[var(--color-main)] rounded-[30px] p-[20px_10px] max-loans-sml:p-[30px_30px]', `${loan.isDue && 'due'}`)}>
         <>
-          <span className={"text-clipped text-xs inline-flex justify-center items-center col-start-2"}>
+          <span className={"text-clipped text-xs inline-flex justify-center items-center col-span-full mb-[5px]"}>
             <FontAwesomeIcon size={"xs"} icon={faClock}/>
             {timestamp.slice(0, timestamp.length - 3)}
           </span>
-          <IconButton title={"Delete loan"} iconClassName={"icon-xs !text-[var(--color-third)] justify-self-end"}
+          <IconButton className={"absolute top-0 right-0 -translate-x-1/5 translate-y-1/3"} title={"Delete loan"} iconClassName={"icon-xs !text-[var(--color-third)]"}
                       onClick={
                         () => showConfirmation(
                           () => deleteLoan(loan.id),
-                          `loan: "${loan.name}" on ${timestamp.slice(0, timestamp.length - 3)} of counterparty "${loan.counterparty.name}"`
+                          `the loan "${loan.name}" on ${timestamp.slice(0, timestamp.length - 3)} that belongs to the counterparty "${loan.counterparty.name}"`
                         )} icon={faCircleXmark}
           />
 
-          <span title={loan.type}>
+          <IconCell title={loan.type}>
             <FontAwesomeIcon size={"xs"} icon={loan.type === "borrowed" ? faVault : faWallet}/>
-          </span>
-          {deadline}
+          </IconCell>
           {
-            loan.priority ? <span title={`${loan.priority} priority`}>
-              <FontAwesomeIcon size={"xs"} icon={faFlag} style={{ color: priorityColorMap[loan.priority] }}/>
-            </span> : <span/>
+            loan.deadline ? (() => {
+              const days = daysUntilDateOnly(loan.deadline);
+              const color = days <= 0 ? 'red' : 'green';
+
+              return (
+                <span className={"font-b text-clipped h-full justify-self-center"}
+                      title={getTimestamp(loan.deadline)} style={{ color }}>
+                {Math.abs(days)} day{Math.abs(days) !== 1 ? 's' : ''}
+            </span>
+              );
+            })() : <span/>
           }
-          <span className={"col-span-full price-wrapper !text-center"}>{loan.counterparty.name}</span>
-          <span className={"text-clipped col-span-full"}>{loan.name}</span>
+          {
+            loan.priority ? <IconCell title={`${loan.priority} priority`}>
+              <FontAwesomeIcon size={"xs"} icon={faFlag} style={{ color: priorityColorMap[loan.priority] }}/>
+            </IconCell> : <IconCell/>
+          }
+          <span className={"col-span-full price-wrapper !justify-center"}>{loan.counterparty.name}</span>
+          <span className={"text-clipped col-span-full justify-self-center"}>{loan.name}</span>
           <span className={"price-wrapper col-span-full p-[0_10px] !bg-[var(--color-third)]/80"}>{loan.sum} €</span>
         </>
       </div>
-    </Button>
+    </div>
   )
 }
 

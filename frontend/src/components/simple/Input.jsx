@@ -7,7 +7,7 @@ const Input = ({ label, id, className, lClassName, endAdornment, wClassName, err
       <div className={"input-wrapper"}>
         <input
           id={id}
-          className={twMerge(`field ${endAdornment ? '!pr-[45px]' : '!pr-[20px]'} font-bold`, className)} {...rest} />
+          className={twMerge(`field min-h-full ${endAdornment ? '!pr-[45px]' : '!pr-[20px]'} font-bold`, className)} {...rest} />
         {endAdornment ? <span className={"end-adornment"}>{endAdornment}</span> : null}
       </div>
       {error && <span className={"max-modal:text-xl modal:text-xs text-[var(--color-error)]"}>{error}</span>}

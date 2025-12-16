@@ -60,7 +60,7 @@ const Sidebar = () => {
         {
           loan.deadline ? (() => {
             const days = daysUntilDateOnly(loan.deadline);
-            const color = days < 0 ? 'red' : 'green';
+            const color = days <= 0 ? 'red' : 'green';
 
             return (
               <span className={"font-b text-clipped"}
@@ -101,7 +101,7 @@ const Sidebar = () => {
   }
 
   return (<div
-    className={"flex flex-col gap-[15px] s-scroll s-scroll-alt-color w-full max-lrg:min-h-fit bg-[var(--color-sec)] max-lrg:overflow-visible lrg:overflow-y-auto lrg:h-full p-[15px_15px]"}>
+    className={"flex flex-col gap-[15px] sml:max-lrg:grid sml:max-lrg:grid-cols-2 s-scroll s-scroll-alt-color w-full max-lrg:min-h-fit bg-[var(--color-sec)] max-lrg:overflow-visible lrg:overflow-y-auto lrg:h-full sml:p-[15px_15px] max-sml:p-[15px_2px]"}>
     <SidebarComponent items={data.loans} title={"Upcoming Deadlines"} emptyText={"No urgent loans found"}
                       getItemLink={getLoansLink} renderItem={renderLoanItem}
                       gridCols={"grid-cols-[1fr_1fr_3fr_4fr_4fr]"}

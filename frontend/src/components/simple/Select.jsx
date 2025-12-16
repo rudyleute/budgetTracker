@@ -17,13 +17,13 @@ const Select = ({ value, options, onOptionClick, className, label, error, lClass
       document.removeEventListener('mousedown', handleOutsideClick, true);
     }
   }, [])
-  
+
   return (
     <div ref={wrapperRef} className={twMerge("field-wrapper", className)}>
       {label && <label className={twMerge("label", lClassName)}>{label}</label>}
       <div className={"input-wrapper"}>
-        <div className={"field relative mb-[1px] bg-[var(--color-text)]"}>
-          <span className={"w-full text-clipped inline-block pr-[45px]"}>{value}</span>
+        <div className={"field relative mb-[1px] bg-[var(--color-text)] overflow-hidden"}>
+          <div className={"text-clipped pr-[45px]"}>{value}</div>
           <FontAwesomeIcon className={"end-adornment"} onClick={() => setIsOpen(prev => !prev)}
                            icon={isOpen ? faAngleUp : faAngleDown}/>
         </div>

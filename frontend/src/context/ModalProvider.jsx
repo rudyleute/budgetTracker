@@ -1,11 +1,11 @@
-import { createContext, useContext, useState } from 'react';
+import { createContext, useCallback, useContext, useMemo, useState } from 'react';
 import Modal from '../components/simple/Modal.jsx';
 
 const ModalContext = createContext({});
 const ModalProvider = ({ children }) => {
   const [stack, setStack] = useState([]);
 
-  const showModal = (title, content, saveFunc = null, hideOnSave = true, closeFunc = null) => {
+  const showModal = useCallback((title, content, saveFunc = null, hideOnSave = true, closeFunc = null) => {
     setStack(prev => [...prev, {
       content,
       title,
@@ -13,12 +13,13 @@ const ModalProvider = ({ children }) => {
       saveFunc,
       hideOnSave
     }]);
-  }
+  }, []);
 
-  const hideModal = () => setStack(prev => prev.slice(0, -1));
+  const hideModal = useCallback(() => setStack(prev => prev.slice(0, -1)), []);
 
+  const value = useMemo(() => ({ showModal, hideModal }), [showModal, hideModal]);
   return (
-    <ModalContext.Provider value={{ showModal, hideModal }}>
+    <ModalContext.Provider value={value}>
       {children}
       {
         stack.map(({ content, title, saveFunc, closeFunc, hideOnSave }, i) => {

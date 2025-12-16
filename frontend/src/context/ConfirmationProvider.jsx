@@ -1,4 +1,4 @@
-import { createContext, useContext, useState } from 'react';
+import { createContext, useCallback, useContext, useMemo, useState } from 'react';
 import ConfirmationDialog from '../components/simple/ConfirmationDialog.jsx';
 
 const defaultState = {
@@ -22,17 +22,19 @@ const ConfirmationProvider = ({ children }) => {
     setData(defaultState);
   }
 
-  const showConfirmation = (onAccept, text, onReject = null) => {
+  const showConfirmation = useCallback((onAccept, text, onReject = null) => {
     setData({
       isShown: true,
       onAccept,
       onReject,
       text
     });
-  }
+  }, []);
+
+  const value = useMemo(() => ({ showConfirmation }), [showConfirmation])
 
   return (
-    <ConfirmationContext.Provider value={{ showConfirmation }}>
+    <ConfirmationContext.Provider value={value}>
       {children}
       {data.isShown &&
         <>

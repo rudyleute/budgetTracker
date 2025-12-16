@@ -1,10 +1,10 @@
-import { createContext, useContext } from 'react';
+import { createContext, useContext, useMemo } from 'react';
 import usePaginatedResource from '../hooks/usePaginatedResource.js';
 
 const defaultQueryParams = {
   filter: "",
   from: "",
-  to: "",
+  to: ""
 };
 
 const TransactionsContext = createContext({});
@@ -23,22 +23,24 @@ const TransactionsProvider = ({ children }) => {
   } = usePaginatedResource({
     endpoint: '/transactions',
     defaultQueryParams,
-    entityName: 'transaction',
+    entityName: 'transaction'
   })
 
+  const value = useMemo(() => ({
+    transactions,
+    addTransaction,
+    deleteTransaction,
+    editTransaction,
+    getNextTransactionsPage,
+    updateTransQueryParams,
+    resetTransQueryParams,
+    queryTransParams,
+    TransGetLoader,
+    TransChangeLoader
+  }), [TransChangeLoader, TransGetLoader, addTransaction, deleteTransaction, editTransaction, getNextTransactionsPage, queryTransParams, resetTransQueryParams, transactions, updateTransQueryParams])
+
   return (
-    <TransactionsContext.Provider value={{
-      transactions,
-      addTransaction,
-      deleteTransaction,
-      editTransaction,
-      getNextTransactionsPage,
-      updateTransQueryParams,
-      resetTransQueryParams,
-      queryTransParams,
-      TransGetLoader,
-      TransChangeLoader
-    }}>
+    <TransactionsContext.Provider value={value}>
       {children}
     </TransactionsContext.Provider>
   )

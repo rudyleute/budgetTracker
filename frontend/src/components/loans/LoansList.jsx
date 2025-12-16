@@ -20,11 +20,11 @@ const LoansList = () => {
 
   const isEmpty = loansMap.length === 0;
   return (
-    <div className={"grid grid-cols-4 max-cards-lrg:grid-cols-3 max-cards-mid:grid-cols-2 max-cards-sml:grid-cols-1 gap-[10px] items-center"}>
+    <div className={"grid loans-lrg:grid-cols-4 loans-mid:max-loans-lrg:grid-cols-3 loans-sml:max-loans-mid:grid-cols-2 max-loans-sml:grid-cols-1 gap-[10px] items-center justify-center"}>
       {!isEmpty && loansMap}
       <LoansGetLoader>
         {isEmpty && <Empty className={"col-span-full"} text={"No loans found"} size={"2xl"}/>}
-        {!loans.isLastPage && <IconButton className={"self-center max-cards-sml:w-full"} onClick={getNextLoansPage} title={"Show more"} icon={faCircleRight}/>}
+        {!loans.isLastPage && <IconButton className={"self-center max-loans-sml:w-full"} onClick={getNextLoansPage} title={"Show more"} icon={faCircleRight}/>}
       </LoansGetLoader>
       <LoansChangeLoader />
     </div>

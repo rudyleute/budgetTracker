@@ -24,7 +24,7 @@ const useAutocomplete = ({
   const onValueChange = useCallback((newValue) => {
     setValue(newValue);
     debouncedSetValue(newValue);
-  }, []);
+  }, [debouncedSetValue]);
 
   const resetValue = useCallback(() => {
     setValue(defaultValue);
@@ -43,7 +43,7 @@ const useAutocomplete = ({
 
       setOptions(newOptions.data);
     })();
-  }, [debouncedValue]);
+  }, [debouncedValue, optionsEndpoint, queryParams]);
 
   //clean up on unmount
   useEffect(() => {

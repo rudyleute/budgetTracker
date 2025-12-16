@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useState } from 'react';
+import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { toast } from 'react-toastify';
 import { formToast } from '../helpers/toast.jsx';
 import api from '../services/axios.js';
@@ -42,7 +42,7 @@ const CategoriesProvider = ({ children }) => {
     }
   }, []);
 
-  const addCategory = async (data) => {
+  const addCategory = useCallback(async (data) => {
     const { data: category, message } = await api.post('/categories', data);
     if (!category) {
       toast.error(formToast(message));
@@ -55,9 +55,9 @@ const CategoriesProvider = ({ children }) => {
     }));
     toast.success(toastCatBody(category.name, "created"))
     return category;
-  }
+  }, [])
 
-  const editCategory = async (id, data) => {
+  const editCategory = useCallback(async (id, data) => {
     const { data: category, message } = await api.patch(`/categories/${id}`, data);
 
     if (!category) {
@@ -74,9 +74,9 @@ const CategoriesProvider = ({ children }) => {
     }))
     toast.success(toastCatBody(category.name, "edited"))
     return category;
-  }
+  }, [])
 
-  const deleteCategory = async (id) => {
+  const deleteCategory = useCallback(async (id) => {
     const { status, message } = await api.delete(`/categories/${id}`);
 
     if (status !== 204) {
@@ -98,10 +98,17 @@ const CategoriesProvider = ({ children }) => {
         dataMap: newMap
       };
     })
-  }
+  }, []);
+
+  const value = useMemo(() => ({
+    categories,
+    addCategory,
+    editCategory,
+    deleteCategory
+  }), [addCategory, categories, deleteCategory, editCategory])
 
   return (
-    <CategoriesContext.Provider value={{ categories, addCategory, editCategory, deleteCategory }}>
+    <CategoriesContext.Provider value={value}>
       {children}
     </CategoriesContext.Provider>
   )

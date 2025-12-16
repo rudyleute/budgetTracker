@@ -1,4 +1,4 @@
-import { useEffect, useState, createContext, useContext } from "react";
+import { useEffect, useState, createContext, useContext, useMemo } from "react";
 import { auth, provider } from "../services/firebase.js";
 import {
   createUserWithEmailAndPassword,
@@ -15,8 +15,6 @@ import { formToast } from '../helpers/toast.jsx';
 import { debounce } from 'lodash';
 import useLoader from '../hooks/useLoader.jsx';
 import api from '../services/axios.js';
-import { ConfirmationProvider } from './ConfirmationProvider.jsx';
-import { ModalProvider } from './ModalProvider.jsx';
 
 const AccountContext = createContext({});
 const useAccount = () => useContext(AccountContext);
@@ -105,9 +103,10 @@ const AccountProvider = ({ children }) => {
     }
   }
 
+  const value = useMemo(() => ({ isAuthenticated, signUp, logIn, logOut }), [isAuthenticated, logIn, logOut, signUp])
   //AuthLoader and Loader render children only when loading is not happening
   return (
-    <AccountContext.Provider value={{ isAuthenticated, signUp, logIn, logOut }}>
+    <AccountContext.Provider value={value}>
       <AuthLoader>
         {children}
         <Loader/>

@@ -1,4 +1,4 @@
-import { createContext, useContext } from 'react';
+import { createContext, useContext, useMemo } from 'react';
 import usePaginatedResource from '../hooks/usePaginatedResource.js';
 
 const defaultQueryParams = {
@@ -29,7 +29,7 @@ const LoansProvider = ({ children }) => {
     entityName: 'loan'
   });
 
-  return (<LoansContext.Provider value={{
+  const value = useMemo(() => ({
     loans,
     loansQueryParams,
     addLoan,
@@ -43,7 +43,9 @@ const LoansProvider = ({ children }) => {
     priorities,
     types,
     sortByOptions
-  }}>
+  }), [LoansChangeLoader, LoansGetLoader, addLoan, deleteLoan, editLoan, getNextLoansPage, loans, loansQueryParams, resetLoansQueryParams, updateLoansQueryParams])
+
+  return (<LoansContext.Provider value={value}>
     {children}
   </LoansContext.Provider>);
 }

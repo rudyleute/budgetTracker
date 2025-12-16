@@ -64,8 +64,9 @@ const LoansPage = () => {
 
   return (
     <>
-      <div className={"flex gap-[10px]"}>
-        <PillButtons dir={"vertical"} className={"row-span-2 row-start-1 col-start-1"} buttons={[
+      <div className={"grid gap-[10px] loans-fil-lrg:grid-cols-[1fr_10fr_10fr_10fr] loans-fil-mid:max-loans-fil-lrg:grid-cols-[1fr_10fr_10fr]" +
+        " max-loans-fil-mid:grid-cols-[1fr_10fr] items-end"}>
+        <PillButtons dir={"vertical"} className={"row-span-2 row-start-1 max-loans-fil-mid:row-start-4 col-start-1 h-full"} buttons={[
           { content: <FontAwesomeIcon icon={faFileCirclePlus}/>, title: "Add a loan", onClick: handleCreation },
           {
             content: <FontAwesomeIcon icon={faBroom}/>,
@@ -73,63 +74,61 @@ const LoansPage = () => {
             onClick: () => resetLoansQueryParams()
           }
         ]}/>
-        <div className={"grid gap-[10px] grid-cols-[1fr_1fr_1fr] items-end grow"}>
-          <Autocomplete
-            {...restAutocompleteProps}
-            id={"counterparty"}
-            label={<IconButton title={"Reset counterparty"} onClick={() => {
-              resetLoansQueryParams("counterparty")
-              resetValue()
-            }} icon={faUserGroup}/>}
-            className={"field-row col-span-2"}
-            lClassName={"!text-black"}
-            placeholder={"Search for counterparty"}
-          />
+        <Autocomplete
+          {...restAutocompleteProps}
+          id={"counterparty"}
+          label={<IconButton title={"Reset counterparty"} onClick={() => {
+            resetLoansQueryParams("counterparty")
+            resetValue()
+          }} icon={faUserGroup}/>}
+          className={"field-row col-span-2 h-full"}
+          lClassName={"!text-black"}
+          placeholder={"Search for counterparty"}
+        />
 
-          <Select
-            className={"field-row"}
-            lClassName={"!text-black"}
-            label={<IconButton title={"Reset priority"} onClick={() => resetLoansQueryParams(["priority"])}
-                               icon={faArrowDownWideShort}/>}
-            onOptionClick={({ label }) => updateLoansQueryParams({ priority: label })}
-            options={priorityOptions}
-            value={loansQueryParams.priority || "--Select priority--"}
-          />
+        <Select
+          className={"field-row max-loans-fil-mid:row-start-2 loans-fil-mid:max-loans-fil-lrg:row-start-3 max-loans-fil-lrg:col-span-2"}
+          lClassName={"!text-black"}
+          label={<IconButton title={"Reset priority"} onClick={() => resetLoansQueryParams(["priority"])}
+                             icon={faArrowDownWideShort}/>}
+          onOptionClick={({ label }) => updateLoansQueryParams({ priority: label })}
+          options={priorityOptions}
+          value={loansQueryParams.priority || "--Select priority--"}
+        />
 
-          <Input
-            label={<IconButton title={"Reset upper date boundary"} onClick={() => resetLoansQueryParams(["to"])}
-                               icon={faHourglassEnd}/>}
-            lClassName={"!text-black"}
-            wClassName={"field-row"}
-            name={"to"}
-            type={"date"}
-            value={loansQueryParams.to}
-            id={"to"}
-            onChange={(e) => updateLoansQueryParams({ to: e.target.value })}
-          />
+        <Input
+          label={<IconButton title={"Reset upper date boundary"} onClick={() => resetLoansQueryParams(["to"])}
+                             icon={faHourglassEnd}/>}
+          lClassName={"!text-black"}
+          wClassName={"field-row loans-fil-mid:max-loans-fil-lrg:row-start-2"}
+          name={"to"}
+          type={"date"}
+          value={loansQueryParams.to}
+          id={"to"}
+          onChange={(e) => updateLoansQueryParams({ to: e.target.value })}
+        />
 
-          <Input
-            label={<IconButton title={"Reset lower date boundary"} onClick={() => resetLoansQueryParams(["from"])}
-                               icon={faHourglassStart}/>}
-            lClassName={"!text-black"}
-            wClassName={"field-row"}
-            name={"from"}
-            type={"date"}
-            id={"for"}
-            value={loansQueryParams.from}
-            onChange={(e) => updateLoansQueryParams({ from: e.target.value })}
-          />
+        <Input
+          label={<IconButton title={"Reset lower date boundary"} onClick={() => resetLoansQueryParams(["from"])}
+                             icon={faHourglassStart}/>}
+          lClassName={"!text-black"}
+          wClassName={"field-row loans-fil-mid:max-loans-fil-lrg:row-start-2"}
+          name={"from"}
+          type={"date"}
+          id={"for"}
+          value={loansQueryParams.from}
+          onChange={(e) => updateLoansQueryParams({ from: e.target.value })}
+        />
 
-          <Select
-            lClassName={"!text-black"}
-            className={"field-row"}
-            label={<IconButton title={"Reset type"} onClick={() => resetLoansQueryParams(["type"])}
-                               icon={faMoneyBillTransfer}/>}
-            onOptionClick={({ label }) => updateLoansQueryParams({ type: label })}
-            options={typeOptions}
-            value={loansQueryParams.type || "--Select type--"}
-          />
-        </div>
+        <Select
+          lClassName={"!text-black"}
+          className={"field-row max-loans-fil-lrg:row-start-3 max-loans-fil-mid:col-span-2"}
+          label={<IconButton title={"Reset type"} onClick={() => resetLoansQueryParams(["type"])}
+                             icon={faMoneyBillTransfer}/>}
+          onOptionClick={({ label }) => updateLoansQueryParams({ type: label })}
+          options={typeOptions}
+          value={loansQueryParams.type || "--Select type--"}
+        />
       </div>
       <LoansList/>
     </>
