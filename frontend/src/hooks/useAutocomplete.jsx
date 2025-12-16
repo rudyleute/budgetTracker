@@ -3,13 +3,14 @@ import _ from 'lodash';
 import api from '../services/axios.js';
 import { toast } from 'react-toastify';
 
+const emptyObject = {}
 const useAutocomplete = ({
                            defaultValue = '',
                            optionsEndpoint,
                            debounceDefault = 500,
                            onOptionClick,
                            optionLabelColumn = "name",
-                           queryParams = {}
+                           queryParams = emptyObject
                          } = {}) => {
   const [value, setValue] = useState(defaultValue);
   const [debouncedValue, setDebouncedValue] = useState(defaultValue)

@@ -1,4 +1,4 @@
-import { useEffect, useState, createContext, useContext, useMemo } from "react";
+import { useEffect, useState, createContext, useContext, useMemo, useCallback } from "react";
 import { auth, provider } from "../services/firebase.js";
 import {
   createUserWithEmailAndPassword,
@@ -8,7 +8,6 @@ import {
   onAuthStateChanged,
   deleteUser
 } from "firebase/auth";
-import { useNavigate } from "react-router-dom";
 import { processErrors } from '../helpers/firebaseErrors.js';
 import { toast } from 'react-toastify';
 import { formToast } from '../helpers/toast.jsx';
@@ -30,7 +29,6 @@ const AccountProvider = ({ children }) => {
     hideLoader: hideActionLoader,
     LoaderElement: Loader
   } = useLoader();
-  const navigate = useNavigate();
 
   useEffect(() => {
     //Debouncer is needed for enforcing email verification - the user is logged out immediately after signing up successfully
@@ -46,9 +44,9 @@ const AccountProvider = ({ children }) => {
       debouncedAuthHandler.cancel();
       unsubscribe();
     };
-  }, []);
+  }, [hideAuthLoader]);
 
-  const signUp = async (data) => {
+  const signUp = useCallback(async (data) => {
     showActionLoader();
     try {
       const result = await createUserWithEmailAndPassword(auth, data.email, data.password);
@@ -58,23 +56,24 @@ const AccountProvider = ({ children }) => {
       if (!userRes.data) {
         toast.error(formToast(userRes.message));
         await deleteUser(result.user);
-        return;
+        return false;
       }
       const user = result.user;
 
       await sendEmailVerification(user);
       await signOut(auth)
 
-      navigate("/login")
       toast.success(formToast("Account created! Please check your email to verify your account"))
+      return true;
     } catch (e) {
       toast.error(formToast(processErrors(e.code)));
+      return false;
     } finally {
       hideActionLoader();
     }
-  }
+  }, [hideActionLoader, showActionLoader])
 
-  const logIn = async (data) => {
+  const logIn = useCallback(async (data) => {
     showActionLoader();
     try {
       const result = await signInWithEmailAndPassword(auth, data.email, data.password);
@@ -89,9 +88,9 @@ const AccountProvider = ({ children }) => {
     } finally {
       hideActionLoader();
     }
-  }
+  }, [hideActionLoader, showActionLoader]);
 
-  const logOut = async () => {
+  const logOut = useCallback(async () => {
     showActionLoader();
 
     try {
@@ -101,7 +100,7 @@ const AccountProvider = ({ children }) => {
     } finally {
       hideActionLoader();
     }
-  }
+  }, [hideActionLoader, showActionLoader]);
 
   const value = useMemo(() => ({ isAuthenticated, signUp, logIn, logOut }), [isAuthenticated, logIn, logOut, signUp])
   //AuthLoader and Loader render children only when loading is not happening

@@ -27,7 +27,10 @@ const SignUpPage = () => {
   const { signUp } = useAccount();
 
   return (
-    <div onSubmit={handleSubmit((values) => signUp(values))}
+    <div onSubmit={handleSubmit(async (values) => {
+      const res = await signUp(values);
+      if (res) navigate('/login');
+    })}
           className={"w-full h-screen bg-[var(--color-sec)] relative"}>
       <form
         className={"w-[350px] max-esml:w-[95%] flex flex-col window-center gap-[15px] relative bg-[var(--color-main)] rounded-[15px] p-[20px_20px_35px_20px]"}

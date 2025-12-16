@@ -17,9 +17,10 @@ const defaultValue = { data: [], total: 0, isLastPage: true };
  * @param {Number} offset
  * @param {Number} limit - Backend-predefined limit if 0, no limit if negative
  */
+const emptyObject = {}
 export const usePaginatedResource = ({
                                        endpoint,
-                                       defaultQueryParams = {},
+                                       defaultQueryParams = emptyObject,
                                        entityName = 'item',
                                        offset = 0,
                                        limit = 0
