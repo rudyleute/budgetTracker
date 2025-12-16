@@ -1,17 +1,13 @@
 import { createRoot } from 'react-dom/client'
-import App from './App.jsx'
 import { StrictMode } from 'react';
 import { ToastContainer } from 'react-toastify';
-import { AccountProvider } from './context/AccountProvider.jsx';
-import { BrowserRouter as Router } from 'react-router-dom';
+import { RouterProvider } from 'react-router-dom';
+import "./styles/main.css"
+import router from './routes/router.jsx';
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
-    <Router>
-        <AccountProvider>
-            <App/>
-            <ToastContainer position={"bottom-center"} draggable={false} />
-        </AccountProvider>
-    </Router>
+    <RouterProvider router={router}/>
+    <ToastContainer position={"bottom-center"} draggable={false}/>
   </StrictMode>
 )
