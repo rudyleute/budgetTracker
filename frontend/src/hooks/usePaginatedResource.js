@@ -89,8 +89,9 @@ export const usePaginatedResource = ({
     const res = await fetchItemsFromStart(items.total);
 
     hideChangeLoader();
+    if (!res) return null;
 
-    return res;
+    return newItem;
   }, [endpoint, entityName, fetchItemsFromStart, hideChangeLoader, items.total, showChangeLoader]);
 
   const editItem = useCallback(async (id, data, timeColName = "timestamp") => {
@@ -108,7 +109,8 @@ export const usePaginatedResource = ({
     const res = await fetchItemsFromStart(items.total);
     hideChangeLoader();
 
-    return res;
+    if (!res) return null;
+    return updatedItem;
   }, [endpoint, entityName, fetchItemsFromStart, hideChangeLoader, items.total, showChangeLoader]);
 
   const deleteItem = useCallback(async (id) => {

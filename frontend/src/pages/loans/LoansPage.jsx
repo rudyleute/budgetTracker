@@ -1,22 +1,22 @@
-import { useLoans } from '../context/LoansProvider.jsx'
-import Select from '../components/simple/Select.jsx';
+import PillButtons from '../../components/simple/PillButtons.jsx';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
-  faArrowDownWideShort, faBroom, faFileCirclePlus,
-  faHourglassEnd,
-  faHourglassStart,
-  faMoneyBillTransfer,
+  faArrowDownWideShort,
+  faBroom,
+  faFileCirclePlus, faMoneyBillTransfer,
+  faPause, faPlay,
   faUserGroup
 } from '@fortawesome/free-solid-svg-icons';
-import { useMemo, useRef } from 'react';
-import Input from '../components/simple/Input.jsx';
-import useAutocomplete from '../hooks/useAutocomplete.jsx'
-import Autocomplete from '../components/simple/Autocomplete.jsx';
-import IconButton from '../components/simple/IconButton.jsx';
-import LoansList from '../components/loans/LoansList.jsx';
-import PillButtons from '../components/simple/PillButtons.jsx';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { useModal } from '../context/ModalProvider.jsx';
-import LoansForm from '../components/loans/LoansForm.jsx';
+import Autocomplete from '../../components/simple/Autocomplete.jsx';
+import IconButton from '../../components/simple/IconButton.jsx';
+import Select from '../../components/simple/Select.jsx';
+import Input from '../../components/simple/Input.jsx';
+import { useLoans } from '../../context/LoansProvider.jsx';
+import React, { useCallback, useMemo, useRef } from 'react';
+import { useModal } from '../../context/ModalProvider.jsx';
+import useAutocomplete from '../../hooks/useAutocomplete.jsx';
+import LoansForm from '../../components/loans/LoansForm.jsx';
+import LoansList from '../../components/loans/LoansList.jsx';
 
 const LoansPage = () => {
   const {
@@ -30,9 +30,14 @@ const LoansPage = () => {
   const formRef = useRef(null);
   const { showModal, hideModal } = useModal();
 
+  const onCounterpartySelect = useCallback(
+    (item) => updateLoansQueryParams({ counterparty: item.id }),
+    [updateLoansQueryParams]
+  );
+
   const { resetValue, ...restAutocompleteProps } = useAutocomplete({
     optionsEndpoint: "/counterparties",
-    onOptionClick: (item) => updateLoansQueryParams({ counterparty: item.id })
+    onOptionClick: onCounterpartySelect
   });
 
   const priorityOptions = useMemo(
@@ -64,9 +69,11 @@ const LoansPage = () => {
 
   return (
     <>
-      <div className={"grid gap-[10px] loans-fil-lrg:grid-cols-[1fr_10fr_10fr_10fr] loans-fil-mid:max-loans-fil-lrg:grid-cols-[1fr_10fr_10fr]" +
-        " max-loans-fil-mid:grid-cols-[1fr_10fr] items-end"}>
-        <PillButtons dir={"vertical"} className={"row-span-2 row-start-1 max-loans-fil-mid:row-start-4 col-start-1 h-full"} buttons={[
+      <div
+        className={"grid gap-[10px] loans-fil-lrg:grid-cols-[1fr_10fr_10fr_10fr] loans-fil-mid:max-loans-fil-lrg:grid-cols-[1fr_10fr_10fr]" +
+          " max-loans-fil-mid:grid-cols-[1fr_10fr] items-end"}>
+        <PillButtons dir={"vertical"}
+                     className={"row-span-2 row-start-1 max-loans-fil-mid:row-start-4 col-start-1 h-full"} buttons={[
           { content: <FontAwesomeIcon icon={faFileCirclePlus}/>, title: "Add a loan", onClick: handleCreation },
           {
             content: <FontAwesomeIcon icon={faBroom}/>,
@@ -83,7 +90,7 @@ const LoansPage = () => {
           }} icon={faUserGroup}/>}
           className={"field-row col-span-2 h-full"}
           lClassName={"!text-black"}
-          placeholder={"Search for counterparty"}
+          placeholder={"Search for counterparty..."}
         />
 
         <Select
@@ -98,7 +105,7 @@ const LoansPage = () => {
 
         <Input
           label={<IconButton title={"Reset upper date boundary"} onClick={() => resetLoansQueryParams(["to"])}
-                             icon={faHourglassEnd}/>}
+                             icon={faPause}/>}
           lClassName={"!text-black"}
           wClassName={"field-row loans-fil-mid:max-loans-fil-lrg:row-start-2"}
           name={"to"}
@@ -110,7 +117,7 @@ const LoansPage = () => {
 
         <Input
           label={<IconButton title={"Reset lower date boundary"} onClick={() => resetLoansQueryParams(["from"])}
-                             icon={faHourglassStart}/>}
+                             icon={faPlay}/>}
           lClassName={"!text-black"}
           wClassName={"field-row loans-fil-mid:max-loans-fil-lrg:row-start-2"}
           name={"from"}
@@ -130,9 +137,9 @@ const LoansPage = () => {
           value={loansQueryParams.type || "--Select type--"}
         />
       </div>
-      <LoansList/>
+      <LoansList />
     </>
   )
 }
 
-export default LoansPage;
+export default React.memo(LoansPage);

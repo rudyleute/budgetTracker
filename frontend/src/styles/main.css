@@ -95,6 +95,10 @@ body {
     @apply px-1 py-1 rounded-[5px] bg-[var(--color-sec)]/60;
 }
 
+.loans-list-wrapper {
+    @apply grid loans-lrg:grid-cols-4 loans-mid:max-loans-lrg:grid-cols-3 loans-sml:max-loans-mid:grid-cols-2 max-loans-sml:grid-cols-1 gap-[10px] items-center justify-center;
+}
+
 .form {
     @apply flex flex-col gap-[10px]
 }

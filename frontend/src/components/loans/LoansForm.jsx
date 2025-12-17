@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from 'react';
+import { useCallback, useEffect, useMemo } from 'react';
 import { useForm } from 'react-hook-form';
 import { loanFormUtils } from '../../resolvers/loanResolver.js';
 import { validateFields } from '../../helpers/utils.js';
@@ -44,11 +44,16 @@ const LoansForm = ({ data = {}, ref, isUpdate = false, onSubmit }) => {
     reValidateMode: "onSubmit"
   });
 
-  const { resetValue, ...restAutocompleteProps } = useAutocomplete({
-    optionsEndpoint: "/counterparties",
-    onOptionClick: (item) => setValue("counterpartyId", item.id, {
+  const onOptionClick = useCallback(
+    (item) => setValue("counterpartyId", item.id, {
       shouldValidate: true, shouldDirty: true
     }),
+    [setValue]
+  );
+
+  const { resetValue, ...restAutocompleteProps } = useAutocomplete({
+    optionsEndpoint: "/counterparties",
+    onOptionClick,
     ...(isUpdate && { defaultValue: counterparty?.name })
   })
 
@@ -58,7 +63,7 @@ const LoansForm = ({ data = {}, ref, isUpdate = false, onSubmit }) => {
     if (ref) ref.current = {
       getData: () => validateFields(trigger, getValues(), formState.dirtyFields)
     }
-  }, [formState.dirtyFields, getValues, isUpdate, ref, trigger]);
+  }, [formState.dirtyFields, getValues, ref, trigger]);
 
   useEffect(() => {
     //The timestamp should be dirtied up before when creating a new transaction since the default value is generated
@@ -106,7 +111,7 @@ const LoansForm = ({ data = {}, ref, isUpdate = false, onSubmit }) => {
         id={"counterparty"}
         label={<>Counterparty{fieldsMeta.counterpartyId.required && <Asterisk/>}</>}
         className={"col-span-full"}
-        placeholder={"Search for counterparty"}
+        placeholder={"Search for counterparty..."}
         error={errors.counterpartyId?.message}
       />
       <Input label={<>Deadline{fieldsMeta.deadline.required && <Asterisk/>}</>} id={"deadline"}

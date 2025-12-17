@@ -1,5 +1,5 @@
 import { useEffect, useState, createContext, useContext, useMemo, useCallback } from "react";
-import { auth, provider } from "../services/firebase.js";
+import { auth } from "../services/firebase.js";
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
@@ -18,12 +18,9 @@ import api from '../services/axios.js';
 const AccountContext = createContext({});
 const useAccount = () => useContext(AccountContext);
 
-const AccountProvider = ({ children }) => {
+const AccountProvider = ({ children, onAuthReady }) => {
   const [isAuthenticated, setAuthenticated] = useState(false);
-  const {
-    hideLoader: hideAuthLoader,
-    LoaderElement: AuthLoader
-  } = useLoader({ isLoading: true, overlayColor: "bg-[var(--color-main)]" });
+
   const {
     showLoader: showActionLoader,
     hideLoader: hideActionLoader,
@@ -36,7 +33,7 @@ const AccountProvider = ({ children }) => {
       if (user && user.emailVerified) setAuthenticated(true);
       else setAuthenticated(false);
 
-      hideAuthLoader();
+      onAuthReady();
     }, 600);
 
     const unsubscribe = onAuthStateChanged(auth, debouncedAuthHandler);
@@ -44,7 +41,7 @@ const AccountProvider = ({ children }) => {
       debouncedAuthHandler.cancel();
       unsubscribe();
     };
-  }, [hideAuthLoader]);
+  }, []);
 
   const signUp = useCallback(async (data) => {
     showActionLoader();
@@ -103,13 +100,10 @@ const AccountProvider = ({ children }) => {
   }, [hideActionLoader, showActionLoader]);
 
   const value = useMemo(() => ({ isAuthenticated, signUp, logIn, logOut }), [isAuthenticated, logIn, logOut, signUp])
-  //AuthLoader and Loader render children only when loading is not happening
   return (
     <AccountContext.Provider value={value}>
-      <AuthLoader>
-        {children}
-        <Loader/>
-      </AuthLoader>
+      {children}
+      <Loader />
     </AccountContext.Provider>
   )
 }

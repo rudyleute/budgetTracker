@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import _ from 'lodash';
 import api from '../services/axios.js';
 import { toast } from 'react-toastify';
+import { formToast } from '../helpers/toast.jsx';
 
 const emptyObject = {}
 const useAutocomplete = ({
@@ -38,7 +39,7 @@ const useAutocomplete = ({
       const { data: newOptions, message } = await api.get(optionsEndpoint, { ...queryParams, filter: debouncedValue })
 
       if (!newOptions) {
-        toast.error(message);
+        toast.error(formToast(message));
         return;
       }
 

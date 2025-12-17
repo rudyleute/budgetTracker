@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
 import { formToast } from '../../helpers/toast.jsx';
 import { daysUntilDateOnly } from '../../helpers/time.js';
@@ -42,8 +42,8 @@ const Sidebar = () => {
     })();
   }, []);
 
-  const getLoansLink = (item) => `/loans?id=${item.id}`;
-  const getCounterLink = (item) => `/loans?counterparty=${item.id}`;
+  const getLoansLink = (item) => `/loans/${item.id}`;
+  const getCounterLink = (item) => `/counterparties/${item.id}`;
 
   const renderLoanItem = (loan) => {
     return (

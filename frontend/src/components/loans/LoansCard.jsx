@@ -1,7 +1,6 @@
 import React, { useCallback, useMemo } from 'react';
 import { twMerge } from 'tailwind-merge';
 import { daysUntilDateOnly, formatTimestamp } from '../../helpers/time.js';
-import Button from '../simple/Button.jsx';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faClock, faFlag, faVault, faWallet } from '@fortawesome/free-solid-svg-icons';
 import { priorityColorMap } from '../../helpers/variables.js';
@@ -19,7 +18,7 @@ const IconCell = ({ children, className, ...rest }) => (
   </span>
 );
 
-const LoansCard = ({ loan }) => {
+const LoansCard = ({ loan, onAfterEdit, onAfterDeleteSuccess }) => {
   const { showModal, hideModal } = useModal();
   const { editLoan, deleteLoan } = useLoans();
   const { showConfirmation } = useConfirmation();
@@ -37,23 +36,28 @@ const LoansCard = ({ loan }) => {
 
   const timestamp = useMemo(() => formatTimestamp(loan.timestamp), [loan.timestamp])
 
-  const editLoanWithHide = useCallback(async (data) => {
-    if (await editLoan(loan.id, data)) hideModal();
-  }, [editLoan, hideModal, loan.id])
-
   const onSubmitEdit = useCallback(async () => {
     const fields = await formRef.current.getData();
-    if (fields) await editLoanWithHide(fields);
-  }, [editLoanWithHide]);
+
+    if (!fields) return null;
+
+    const res = await editLoan(loan.id, fields);
+    if (res) {
+      hideModal();
+      onAfterEdit && onAfterEdit(res);
+    }
+
+    return null;
+  }, [editLoan, hideModal, loan.id, onAfterEdit]);
 
   const handleOnEdit = useCallback(() => {
     showModal(
       "Edit loan",
-      <LoansForm onSubmit={editLoanWithHide} data={loan} ref={formRef} isUpdate={true}/>,
+      <LoansForm onSubmit={onSubmitEdit} data={loan} ref={formRef} isUpdate={true}/>,
       onSubmitEdit,
       false
     )
-  }, [editLoanWithHide, loan, onSubmitEdit, showModal]);
+  }, [loan, onSubmitEdit, showModal]);
 
   return (
     <div className={"w-full h-fit hover:cursor-pointer sml:lift-scale"} title={"Edit loan"} onClick={handleOnEdit}>
@@ -67,7 +71,9 @@ const LoansCard = ({ loan }) => {
           <IconButton className={"absolute top-0 right-0 -translate-x-1/5 translate-y-1/3"} title={"Delete loan"} iconClassName={"icon-xs !text-[var(--color-third)]"}
                       onClick={
                         () => showConfirmation(
-                          () => deleteLoan(loan.id),
+                          () => {
+                            if (deleteLoan(loan.id) && onAfterDeleteSuccess) onAfterDeleteSuccess();
+                          },
                           `the loan "${loan.name}" on ${timestamp.slice(0, timestamp.length - 3)} that belongs to the counterparty "${loan.counterparty.name}"`
                         )} icon={faCircleXmark}
           />

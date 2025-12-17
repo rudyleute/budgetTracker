@@ -161,6 +161,61 @@ router.get('/', async (req, res) => {
   }
 });
 
+router.get("/:id", async (req, res) => {
+  try {
+    const uid = req.user.uid;
+    const { id } = req.params;
+
+    logger.debug('Fetching a loan', { uid, id });
+
+    const result = await db.query(
+      `SELECT loans.id,
+              loans.name,
+              loans.deadline,
+              loans.priority,
+              loans.timestamp,
+              loans.type,
+              loans.sum,
+              json_build_object(
+                      'id', cp.id,
+                      'name', cp.name,
+                      'email', cp.email,
+                      'note', cp.note,
+                      'phone', cp.phone
+              ) AS counterparty
+       FROM loans
+                LEFT JOIN counterparties cp ON loans.counterparty_id = cp.id
+       WHERE loans.user_uid = $1
+         AND loans.id = $2
+       LIMIT 1;`,
+      [uid, id]
+    );
+
+    if (result.rows.length === 0) {
+      logger.warn('Requested loan has not been found', {uid, id})
+      return res.status(404).json({
+        message: "Requested loan has not been found",
+      })
+    }
+
+    logger.info('Requested loan has been retrieved successfully', {
+      uid,
+      loan_id: id
+    });
+
+    return res.status(200).json(result.rows[0]);
+  } catch (error) {
+    const { id } = req.params;
+    logger.error(`Failed to retrieve a loan`, {
+      error: error.message,
+      stack: error.stack,
+      uid: req.user.uid,
+      loan_id: id
+    });
+    res.status(500).json({ message: `Failed to retrieve the loan` });
+  }
+})
+
 router.post('/', (req, res) => handleUpsert({
   req,
   res,
