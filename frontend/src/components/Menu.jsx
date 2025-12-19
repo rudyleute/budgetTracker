@@ -3,7 +3,7 @@ import {
   faChartPie,
   faRightFromBracket,
   faCircleUser,
-  faCoins
+  faCoins, faPeopleArrows
 } from '@fortawesome/free-solid-svg-icons';
 import IconButton from './simple/IconButton.jsx';
 import { useNavigate } from 'react-router-dom';
@@ -21,14 +21,17 @@ const Menu = () => {
       <div className={"flex lrg:flex-col gap-[15px] max-esml:gap-[5px] items-center w-full"}>
         <IconButton onClick={() => navigate("/")} title={"Home"} icon={faHouse}
                     iconClassName={"max-lrg:icon-s lrg:icon-b"}/>
-        {/*<IconButton onClick={() => navigate("/dashboard")} title={"DashboardPage"} icon={faChartPie}*/}
+        {/*<IconButton onClick={() => navigate("/dashboard")} title={"Dashboard"} icon={faChartPie}*/}
         {/*            iconClassName={"max-lrg:icon-s lrg:icon-b"}/>*/}
+
         <IconButton onClick={() => navigate("/loans")} title={"Loans"} icon={faCoins}
+                    iconClassName={"max-lrg:icon-s lrg:icon-b"}/>
+        <IconButton onClick={() => navigate("/counterparties")} title={"Counterparties"} icon={faPeopleArrows}
                     iconClassName={"max-lrg:icon-s lrg:icon-b"}/>
       </div>
 
       <div className={"flex justify-center gap-[5px] lrg:gap-[10px]"}>
-        {/*<IconButton onClick={() => navigate("/profile")} title={"ProfilePage"} icon={faCircleUser}*/}
+        {/*<IconButton onClick={() => navigate("/profile")} title={"Profile"} icon={faCircleUser}*/}
         {/*            iconClassName={"icon-s"}/>*/}
         <IconButton onClick={() => logOut()} title={"Log out"} icon={faRightFromBracket}
                     iconClassName={"icon-s"}/>

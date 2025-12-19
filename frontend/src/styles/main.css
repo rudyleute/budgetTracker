@@ -47,6 +47,7 @@
     --color-text: white;
     --color-input-text: black;
     --color-error: red;
+    --color-pos: theme(colors.green.600);
 
     --menu-height: 70px;
 }
@@ -97,6 +98,10 @@ body {
 
 .loans-list-wrapper {
     @apply grid loans-lrg:grid-cols-4 loans-mid:max-loans-lrg:grid-cols-3 loans-sml:max-loans-mid:grid-cols-2 max-loans-sml:grid-cols-1 gap-[10px] items-center justify-center;
+}
+
+.counterparties-list-wrapper {
+    @apply grid grid-cols-5 gap-[10px] items-start justify-center;
 }
 
 .form {
@@ -156,7 +161,7 @@ body {
 }
 
 .price-wrapper {
-    @apply shrink-0 whitespace-nowrap bg-[var(--color-sec)]/90 w-full rounded-[5px] inline-flex items-center justify-end
+    @apply shrink-0 whitespace-nowrap bg-[var(--color-sec)]/90 w-full rounded-[5px] inline-flex items-center justify-end p-[0_10px]
 }
 
 .input-wrapper {

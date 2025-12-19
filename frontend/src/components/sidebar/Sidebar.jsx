@@ -9,6 +9,7 @@ import SidebarComponent from './SidebarComponent.jsx';
 import { formatTimestamp } from '../../helpers/time.js';
 import api from '../../services/axios.js';
 import { priorityColorMap } from '../../helpers/variables.js';
+import { twMerge } from 'tailwind-merge';
 
 const defaultValue = { loans: [], balance: [] }
 const Sidebar = () => {
@@ -60,17 +61,16 @@ const Sidebar = () => {
         {
           loan.deadline ? (() => {
             const days = daysUntilDateOnly(loan.deadline);
-            const color = days <= 0 ? 'red' : 'green';
 
             return (
-              <span className={"font-b text-clipped"}
+              <span className={twMerge("font-b text-clipped !text-[var(--color-pos)]", days <= 0 && "!text-[var(--color-third)]" )}
                     title={formatTimestamp(loan.deadline, {
                       day: '2-digit',
                       month: 'short',
                       year: 'numeric',
                       hour: '2-digit',
                       minute: '2-digit'
-                    })} style={{ color }}>
+                    })}>
                 {Math.abs(days)} day{Math.abs(days) !== 1 ? 's' : ''}
             </span>
             );
@@ -84,17 +84,19 @@ const Sidebar = () => {
   const renderCounterItem = (item) => {
     return (
       <>
-        <span className={"flex justify-center w-full shrink-0 whitespace-nowrap"}>
-          {item.phone && <Link title={`+${item.phone}`} to={`tel:+${item.phone}`}>
+        <span className={"flex justify-center w-full shrink-0 whitespace-nowrap text-[var(--color-text)]"}>
+          {item.phone && <Link title={`Call +${item.phone}`} to={`tel:+${item.phone}`} onClick={(e) => e.stopPropagation()}>
             <FontAwesomeIcon color={"var(--color-third)"} icon={faPhone}/>
           </Link>}
-          {item.email && <Link title={item.email} to={`mailto:${item.email}`}>
+          {item.email && <Link title={`Mail ${item.email}`} to={`mailto:${item.email}`} onClick={(e) => e.stopPropagation()}>
             <FontAwesomeIcon color={"var(--color-third)"} icon={faAt}/>
           </Link>}
         </span>
-        <span className={"text-clipped text-[var(--color-text)]"}>{item.name}</span>
-        <span className={"price-wrapper"}
-              style={{ color: parseFloat(item.balance) > 0 ? "red" : "green" }}>{item.balance} €</span>
+        <span className={"text-clipped"}>{item.name}</span>
+        <span className={twMerge(
+          "price-wrapper !bg-[var(--color-pos)]/80",
+          item.balance > 0 && "!bg-[var(--color-third)]/80"
+        )}>{item.balance} €</span>
       </>
     )
 

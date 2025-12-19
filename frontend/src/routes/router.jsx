@@ -16,6 +16,7 @@ import RootLayout from './RootLayout.jsx';
 import LoanPage from '../pages/loans/LoanPage.jsx';
 import CounterpartiesPage from '../pages/counterparties/CounterpartiesPage.jsx';
 import CounterpartyPage from '../pages/counterparties/CounterpartyPage.jsx';
+import { CounterpartiesProvider } from '../context/CounterpartiesProvider.jsx';
 
 const router = createBrowserRouter([
   {
@@ -28,36 +29,48 @@ const router = createBrowserRouter([
           element: <Layout/>,
           children: [
             {
-              index: true, element: <TransactionsProvider>
-                <CategoriesProvider>
-                  <ModalProvider>
-                    <ConfirmationProvider>
-                      <MainPage/>
-                    </ConfirmationProvider>
-                  </ModalProvider>
-                </CategoriesProvider>
-              </TransactionsProvider>
+              index: true, element:
+                <TransactionsProvider>
+                  <CategoriesProvider>
+                    <ModalProvider>
+                      <ConfirmationProvider>
+                        <MainPage/>
+                      </ConfirmationProvider>
+                    </ModalProvider>
+                  </CategoriesProvider>
+                </TransactionsProvider>
             },
             {
-              path: "loans", element: <LoansProvider>
-                <ModalProvider>
-                  <ConfirmationProvider>
-                    <Outlet/>
-                  </ConfirmationProvider>
-                </ModalProvider>
-              </LoansProvider>,
+              path: "loans", element:
+                <LoansProvider>
+                  <ModalProvider>
+                    <ConfirmationProvider>
+                      <Outlet/>
+                    </ConfirmationProvider>
+                  </ModalProvider>
+                </LoansProvider>,
               children: [
-                {index: true, element: <LoansPage />},
-                {path: ":id", element: <LoanPage />}
+                { index: true, element: <LoansPage/> },
+                { path: ":id", element: <LoanPage/> }
               ]
             },
-            // {
-            //   path: "counterparties",
-            //   children: [
-            //     {index: true, element: <CounterpartiesPage />},
-            //     {path: ":id", element: <CounterpartyPage />}
-            //   ]
-            // },
+            {
+              path: "counterparties",
+              element:
+                <CounterpartiesProvider>
+                  <LoansProvider>
+                    <ModalProvider>
+                      <ConfirmationProvider>
+                        <Outlet/>
+                      </ConfirmationProvider>
+                    </ModalProvider>
+                  </LoansProvider>
+                </CounterpartiesProvider>,
+              children: [
+                { index: true, element: <CounterpartiesPage/> },
+                { path: ":id", element: <CounterpartyPage/> }
+              ]
+            },
             // { path: "profile", element: <ProfilePage /> },
             // { path: "dashboard", element: <DashboardPage />},
             { path: "login", element: <Navigate to="/" replace/> },
