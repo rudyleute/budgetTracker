@@ -46,7 +46,7 @@ const SignUpPage = () => {
                       icon={faRightToBracket}
           />
         </div>
-        <div className={"flex flex-col gap-[10px]"}>
+        <div className={"flex flex-col gap-2.5"}>
           <Input error={errors.email?.message} {...register("email", {
             onChange: () => clearErrors("email")
           })} lClassName={"!text-[1.2rem]"} wClassName={"!text-[1.1rem]"} type={"text"}

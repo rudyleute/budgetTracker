@@ -73,7 +73,7 @@ const TransactionsForm = ({ ref, name, categoryId, price, timestamp, onSubmit, i
   }
 
   const formLabel = ({ id, name, color }) => {
-    return <span className={"flex items-center justify-between gap-[10px]"}>
+    return <span className={"flex items-center justify-between gap-2.5"}>
         <span className={"text-clipped"}>
           <Color value={color}/>
           <span className={"ml-[10px]"}>{name}</span>
@@ -133,7 +133,7 @@ const TransactionsForm = ({ ref, name, categoryId, price, timestamp, onSubmit, i
 
         if (data) onSubmit(data);
       }
-    }} className={"grid max-modal:grid-cols-1 modal:grid-cols-[2fr_1fr] gap-[10px]"}>
+    }} className={"grid max-modal:grid-cols-1 modal:grid-cols-[2fr_1fr] gap-2.5"}>
       <Input wClassName={"col-span-full modal:row-start-1"} label={"Name"} id={"name"} type={"text"} {...register("name", {
         onChange: () => clearErrors("name")
       })} error={errors.name?.message}

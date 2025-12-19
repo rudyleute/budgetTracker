@@ -8,7 +8,7 @@ const Modal = ({ children, onClose, onSubmit, bClassName, title, zIndex }) => {
     <div
       className={"flex flex-col font-bold text-[var(--color-text)] window-center w-full max-w-[480px] box-content h-[550px] rounded-[15px]"}
       style={{ zIndex }}>
-      <div className={"p-[5px_10px] flex justify-between items-center gap-[10px] bg-[var(--color-sec)]"}>
+      <div className={"p-[5px_10px] flex justify-between items-center gap-2.5 bg-[var(--color-sec)]"}>
         <span className={"uppercase text-clipped"}>{title}</span>
         <div className={"flex-shrink-0"}>
           <IconButton size={"xl"} title={"Save"} onClick={onSubmit} icon={faFloppyDisk}/>

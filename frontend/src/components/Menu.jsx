@@ -30,7 +30,7 @@ const Menu = () => {
                     iconClassName={"max-lrg:icon-s lrg:icon-b"}/>
       </div>
 
-      <div className={"flex justify-center gap-[5px] lrg:gap-[10px]"}>
+      <div className={"flex justify-center gap-[5px] lrg:gap-2.5"}>
         {/*<IconButton onClick={() => navigate("/profile")} title={"Profile"} icon={faCircleUser}*/}
         {/*            iconClassName={"icon-s"}/>*/}
         <IconButton onClick={() => logOut()} title={"Log out"} icon={faRightFromBracket}

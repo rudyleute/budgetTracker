@@ -8,12 +8,16 @@ export const formToast = (text) => {
 
 export const formToastMain = (entity, name, timestamp, action) => {
   return formToast(<>
-    <span className={"capitalize"}>{entity}</span> <b>"{name}"</b> at <b>{formatTimestamp(timestamp, {
-    hour: '2-digit',
-    minute: '2-digit',
-    month: 'short',
-    year: 'numeric',
-    day: '2-digit'
-  })}</b> has been successfully {action}!
+    <span className={"capitalize"}>{entity}</span> <b>"{name}"</b>
+    {timestamp && (
+      <> at <b>{formatTimestamp(timestamp, {
+        hour: '2-digit',
+        minute: '2-digit',
+        month: 'short',
+        year: 'numeric',
+        day: '2-digit'
+      })}</b>
+      </>)}
+    <> has been successfully {action}!</>
   </>);
 }

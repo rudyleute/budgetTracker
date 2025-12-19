@@ -37,7 +37,7 @@
 }
 
 .items-border {
-    @apply first:pt-[5px] pt-[10px] pb-[10px] last:pb-[5px] border-b-1 border-b-[var(--color-text)] border-solid last:border-b-0;
+    @apply first:pt-[5px] pt-2.5 pb-2.5 last:pb-[5px] border-b border-b-(--color-text) border-solid last:border-b-0;
 }
 
 :root {
@@ -53,7 +53,7 @@
 }
 
 .due {
-    @apply border-4 border-[var(--color-text)];
+    @apply border-4 border-(--color-text);
 }
 
 @utility s-scroll {
@@ -68,7 +68,7 @@
     }
 
     &::-webkit-scrollbar-thumb {
-        @apply bg-[var(--color-main)] bg-clip-content;
+        @apply bg-(--color-main) bg-clip-content;
     }
 
     &::-webkit-scrollbar-thumb:hover {
@@ -78,13 +78,13 @@
 
 @utility s-scroll-alt-color {
     &::-webkit-scrollbar-thumb {
-        @apply bg-[var(--color-third)];
+        @apply bg-(--color-third);
     }
 }
 
 @utility s-scroll-track {
     &::-webkit-scrollbar-track {
-        @apply w-fit bg-[var(--color-third)];
+        @apply w-fit bg-(--color-third);
     }
 }
 
@@ -93,19 +93,19 @@ body {
 }
 
 @utility text-hbg {
-    @apply px-1 py-1 rounded-[5px] bg-[var(--color-sec)]/60;
+    @apply px-1 py-1 rounded-[5px] bg-(--color-sec)/60;
 }
 
 .loans-list-wrapper {
-    @apply grid loans-lrg:grid-cols-4 loans-mid:max-loans-lrg:grid-cols-3 loans-sml:max-loans-mid:grid-cols-2 max-loans-sml:grid-cols-1 gap-[10px] items-center justify-center;
+    @apply grid loans-lrg:grid-cols-4 loans-mid:max-loans-lrg:grid-cols-3 loans-sml:max-loans-mid:grid-cols-2 max-loans-sml:grid-cols-1 gap-2.5 items-center justify-center;
 }
 
 .counterparties-list-wrapper {
-    @apply grid grid-cols-5 gap-[10px] items-start justify-center;
+    @apply grid grid-cols-5 gap-2.5 items-start justify-center;
 }
 
 .form {
-    @apply flex flex-col gap-[10px]
+    @apply flex flex-col gap-2.5
 }
 
 .window-center {
@@ -113,7 +113,7 @@ body {
 }
 
 .overlay {
-    @apply fixed top-0 left-0 w-screen h-screen bg-[var(--color-sec)]/80;
+    @apply fixed top-0 left-0 w-screen h-screen bg-(--color-sec)/80;
 }
 
 .jump-1 {
@@ -129,11 +129,11 @@ body {
 }
 
 .btn-rounded {
-    @apply p-[5px_10px] bg-[var(--color-main)] text-[var(--color-text)] font-bold h-full w-fit first:rounded-l-[15px] last:rounded-r-[15px];
+    @apply p-[5px_10px] bg-(--color-main) text-(--color-text) font-bold h-full w-fit first:rounded-l-[15px] last:rounded-r-[15px];
 }
 
 .btn-rounded-vert {
-    @apply p-[5px_10px] bg-[var(--color-main)] text-[var(--color-text)] font-bold h-full w-fit first:rounded-t-[15px] last:rounded-b-[15px];
+    @apply p-[5px_10px] bg-(--color-main) text-(--color-text) font-bold h-full w-fit first:rounded-t-[15px] last:rounded-b-[15px];
 }
 
 .transition-500 {
@@ -141,7 +141,7 @@ body {
 }
 
 .label {
-    @apply capitalize font-bold h-fit text-[var(--color-text)] text-xl
+    @apply capitalize font-bold h-fit text-(--color-text) text-xl
 }
 
 .field-wrapper {
@@ -149,7 +149,7 @@ body {
 }
 
 .field {
-    @apply bg-[var(--color-text)] rounded-[15px] h-[40px] p-[5px] pl-[20px] w-full font-bold text-[var(--color-input-text)]
+    @apply bg-(--color-text) rounded-[15px] h-10 p-[5px] pl-5 w-full font-bold text-(--color-input-text)
 }
 
 .text-clipped {
@@ -157,11 +157,11 @@ body {
 }
 
 .end-adornment {
-    @apply hover:cursor-pointer absolute right-[10px] w-[30px] top-[50%] translate-y-[-50%]
+    @apply hover:cursor-pointer absolute right-2.5 w-[30px] top-[50%] translate-y-[-50%]
 }
 
 .price-wrapper {
-    @apply shrink-0 whitespace-nowrap bg-[var(--color-sec)]/90 w-full rounded-[5px] inline-flex items-center justify-end p-[0_10px]
+    @apply shrink-0 whitespace-nowrap bg-(--color-sec)/90 w-full rounded-[5px] inline-flex items-center justify-end p-[0_10px]
 }
 
 .input-wrapper {
@@ -169,7 +169,7 @@ body {
 }
 
 .field-row {
-    @apply !flex-row items-center gap-[5px];
+    @apply flex-row! items-center gap-[5px];
 }
 
  @utility icon-b {

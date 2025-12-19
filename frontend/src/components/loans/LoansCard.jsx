@@ -11,6 +11,7 @@ import { useRef } from 'react';
 import IconButton from '../simple/IconButton.jsx';
 import { faCircleXmark } from '@fortawesome/free-regular-svg-icons';
 import { useConfirmation } from '../../context/ConfirmationProvider.jsx';
+import _ from 'lodash';
 
 const IconCell = ({ children, className, ...rest }) => (
   <span className={twMerge("w-6 h-6 flex items-center justify-center", className)} {...rest}>
@@ -39,7 +40,7 @@ const LoansCard = ({ loan, onAfterEdit, onAfterDeleteSuccess }) => {
   const onSubmitEdit = useCallback(async () => {
     const fields = await formRef.current.getData();
 
-    if (!fields) return null;
+    if (_.isEmpty(fields)) return null;
 
     const res = await editLoan(loan.id, fields);
     if (res) {

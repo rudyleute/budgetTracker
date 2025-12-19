@@ -11,6 +11,7 @@ import { faCircleXmark } from '@fortawesome/free-regular-svg-icons';
 import IconButton from '../simple/IconButton.jsx';
 import { Link } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
+import _ from 'lodash';
 
 const IconCell = ({ children, className, ...rest }) => (
   <span className={twMerge("w-6 h-6 flex items-center justify-center", className)} {...rest}>
@@ -28,7 +29,7 @@ const CounterpartiesCard = ({ counterparty }) => {
   const onSubmitEdit = useCallback(async () => {
     const fields = await formRef.current.getData();
 
-    if (!fields) return null;
+    if (_.isEmpty(fields)) return null;
 
     const res = await editCounterparty(counterparty.id, fields);
     if (res) hideModal();

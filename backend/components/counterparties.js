@@ -57,7 +57,7 @@ router.get('/', async (req, res) => {
                    LEFT JOIN loans l ON cp.id = l.counterparty_id AND l.user_uid = $${params.length - 2}
           WHERE ${cond.join(' AND ')}
           GROUP BY cp.id
-          ORDER BY balance DESC
+          ORDER BY balance DESC, cp.name
       `;
     } else {
       query = `

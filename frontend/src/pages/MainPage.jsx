@@ -65,7 +65,7 @@ const MainPage = () => {
 
   return (
     <>
-      <div className={"grid mid:grid-cols-[4fr_4fr_2fr] max-mid:grid-cols-2 gap-[10px]"}>
+      <div className={"grid mid:grid-cols-[4fr_4fr_2fr] max-mid:grid-cols-2 gap-2.5"}>
         <Input
           label={<IconButton title={"Reset name filter"} onClick={() => {
             resetTransQueryParams("filter")

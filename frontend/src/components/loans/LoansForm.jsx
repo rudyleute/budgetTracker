@@ -35,7 +35,7 @@ const LoansForm = ({ data = {}, ref, isUpdate = false, onSubmit }) => {
       name: name || "",
       sum: sum || "",
       timestamp: "",
-      deadline: undefined,
+      deadline: "",
       counterpartyId: counterparty?.id || "",
       type: type || "",
       priority: priority || undefined
@@ -85,12 +85,8 @@ const LoansForm = ({ data = {}, ref, isUpdate = false, onSubmit }) => {
   return (
     <form onSubmit={async (e) => {
       e.preventDefault();
-      if (onSubmit) {
-        const data = await validateFields(trigger, getValues(), formState.dirtyFields);
-
-        if (data) onSubmit(data);
-      }
-    }} className={"grid max-modal:grid-cols-1 modal:grid-cols-[2fr_1fr] gap-[10px]"}>
+      onSubmit && onSubmit()
+    }} className={"grid max-modal:grid-cols-1 modal:grid-cols-[2fr_1fr] gap-2.5"}>
       <Input wClassName={"col-span-full"} label={<>Name{fieldsMeta.name.required && <Asterisk/>}</>} id={"name"}
              type={"text"} {...register("name", {
         onChange: () => clearErrors("name")
@@ -114,7 +110,7 @@ const LoansForm = ({ data = {}, ref, isUpdate = false, onSubmit }) => {
         placeholder={"Search for counterparty..."}
         error={errors.counterpartyId?.message}
       />
-      <Input label={<>Deadline{fieldsMeta.deadline.required && <Asterisk/>}</>} id={"deadline"}
+      <Input wClassName={"col-span-full"} label={<>Deadline{fieldsMeta.deadline.required && <Asterisk/>}</>} id={"deadline"}
              type={"datetime-local"} {...register("deadline", {
         onChange: () => clearErrors("deadline")
       })} error={errors.deadline?.message}

@@ -1,0 +1,17 @@
+import { twMerge } from 'tailwind-merge';
+
+const Textarea = ({ label, className, lClassName, wClassName, value, error, ...rest }) => {
+  return (
+    <div className={twMerge("field-wrapper", wClassName)}>
+      {label && <label className={twMerge("label", lClassName)} htmlFor={rest.id}>{label}</label>}
+      <div className={"input-wrapper h-fit!"}>
+        <textarea
+          className={twMerge(`field pr-5! font-bold`, rest.rows && 'h-auto!', className)} {...rest} >
+          {value}
+        </textarea>
+      </div>
+      {error && <span className={"max-modal:text-xl modal:text-xs text-(--color-error)"}>{error}</span>}
+    </div>);
+}
+
+export default Textarea;

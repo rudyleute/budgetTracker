@@ -33,7 +33,7 @@ const CounterpartiesPage = () => {
   const onSubmitCreate = async () => {
     const fields = await formRef.current.getData();
 
-    if (!fields) return null;
+    if (_.isEmpty(fields)) return null;
 
     const res = addCounterparty(fields);
     if (res) hideModal();
@@ -52,7 +52,7 @@ const CounterpartiesPage = () => {
 
   return (
     <>
-      <div className={"grid gap-[10px] sml:grid-cols-[1fr_20fr] max-sml:grid-cols-1"}>
+      <div className={"grid gap-2.5 sml:grid-cols-[1fr_20fr] max-sml:grid-cols-1"}>
         <PillButtons
           className={"max-sml:row-start-2 max-sml:justify-self-end"}
           buttons={[

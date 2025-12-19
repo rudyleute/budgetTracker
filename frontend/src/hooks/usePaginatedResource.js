@@ -86,7 +86,7 @@ export const usePaginatedResource = ({
     }
 
     toast.success(formToastMain(entityName, newItem.name, newItem[timeColName], "created"));
-    const res = await fetchItemsFromStart(items.total);
+    const res = await fetchItemsFromStart(items.total + 1);
 
     hideChangeLoader();
     if (!res) return null;

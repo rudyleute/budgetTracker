@@ -17,6 +17,7 @@ import { useModal } from '../../context/ModalProvider.jsx';
 import useAutocomplete from '../../hooks/useAutocomplete.jsx';
 import LoansForm from '../../components/loans/LoansForm.jsx';
 import LoansList from '../../components/loans/LoansList.jsx';
+import _ from 'lodash';
 
 const LoansPage = () => {
   const {
@@ -49,19 +50,21 @@ const LoansPage = () => {
     [loansQueryParams.type, types]
   );
 
-  const addLoanWithHide = async (data) => {
-    if (await addLoan(data)) hideModal();
-  }
-
   const onSubmitCreate = async () => {
     const fields = await formRef.current.getData();
-    if (fields) await addLoanWithHide(fields);
+
+    if (_.isEmpty(fields)) return null;
+
+    const res = await addLoan(fields);
+    if (res) hideModal();
+
+    return res;
   }
 
   const handleCreation = () => {
     showModal(
       "New loan",
-      <LoansForm onSubmit={addLoanWithHide} ref={formRef}/>,
+      <LoansForm onSubmit={onSubmitCreate} ref={formRef}/>,
       onSubmitCreate,
       false
     )
@@ -70,7 +73,7 @@ const LoansPage = () => {
   return (
     <>
       <div
-        className={"grid gap-[10px] loans-fil-lrg:grid-cols-[1fr_10fr_10fr_10fr] loans-fil-mid:max-loans-fil-lrg:grid-cols-[1fr_10fr_10fr]" +
+        className={"grid gap-2.5 loans-fil-lrg:grid-cols-[1fr_10fr_10fr_10fr] loans-fil-mid:max-loans-fil-lrg:grid-cols-[1fr_10fr_10fr]" +
           " max-loans-fil-mid:grid-cols-[1fr_10fr] items-end"}>
         <PillButtons dir={"vertical"}
                      className={"row-span-2 row-start-1 max-loans-fil-mid:row-start-4 col-start-1 h-full"} buttons={[
@@ -89,6 +92,7 @@ const LoansPage = () => {
             resetValue()
           }} icon={faUserGroup}/>}
           className={"field-row col-span-2 h-full"}
+          iClassName={"min-h-full"}
           lClassName={"!text-black"}
           placeholder={"Search for counterparty..."}
         />
@@ -108,6 +112,7 @@ const LoansPage = () => {
                              icon={faPause}/>}
           lClassName={"!text-black"}
           wClassName={"field-row loans-fil-mid:max-loans-fil-lrg:row-start-2"}
+          className={"min-h-full"}
           name={"to"}
           type={"date"}
           value={loansQueryParams.to}
@@ -120,6 +125,7 @@ const LoansPage = () => {
                              icon={faPlay}/>}
           lClassName={"!text-black"}
           wClassName={"field-row loans-fil-mid:max-loans-fil-lrg:row-start-2"}
+          className={"min-h-full"}
           name={"from"}
           type={"date"}
           id={"for"}

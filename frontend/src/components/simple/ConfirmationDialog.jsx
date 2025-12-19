@@ -7,7 +7,7 @@ const ConfirmationDialog = ({ onReject, onAccept, text }) => {
       <div className={"h-[80%] p-[10px_15px]"}>
         <span>Are you sure that you want to delete {text}?</span>
       </div>
-      <div className={"grow flex justify-around items-center gap-[10px] p-[7px_10px]"}>
+      <div className={"grow flex justify-around items-center gap-2.5 p-[7px_10px]"}>
         <Button className={"w-[50%] btn-classic jump-05 bg-[var(--color-third)]"} onClick={onReject}>Cancel</Button>
         <Button className={"w-[50%] btn-classic jump-05 bg-[var(--color-sec)]"} onClick={onAccept}>Confirm</Button>
       </div>

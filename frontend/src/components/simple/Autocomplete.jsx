@@ -4,13 +4,13 @@ import Input from './Input.jsx';
 
 const Autocomplete = ({
                         options,
-                        id,
                         onChange,
                         onOptionClick,
                         optionLabelColumn,
                         className,
                         label,
                         lClassName,
+                        iClassName,
                         error,
                         ...rest
                       }) => {
@@ -31,11 +31,11 @@ const Autocomplete = ({
 
   return (
     <div className={twMerge("field-wrapper", className)}>
-      {label && <label htmlFor={id} className={twMerge("label", lClassName)}>{label}</label>}
+      {label && <label htmlFor={rest.id} className={twMerge("label", lClassName)}>{label}</label>}
       <div ref={wrapperRef} className={"input-wrapper h-full"}>
-        <Input ref={inputRef} id={id} {...rest} onChange={e => onChange(e.target.value)}
-               onFocus={() => setIsOpen(true)}
-               />
+        <Input className={iClassName} ref={inputRef} onChange={e => onChange(e.target.value)}
+               onFocus={() => setIsOpen(true)} {...rest}
+        />
         {isOpen && <div
           className={"w-full text-[var(--color-input-text)] rounded-[15px] pr-0 text-xl max-h-[200px] overflow-hidden bg-[var(--color-text)] absolute top-full left-0 z-10 shadow-[0_10px_25px_rgba(0,0,0,0.3)]"}>
           <ul className={"s-scroll s-scroll-alt-color max-h-[200px] h-full overflow-y-auto"}>
