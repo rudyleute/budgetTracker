@@ -6,9 +6,9 @@
     --breakpoint-sml: 750px;
     --breakpoint-mid: 850px;
     --breakpoint-lrg: 1420px;
-    --breakpoint-loans-lrg: 1150px;
-    --breakpoint-loans-mid: 800px;
-    --breakpoint-loans-sml: 560px;
+    --breakpoint-cards-lrg: 1150px;
+    --breakpoint-cards-mid: 800px;
+    --breakpoint-cards-sml: 560px;
     --breakpoint-loans-fil-lrg: 1050px;
     --breakpoint-loans-fil-mid: 620px;
 }
@@ -40,6 +40,30 @@
     @apply first:pt-[5px] pt-2.5 pb-2.5 last:pb-[5px] border-b border-b-(--color-text) border-solid last:border-b-0;
 }
 
+.filters-4-grid {
+    @apply mid:grid-cols-[4fr_4fr_2fr] max-mid:grid-cols-2
+}
+
+.filters-4-1 {
+    @apply mid:col-start-1 mid:row-start-1 col-span-2
+}
+
+.filters-4-3 {
+    @apply mid:row-start-2 mid:col-start-2 max-mid:row-start-2 max-mid:col-start-1 max-sml:row-start-2 max-sml:col-span-2
+}
+
+.filters-4-2 {
+    @apply mid:row-start-1 mid:col-start-3 max-mid:row-start-2 max-mid:col-start-2 max-sml:row-start-3 max-sml:col-start-1 max-esml:row-start-3 max-esml:col-start-1 max-esml:col-span-2
+}
+
+.filters-4-4 {
+    @apply mid:row-start-2 mid:col-start-3 max-mid:row-start-3 max-mid:col-start-2 max-sml:row-start-3 max-sml:col-start-2 max-esml:col-start-1 max-esml:col-span-2 max-esml:row-start-4;
+}
+
+.filters-4-btns {
+    @apply mid:row-start-2 mid:col-start-1 justify-self-end max-mid:row-start-3 max-sml:row-start-4 max-sml:col-start-2 max-esml:row-start-5 max-esml:col-start-1 max-esml:col-span-2
+}
+
 :root {
     --color-main: #000000;
     --color-sec: #323232;
@@ -50,6 +74,7 @@
     --color-pos: theme(colors.green.600);
 
     --menu-height: 70px;
+    --input-border-radius: 15px;
 }
 
 .due {
@@ -97,7 +122,7 @@ body {
 }
 
 .loans-list-wrapper {
-    @apply grid loans-lrg:grid-cols-4 loans-mid:max-loans-lrg:grid-cols-3 loans-sml:max-loans-mid:grid-cols-2 max-loans-sml:grid-cols-1 gap-2.5 items-center justify-center;
+    @apply grid cards-lrg:grid-cols-4 cards-mid:max-cards-lrg:grid-cols-3 cards-sml:max-cards-mid:grid-cols-2 max-cards-sml:grid-cols-1 gap-2.5 items-center justify-center;
 }
 
 .counterparties-list-wrapper {

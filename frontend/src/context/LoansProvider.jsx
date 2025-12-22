@@ -11,7 +11,7 @@ const priorities = ['high', 'medium', 'low'];
 const types = ["borrowed", "lent"]
 
 const LoansContext = createContext({});
-const LoansProvider = ({ children }) => {
+const LoansProvider = ({ children, skipInitFetch=false }) => {
   const {
     items: loans,
     queryParams: loansQueryParams,
@@ -26,7 +26,8 @@ const LoansProvider = ({ children }) => {
   } = usePaginatedResource({
     endpoint: "/loans",
     defaultQueryParams,
-    entityName: 'loan'
+    entityName: 'loan',
+    skipInitFetch
   });
 
   const value = useMemo(() => ({

@@ -1,22 +1,19 @@
-import { createBrowserRouter, Navigate, Outlet } from 'react-router-dom';
+import { createBrowserRouter, Navigate } from 'react-router-dom';
 import Layout from '../Layout.jsx';
 import NotFoundPage from '../pages/NotFoundPage.jsx';
-import MainPage from '../pages/MainPage.jsx';
+import TransactionsPage from '../pages/TransactionsPage.jsx';
 import LoginPage from '../pages/LoginPage.jsx';
 import SignUpPage from '../pages/SignUpPage.jsx';
 import LoansPage from '../pages/loans/LoansPage.jsx';
 import PublicRoute from './PublicRoute.jsx';
 import ProtectedRoute from './ProtectedRoute.jsx';
-import { TransactionsProvider } from '../context/TransactionsProvider.jsx';
-import { ConfirmationProvider } from '../context/ConfirmationProvider.jsx';
-import { ModalProvider } from '../context/ModalProvider.jsx';
-import { CategoriesProvider } from '../context/CategoriesProvider.jsx';
-import { LoansProvider } from '../context/LoansProvider.jsx';
 import RootLayout from './RootLayout.jsx';
 import LoanPage from '../pages/loans/LoanPage.jsx';
 import CounterpartiesPage from '../pages/counterparties/CounterpartiesPage.jsx';
 import CounterpartyPage from '../pages/counterparties/CounterpartyPage.jsx';
-import { CounterpartiesProvider } from '../context/CounterpartiesProvider.jsx';
+import LayoutTransactions from '../layouts/LayoutTransactions.jsx';
+import LayoutLoans from '../layouts/LayoutLoans.jsx';
+import LayoutCounterparties from '../layouts/LayoutCounterparties.jsx';
 
 const router = createBrowserRouter([
   {
@@ -29,26 +26,13 @@ const router = createBrowserRouter([
           element: <Layout/>,
           children: [
             {
-              index: true, element:
-                <TransactionsProvider>
-                  <CategoriesProvider>
-                    <ModalProvider>
-                      <ConfirmationProvider>
-                        <MainPage/>
-                      </ConfirmationProvider>
-                    </ModalProvider>
-                  </CategoriesProvider>
-                </TransactionsProvider>
+              element: <LayoutTransactions/>,
+              children: [
+                { index: true, element: <TransactionsPage/> }
+              ]
             },
             {
-              path: "loans", element:
-                <LoansProvider>
-                  <ModalProvider>
-                    <ConfirmationProvider>
-                      <Outlet/>
-                    </ConfirmationProvider>
-                  </ModalProvider>
-                </LoansProvider>,
+              path: "loans", element: <LayoutLoans />,
               children: [
                 { index: true, element: <LoansPage/> },
                 { path: ":id", element: <LoanPage/> }
@@ -56,16 +40,7 @@ const router = createBrowserRouter([
             },
             {
               path: "counterparties",
-              element:
-                <CounterpartiesProvider>
-                  <LoansProvider>
-                    <ModalProvider>
-                      <ConfirmationProvider>
-                        <Outlet/>
-                      </ConfirmationProvider>
-                    </ModalProvider>
-                  </LoansProvider>
-                </CounterpartiesProvider>,
+              element: <LayoutCounterparties />,
               children: [
                 { index: true, element: <CounterpartiesPage/> },
                 { path: ":id", element: <CounterpartyPage/> }

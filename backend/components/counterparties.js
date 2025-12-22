@@ -111,17 +111,24 @@ router.get('/:id', async (req, res) => {
     const uid = req.user.uid;
     const { id } = req.params;
 
-    logger.debug('Fetching counterparties', { uid, includeBalance });
+    logger.debug('Fetching counterparties', { uid });
 
     const query = `
-        SELECT id,
-               name,
-               email,
-               phone,
-               note
-        FROM counterparties
-        WHERE user_uid = $1
-          AND id = $2
+        SELECT cp.id,
+               cp.name,
+               cp.email,
+               cp.phone,
+               cp.note,
+               COALESCE(
+                       SUM(CASE WHEN l.type = 'borrowed' THEN l.sum ELSE 0 END) -
+                       SUM(CASE WHEN l.type = 'lent' THEN l.sum ELSE 0 END),
+                       0
+               ) AS balance
+        FROM counterparties cp
+                 LEFT JOIN loans l ON cp.id = l.counterparty_id AND l.user_uid = $1
+        WHERE cp.user_uid = $1
+          AND cp.id = $2
+        GROUP BY cp.id
         LIMIT 1;`
 
     const result = await db.query(query, [uid, id]);
@@ -129,7 +136,7 @@ router.get('/:id', async (req, res) => {
     if (result.rows.length === 0) {
       logger.warn('Requested counterparty has not been found', { uid, id })
       return res.status(404).json({
-        message: "Requested loan has not been found"
+        message: "Requested counterparty has not been found"
       })
     }
 

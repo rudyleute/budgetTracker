@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { toast } from 'react-toastify';
 import _ from 'lodash';
 import api from '../services/axios.js';
@@ -16,6 +16,7 @@ const defaultValue = { data: [], total: 0, isLastPage: true };
  * @param {String} entityName - Name for toast messages (e.g., 'transaction', 'loan')
  * @param {Number} offset
  * @param {Number} limit - Backend-predefined limit if 0, no limit if negative
+ * @param {Boolean} skipInitFetch - if set to true, the initial fetching on mount is not performed
  */
 const emptyObject = {}
 export const usePaginatedResource = ({
@@ -23,10 +24,12 @@ export const usePaginatedResource = ({
                                        defaultQueryParams = emptyObject,
                                        entityName = 'item',
                                        offset = 0,
-                                       limit = 0
+                                       limit = 0,
+                                       skipInitFetch = false
                                      }) => {
   const [items, setItems] = useState(defaultValue);
   const [queryParams, setQueryParams] = useState(defaultQueryParams);
+  const isInitFetch = useRef(true);
   const {
     showLoader: showGetLoader,
     hideLoader: hideGetLoader,
@@ -48,27 +51,46 @@ export const usePaginatedResource = ({
   }, [endpoint, limit, offset, queryParams]);
 
   useEffect(() => {
+    if (skipInitFetch && isInitFetch.current) {
+      isInitFetch.current = false;
+      return;
+    }
+
     (async () => {
       showGetLoader();
       if (!await fetchItemsFromStart()) setItems(defaultValue);
       hideGetLoader();
     })();
-  }, [fetchItemsFromStart, hideGetLoader, showGetLoader]);
+  }, [fetchItemsFromStart, hideGetLoader, showGetLoader, skipInitFetch]);
 
   const updateQueryParams = useCallback((values) => {
     //prev is returned and new requests are not made if none of the fields' values were changed
     setQueryParams(prev => newQueryParams(values, prev, Object.keys(defaultQueryParams)));
   }, [defaultQueryParams]);
 
-  const resetQueryParams = useCallback((params = []) => {
+  const resetQueryParams = useCallback((params = [], ignore = []) => {
     setQueryParams(prev => {
-      //if no keys have been provided, reset all of them
-      if (params.length === 0) return _.isEqual(prev, defaultQueryParams) ? prev : defaultQueryParams;
+      let nParams = typeof params === "string" ? [params] : params;
+      const nIgnore = typeof ignore === "string" ? [ignore] : ignore
+      
+      if (nParams.length === 0) {
+        //if no keys have been provided, reset all of them
+        if (nIgnore.length === 0) return _.isEqual(prev, defaultQueryParams) ? prev : defaultQueryParams;
 
-      const normalized = typeof params === "string" ? [params] : params
+        //reset all the fields in the query apart from the ones that were requested to be ignored
+        const next = { ...prev };
+        Object.keys(defaultQueryParams).forEach((key) => {
+          if (!nIgnore.includes(key)) next[key] = defaultQueryParams[key];
+        });
 
-      const next = {...prev};
-      normalized.forEach((key) => {
+        return _.isEqual(prev, next) ? prev : next;
+      }
+
+      //ensure that ignored query params are not in params
+      const resetParams = nParams.filter(elem => !nIgnore.includes(elem))
+
+      const next = { ...prev };
+      resetParams.forEach((key) => {
         if (key in defaultQueryParams) next[key] = defaultQueryParams[key];
       });
       return _.isEqual(prev, next) ? prev : next;
@@ -138,7 +160,7 @@ export const usePaginatedResource = ({
 
     if (!res) return false;
 
-    const {data: newItems, total, isLastPage} = res;
+    const { data: newItems, total, isLastPage } = res;
     setItems(prev => ({
       data: prev.data.concat(newItems),
       total: prev.total + total,

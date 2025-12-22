@@ -6,7 +6,7 @@ const Textarea = ({ label, className, lClassName, wClassName, value, error, ...r
       {label && <label className={twMerge("label", lClassName)} htmlFor={rest.id}>{label}</label>}
       <div className={"input-wrapper h-fit!"}>
         <textarea
-          className={twMerge(`field pr-5! font-bold`, rest.rows && 'h-auto!', className)} {...rest} >
+          className={twMerge(`field pr-5! font-bold s-scroll s-scroll-alt-color`, rest.rows && 'h-auto!', className)} {...rest} >
           {value}
         </textarea>
       </div>

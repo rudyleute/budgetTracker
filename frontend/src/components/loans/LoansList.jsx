@@ -24,7 +24,7 @@ const LoansList = () => {
       {!isEmpty && loansMap}
       <LoansGetLoader>
         {isEmpty && <Empty className={"col-span-full"} text={"No loans found"} size={"2xl"}/>}
-        {!loans.isLastPage && <IconButton className={"self-center max-loans-sml:w-full"} onClick={getNextLoansPage} title={"Show more"} icon={faCircleRight}/>}
+        {!loans.isLastPage && <IconButton className={"self-center max-cards-sml:w-full"} onClick={getNextLoansPage} title={"Show more"} icon={faCircleRight}/>}
       </LoansGetLoader>
       <LoansChangeLoader />
     </div>

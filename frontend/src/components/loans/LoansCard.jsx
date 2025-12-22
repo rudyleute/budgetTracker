@@ -12,12 +12,7 @@ import IconButton from '../simple/IconButton.jsx';
 import { faCircleXmark } from '@fortawesome/free-regular-svg-icons';
 import { useConfirmation } from '../../context/ConfirmationProvider.jsx';
 import _ from 'lodash';
-
-const IconCell = ({ children, className, ...rest }) => (
-  <span className={twMerge("w-6 h-6 flex items-center justify-center", className)} {...rest}>
-    {children}
-  </span>
-);
+import IconCell from '../simple/IconCell.jsx';
 
 const LoansCard = ({ loan, onAfterEdit, onAfterDeleteSuccess }) => {
   const { showModal, hideModal } = useModal();
@@ -63,7 +58,7 @@ const LoansCard = ({ loan, onAfterEdit, onAfterDeleteSuccess }) => {
   return (
     <div className={"w-full h-fit hover:cursor-pointer sml:lift-scale"} title={"Edit loan"} onClick={handleOnEdit}>
       <div
-        className={twMerge('relative w-full h-full items-center font-bold grid grid-cols-[1fr_10fr_1fr] animate-fade-in text-[var(--color-text)] bg-[var(--color-main)] rounded-[30px] p-[20px_10px] max-loans-sml:p-[30px_30px]', `${loan.isDue && 'due'}`)}>
+        className={twMerge('relative w-full h-full items-center font-bold grid grid-cols-[1fr_10fr_1fr] animate-fade-in text-[var(--color-text)] bg-[var(--color-main)] rounded-[30px] p-[20px_10px] max-cards-sml:p-[30px_30px]', `${loan.isDue && 'due'}`)}>
         <span className={"text-clipped text-xs inline-flex justify-center items-center col-span-full mb-[5px]"}>
           <FontAwesomeIcon size={"xs"} icon={faClock}/>
           {timestamp.slice(0, timestamp.length - 3)}

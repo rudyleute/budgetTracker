@@ -1,6 +1,6 @@
 import React, { useCallback } from 'react';
 import { twMerge } from 'tailwind-merge';
-import { faAt, faCircleUser, faCoins, faPhone, faStickyNote, faUserXmark } from '@fortawesome/free-solid-svg-icons';
+import { faAt, faCircleUser, faCoins, faPhone, faStickyNote } from '@fortawesome/free-solid-svg-icons';
 import CounterpartiesForm from './CounterpartiesForm.jsx';
 import { useModal } from '../../context/ModalProvider.jsx';
 import { useCounterparties } from '../../context/CounterpartiesProvider.jsx';
@@ -12,12 +12,7 @@ import IconButton from '../simple/IconButton.jsx';
 import { Link } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
 import _ from 'lodash';
-
-const IconCell = ({ children, className, ...rest }) => (
-  <span className={twMerge("w-6 h-6 flex items-center justify-center", className)} {...rest}>
-    {children}
-  </span>
-);
+import IconCell from '../simple/IconCell.jsx';
 
 const CounterpartiesCard = ({ counterparty }) => {
   const { showModal, hideModal } = useModal();
@@ -50,7 +45,7 @@ const CounterpartiesCard = ({ counterparty }) => {
     <div className={"w-full h-fit hover:cursor-pointer sml:lift-scale text-xl"} title={"Edit counterparty"}
          onClick={handleOnEdit}>
       <div
-        className={'relative w-full h-full items-center justify-center font-bold grid grid-cols-1 gap-[5px] animate-fade-in text-[var(--color-text)] bg-[var(--color-main)] rounded-[30px] p-[20px_20px]'}
+        className={'relative w-full h-full items-center justify-center font-bold grid grid-cols-1 gap-[5px] animate-fade-in text-(--color-text) bg-(--color-main) rounded-[30px] p-[20px_20px]'}
       >
         <span className={"w-full grid grid-cols-3"}>
           <IconCell>
@@ -61,7 +56,7 @@ const CounterpartiesCard = ({ counterparty }) => {
           </IconCell>
           <FontAwesomeIcon className={"justify-self-center"} size={"3x"} color={"var(--color-third)"} icon={faCircleUser}/>
           <IconCell className={"justify-self-end"}>
-            <IconButton title={"Delete loan"}
+            <IconButton title={"Delete counterparty"}
                         iconClassName={"icon-xs !text-[var(--color-third)]"}
                         onClick={
                           () => showConfirmation(
@@ -70,7 +65,6 @@ const CounterpartiesCard = ({ counterparty }) => {
                           )} icon={faCircleXmark}
             />
           </IconCell>
-
         </span>
         <span className={"flex items-center gap-[5px]"}>
           {counterparty.note && <IconCell title={counterparty.note}>

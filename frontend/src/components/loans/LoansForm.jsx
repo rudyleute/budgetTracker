@@ -12,13 +12,13 @@ import Autocomplete from '../simple/Autocomplete.jsx';
 
 const Asterisk = () => <span title={"Required"} className={"text-[var(--color-third)]"}>*</span>
 
-const LoansForm = ({ data = {}, ref, isUpdate = false, onSubmit }) => {
+const LoansForm = ({ data = {}, ref, isUpdate = false, onSubmit, counterparty }) => {
   const { priorities, types } = useLoans();
   const { resolver: loanResolver, fieldsMeta } = useMemo(() => {
     return loanFormUtils(types, priorities);
   }, [types, priorities]);
 
-  const { name, sum, timestamp, deadline, counterparty, type, priority } = data;
+  const { name, sum, timestamp, deadline, counterparty: loanCounterparty, type, priority } = data;
 
   const {
     register,
@@ -36,7 +36,7 @@ const LoansForm = ({ data = {}, ref, isUpdate = false, onSubmit }) => {
       sum: sum || "",
       timestamp: "",
       deadline: "",
-      counterpartyId: counterparty?.id || "",
+      counterpartyId: loanCounterparty?.id || "",
       type: type || "",
       priority: priority || undefined
     },
@@ -54,7 +54,8 @@ const LoansForm = ({ data = {}, ref, isUpdate = false, onSubmit }) => {
   const { resetValue, ...restAutocompleteProps } = useAutocomplete({
     optionsEndpoint: "/counterparties",
     onOptionClick,
-    ...(isUpdate && { defaultValue: counterparty?.name })
+    ...(!isUpdate && counterparty?.name && { defaultValue: counterparty?.name }),
+    ...(isUpdate && { defaultValue: loanCounterparty?.name })
   })
 
   const fields = watch();
@@ -71,7 +72,14 @@ const LoansForm = ({ data = {}, ref, isUpdate = false, onSubmit }) => {
       setValue("timestamp", getDatetimeLocal(new Date(timestamp)));
       if (deadline) setValue("deadline", getDatetimeLocal(new Date(deadline)));
     } else setValue("timestamp", getDatetimeLocal(new Date(Date.now())), { shouldDirty: true });
-  }, [setValue, isUpdate, timestamp, deadline]);
+
+    //default counterparty should be marked as dirtied up
+    if (!isUpdate && counterparty?.id) {
+      setValue("counterpartyId", counterparty.id, {
+        shouldValidate: true, shouldDirty: true
+      })
+    }
+  }, [setValue, isUpdate, timestamp, deadline, counterparty]);
 
   const priorityOptions = useMemo(
     () => priorities.filter(priority => priority !== fields.priority).map(priority => ({ label: priority })),
