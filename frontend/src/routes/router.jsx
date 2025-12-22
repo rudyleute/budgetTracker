@@ -20,6 +20,13 @@ const router = createBrowserRouter([
     element: <RootLayout/>,
     children: [
       {
+        element: <PublicRoute />,
+        children: [
+          { path: "/login", element: <LoginPage /> },
+          { path: "/signup", element: <SignUpPage /> }
+        ]
+      },
+      {
         path: "/",
         element: <ProtectedRoute/>,
         children: [{
@@ -48,21 +55,9 @@ const router = createBrowserRouter([
             },
             // { path: "profile", element: <ProfilePage /> },
             // { path: "dashboard", element: <DashboardPage />},
-            { path: "login", element: <Navigate to="/" replace/> },
-            { path: "signup", element: <Navigate to="/" replace/> },
             { path: "*", element: <NotFoundPage/> }
           ]
         }]
-      },
-      {
-        path: "/",
-        element: <PublicRoute/>,
-        children: [
-          { index: true, element: <Navigate to="/login" replace/> },
-          { path: "login", element: <LoginPage/> },
-          { path: "signup", element: <SignUpPage/> },
-          { path: "*", element: <Navigate to="/" replace/> }
-        ]
       }
     ]
   }
