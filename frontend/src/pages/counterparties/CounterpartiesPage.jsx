@@ -7,7 +7,6 @@ import { useCounterparties } from '../../context/CounterpartiesProvider.jsx';
 import CounterpartiesList from '../../components/counterparties/CounterpartiesList.jsx';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import PillButtons from '../../components/simple/PillButtons.jsx';
-import TransactionsForm from '../../components/transactions/TransactionsForm.jsx';
 import { useModal } from '../../context/ModalProvider.jsx';
 import CounterpartiesForm from '../../components/counterparties/CounterpartiesForm.jsx';
 import { onFormSubmit } from '../../helpers/utils.js';

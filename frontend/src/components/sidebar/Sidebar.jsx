@@ -63,7 +63,7 @@ const Sidebar = () => {
             const days = daysUntilDateOnly(loan.deadline);
 
             return (
-              <span className={twMerge("font-b text-clipped !text-[var(--color-pos)]", days <= 0 && "!text-[var(--color-third)]" )}
+              <span className={twMerge("font-b text-clipped !text-(--color-pos)", days <= 0 && "!text-(--color-third)" )}
                     title={formatTimestamp(loan.deadline, {
                       day: '2-digit',
                       month: 'short',
@@ -84,7 +84,7 @@ const Sidebar = () => {
   const renderCounterItem = (item) => {
     return (
       <>
-        <span className={"flex justify-center w-full shrink-0 whitespace-nowrap text-[var(--color-text)]"}>
+        <span className={"flex justify-center w-full shrink-0 whitespace-nowrap text-(--color-text)"}>
           {item.phone && <Link title={`Call +${item.phone}`} to={`tel:+${item.phone}`} onClick={(e) => e.stopPropagation()}>
             <FontAwesomeIcon color={"var(--color-third)"} icon={faPhone}/>
           </Link>}
@@ -94,8 +94,8 @@ const Sidebar = () => {
         </span>
         <span className={"text-clipped"}>{item.name}</span>
         <span className={twMerge(
-          "price-wrapper !bg-[var(--color-pos)]/80",
-          item.balance > 0 && "!bg-[var(--color-third)]/80"
+          "price-wrapper bg-(--color-pos)/80!",
+          item.balance > 0 && "bg-(--color-third)/80!"
         )}>{item.balance} €</span>
       </>
     )
@@ -103,11 +103,11 @@ const Sidebar = () => {
   }
 
   return (<div
-    className={"flex flex-col gap-[15px] sml:max-lrg:grid sml:max-lrg:grid-cols-2 s-scroll s-scroll-alt-color w-full max-lrg:min-h-fit bg-[var(--color-sec)] max-lrg:overflow-visible lrg:overflow-y-auto lrg:h-full sml:p-[15px_15px] max-sml:p-[15px_2px]"}>
+    className={"flex flex-col gap-[15px] sml:max-lrg:grid sml:max-lrg:grid-cols-2 s-scroll s-scroll-alt-color w-full max-lrg:min-h-fit bg-(--color-sec) max-lrg:overflow-visible lrg:overflow-y-auto lrg:h-full sml:p-[15px_15px] max-sml:p-[15px_2px]"}>
     <SidebarComponent items={data.loans} title={"Upcoming Deadlines"} emptyText={"No urgent loans found"}
                       getItemLink={getLoansLink} renderItem={renderLoanItem}
                       gridCols={"grid-cols-[1fr_1fr_3fr_4fr_4fr]"}
-                      iwClass={"items-center text-[var(--color-text)] !pt-[5px] !pb-[5px]"}/>
+                      iwClass={"items-center text-(--color-text) !pt-[5px] !pb-[5px]"}/>
     <SidebarComponent items={data.balance} title={"Balance"} emptyText={"No counterparties found"}
                       getItemLink={getCounterLink} renderItem={renderCounterItem} gridCols={"grid-cols-[2fr_5fr_5fr]"}/>
   </div>)

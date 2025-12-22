@@ -28,9 +28,9 @@ const SidebarComponent = ({ items, title, emptyText, gridCols, renderItem, getIt
       {
         content.length > 0 ?
           <div
-            className={twMerge("flex flex-col justify-center bg-[var(--color-main)] p-[10px] animate-fade-in rounded-[15px] h-fit text-[var(--color-text)]", className)}>
+            className={twMerge("flex flex-col justify-center bg-(--color-main) p-2.5 animate-fade-in rounded-[15px] h-fit text-(--color-text)", className)}>
             <span
-              className={"text-[var(--color-text)] uppercase text-xl font-bold mb-[5px] align-middle self-center"}>{title}
+              className={"text-(--color-text) uppercase text-xl font-bold mb-[5px] align-middle self-center"}>{title}
             </span>
             <div>{content}</div>
           </div> : <div>

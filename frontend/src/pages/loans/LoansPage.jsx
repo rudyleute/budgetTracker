@@ -14,10 +14,9 @@ import Input from '../../components/simple/Input.jsx';
 import { useLoans } from '../../context/LoansProvider.jsx';
 import React, { useCallback, useMemo, useRef } from 'react';
 import { useModal } from '../../context/ModalProvider.jsx';
-import useAutocomplete from '../../hooks/useAutocomplete.jsx';
+import useAutocomplete from '../../hooks/useAutocomplete.js';
 import LoansForm from '../../components/loans/LoansForm.jsx';
 import LoansList from '../../components/loans/LoansList.jsx';
-import _ from 'lodash';
 import { onFormSubmit } from '../../helpers/utils.js';
 
 const LoansPage = () => {

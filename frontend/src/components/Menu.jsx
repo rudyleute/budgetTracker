@@ -15,9 +15,9 @@ const Menu = () => {
 
   return (
     <aside
-      className={"flex items-center justify-between bg-[var(--color-sec)] h-full w-full shadow-sm " +
+      className={"flex items-center justify-between bg-(--color-sec) h-full w-full shadow-sm " +
         "lrg:flex-col lrg:p-[15px_15px] " +
-        "max-lrg:p-[10px_25px] max-esml:p-[10px_4px] max-lrg:fixed max-lrg:top-0 max-lrg:left-0 max-lrg:h-[var(--menu-height)] max-lrg:z-[1000]"}>
+        "max-lrg:p-[10px_25px] max-esml:p-[10px_4px] max-lrg:fixed max-lrg:top-0 max-lrg:left-0 max-lrg:h-(--menu-height) max-lrg:z-1000"}>
       <div className={"flex lrg:flex-col gap-[15px] max-esml:gap-[5px] items-center w-full"}>
         <IconButton onClick={() => navigate("/")} title={"Home"} icon={faHouse}
                     iconClassName={"max-lrg:icon-s lrg:icon-b"}/>

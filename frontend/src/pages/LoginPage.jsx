@@ -31,18 +31,18 @@ const LoginPage = () => {
   const { logIn } = useAccount();
 
   return (
-    <div onSubmit={handleSubmit((values) => logIn(values))} className={"w-full h-screen bg-[var(--color-sec)] relative"}>
+    <div onSubmit={handleSubmit((values) => logIn(values))} className={"w-full h-screen bg-(--color-sec) relative"}>
       <form
-        className={"w-[350px] max-esml:w-[95%] flex flex-col window-center gap-[15px] relative bg-[var(--color-main)] rounded-[15px] p-[20px_20px_35px_20px]"}
+        className={"w-[350px] max-esml:w-[95%] flex flex-col window-center gap-[15px] relative bg-(--color-main) rounded-[15px] p-[20px_20px_35px_20px]"}
       >
         <div className={"flex items-center justify-between"}>
-          <IconButton size={"xl"} title={"Sign up"} iconClassName={"text-[var(--color-sec)]"}
+          <IconButton size={"xl"} title={"Sign up"} iconClassName={"text-(--color-sec)"}
                       onClick={() => navigate("/signup")}
                       icon={faCircleUser}/>
-          <span className={"inline-block text-[var(--color-text)] uppercase font-bold"}>
+          <span className={"inline-block text-(--color-text) uppercase font-bold"}>
             Sign in
           </span>
-          <IconButton type={"submit"} size={"xl"} title={"Sign in"} iconClassName={"text-[var(--color-sec)]"}
+          <IconButton type={"submit"} size={"xl"} title={"Sign in"} iconClassName={"text-(--color-sec)"}
                       icon={faRightToBracket}
           />
         </div>

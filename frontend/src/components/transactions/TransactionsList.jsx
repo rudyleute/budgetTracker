@@ -40,8 +40,8 @@ const TransactionsList = () => {
     });
 
     return <Accordion className={"animate-fade-in"}
-                      hClassName={"max-sml:h-[50px] bg-[var(--color-sec)] text-[var(--color-text)]"}
-                      bClassName={"bg-[var(--color-main)] p-[5px]"} label={
+                      hClassName={"max-sml:h-[50px] bg-(--color-sec) text-(--color-text)"}
+                      bClassName={"bg-(--color-main) p-[5px]"} label={
       <span className={"w-full flex justify-between"}>
         <span className={"text-clipped grow"}>{key} </span>
         <span>{total} €</span>
@@ -55,7 +55,7 @@ const TransactionsList = () => {
 
   const isEmpty = transactionsMap.length === 0;
   return (
-    <div className={"w-full flex flex-col gap-[5px] max-esml:gap-[20px] items-center"}>
+    <div className={"w-full flex flex-col gap-[5px] max-esml:gap-5 items-center"}>
       {!isEmpty && transactionsMap}
       <TransGetLoader>
         {isEmpty && <Empty text={"No transactions found"} size={"2xl"}/>}

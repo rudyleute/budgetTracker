@@ -1,5 +1,5 @@
 export const processErrors = (code) => {
-  let message = '';
+  let message;
   switch (code) {
     case "auth/credential-already-in-use":
       message = "The provided credentials are already in use.";

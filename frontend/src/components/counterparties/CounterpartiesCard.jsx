@@ -44,14 +44,14 @@ const CounterpartiesCard = ({ counterparty }) => {
         <span className={"w-full grid grid-cols-3"}>
           <IconCell>
             <IconButton title={`See the loans of ${counterparty.name}`}
-                        iconClassName={"icon-xs !text-[var(--color-third)]"}
+                        iconClassName={"icon-xs !text-(--color-third)"}
                         onClick={() => navigate(`/counterparties/${counterparty.id}`)} icon={faCoins}
             />
           </IconCell>
           <FontAwesomeIcon className={"justify-self-center"} size={"3x"} color={"var(--color-third)"} icon={faCircleUser}/>
           <IconCell className={"justify-self-end"}>
             <IconButton title={"Delete counterparty"}
-                        iconClassName={"icon-xs !text-[var(--color-third)]"}
+                        iconClassName={"icon-xs !text-(--color-third)"}
                         onClick={
                           () => showConfirmation(
                             () => deleteCounterparty(counterparty.id),

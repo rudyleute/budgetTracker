@@ -39,7 +39,7 @@ const ConfirmationProvider = ({ children }) => {
       {data.isShown &&
         <>
           <ConfirmationDialog onReject={onRejectAct} onAccept={onAcceptAct} text={data.text}/>
-          <div className={"overlay z-[2999]"}/>
+          <div className={"overlay z-2999"}/>
         </>}
     </ConfirmationContext.Provider>
   )

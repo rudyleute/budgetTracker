@@ -6,7 +6,7 @@ const RootLayout = () => {
   const {
     hideLoader,
     LoaderElement: AuthLoader
-  } = useLoader({ isLoading: true, overlayColor: "bg-[var(--color-main)]" });
+  } = useLoader({ isLoading: true, overlayColor: "bg-(--color-main)" });
 
   return (
     <AccountProvider onAuthReady={hideLoader}>

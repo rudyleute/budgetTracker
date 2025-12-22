@@ -31,10 +31,10 @@ const useLoader = ({
     if (!loader.loading) return <>{children}</>;
 
     return global ? createPortal(<div
-        className={twMerge("fixed gap-[15px] overlay z-[4000] flex flex-col justify-center items-center", `${overlayColor && '!'}${overlayColor}`)}>
+        className={twMerge("fixed gap-[15px] overlay z-4000 flex flex-col justify-center items-center", `${overlayColor && '!'}${overlayColor}`)}>
         <LoaderComp size={size} color={color}/>
         {loader.message && (
-          <span className="text-[var(--color-main)] font-bold">
+          <span className="text-(--color-main) font-bold">
             {loader.message}
           </span>
         )}

@@ -52,9 +52,9 @@ const TransactionsItem = ({ data }) => {
       </div>
       <div className={"price-wrapper flex items-center justify-end max-esml:row-start-3 max-esml:row-span-2 max-esml:col-start-3 text-(--color-text) px-3 py-1 h-full"}>{price} €</div>
       <div className={"leading-0 flex justify-center max-esml:row-start-4 max-esml:col-start-1 gap-[3px] max-esml:gap-2.5 max-esml:p-[0_5px]"}>
-        <IconButton title={"Edit"} iconClassName={"icon-xs max-esml:!text-[var(--color-third)] esml:!text-[var(--color-sec)]"} onClick={handleEditing}
+        <IconButton title={"Edit"} iconClassName={"icon-xs max-esml:!text-(--color-third) esml:!text-(--color-sec)"} onClick={handleEditing}
                     icon={faPenToSquare}/>
-        <IconButton title={"Delete"} iconClassName={"icon-xs max-esml:!text-[var(--color-third)] esml:!text-[var(--color-sec)]"} onClick={
+        <IconButton title={"Delete"} iconClassName={"icon-xs max-esml:!text-(--color-third) esml:!text-(--color-sec)"} onClick={
           () => showConfirmation(
             () => deleteTransaction(id),
             `transaction: "${name}" on ${transDay} ${transMonth} in category "${category.name}"`

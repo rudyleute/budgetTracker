@@ -6,7 +6,7 @@ import { formToast } from '../../helpers/toast.jsx';
 import { toast } from 'react-toastify';
 import LoansCard from '../../components/loans/LoansCard.jsx';
 import { useCallback, useEffect, useState } from 'react';
-import { useNavigate, redirect } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 const LoanPage = () => {
   const { id } = useParams();

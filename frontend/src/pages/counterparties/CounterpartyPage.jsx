@@ -79,7 +79,7 @@ const CounterpartyPage = () => {
         >
           <IconCell className={"absolute top-0 right-0 -translate-x-1/5 translate-y-1/3"}>
             <IconButton title={"Delete counterparty"}
-                        iconClassName={"icon-xs !text-[var(--color-third)]"}
+                        iconClassName={"icon-xs !text-(--color-third)"}
                         onClick={
                           () => showConfirmation(
                             () => {

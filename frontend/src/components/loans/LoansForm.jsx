@@ -7,7 +7,7 @@ import Select from '../simple/Select.jsx';
 import Button from '../simple/Button.jsx';
 import { useLoans } from '../../context/LoansProvider.jsx';
 import Input from '../simple/Input.jsx';
-import useAutocomplete from '../../hooks/useAutocomplete.jsx';
+import useAutocomplete from '../../hooks/useAutocomplete.js';
 import Autocomplete from '../simple/Autocomplete.jsx';
 
 const LoansForm = ({ data = {}, ref, isUpdate = false, onSubmit, counterparty }) => {

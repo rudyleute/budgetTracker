@@ -154,7 +154,7 @@ const TransactionsForm = ({ ref, name, categoryId, price, timestamp, onSubmit, i
             <IconButton
               onClick={handleCatCreate}
               className={"leading-0"}
-              iconClassName={"!text-[var(--color-text)]"}
+              iconClassName={"!text-(--color-text)"}
               title={"Add category"}
               icon={faFolderPlus}
             />

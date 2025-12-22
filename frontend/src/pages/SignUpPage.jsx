@@ -40,13 +40,13 @@ const SignUpPage = () => {
         className={"w-[350px] max-esml:w-[95%] flex flex-col window-center gap-[15px] relative bg-(--color-main) rounded-[15px] p-[20px_20px_35px_20px]"}
       >
         <div className={"flex items-center justify-between"}>
-          <IconButton size={"xl"} title={"Sign in"} iconClassName={"text-[var(--color-sec)]"}
+          <IconButton size={"xl"} title={"Sign in"} iconClassName={"text-(--color-sec)"}
                       onClick={() => navigate("/login")}
                       icon={faIdBadge}/>
           <span className={"inline-block text-(--color-text) uppercase font-bold"}>
             Sign up
           </span>
-          <IconButton type={"submit"} size={"xl"} title={"Sign up"} iconClassName={"text-[var(--color-sec)]"}
+          <IconButton type={"submit"} size={"xl"} title={"Sign up"} iconClassName={"text-(--color-sec)"}
                       icon={faRightToBracket}
           />
         </div>

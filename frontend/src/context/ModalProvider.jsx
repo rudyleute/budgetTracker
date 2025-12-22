@@ -34,7 +34,7 @@ const ModalProvider = ({ children }) => {
           </Modal>)
         })
       }
-      {stack.length > 0 && <div className={"overlay z-[1999]"} {...(stack.length === 1 ? {onClick: hideModal} : {})} />}
+      {stack.length > 0 && <div className={"overlay z-1999"} {...(stack.length === 1 ? {onClick: hideModal} : {})} />}
     </ModalContext.Provider>
   )
 }

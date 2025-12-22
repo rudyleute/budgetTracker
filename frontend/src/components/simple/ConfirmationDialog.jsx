@@ -3,13 +3,13 @@ import Button from './Button.jsx';
 
 const ConfirmationDialog = ({ onReject, onAccept, text }) => {
   return createPortal(
-    <div className={"bg-[var(--color-main)] z-[3000] w-[100%] max-w-[400px] h-[250px] window-center rounded-[15px] flex flex-col text-[var(--color-text)] font-bold"}>
+    <div className={"bg-(--color-main) z-3000 w-full max-w-[400px] h-[250px] window-center rounded-[15px] flex flex-col text-(--color-text) font-bold"}>
       <div className={"h-[80%] p-[10px_15px]"}>
         <span>Are you sure that you want to delete {text}?</span>
       </div>
       <div className={"grow flex justify-around items-center gap-2.5 p-[7px_10px]"}>
-        <Button className={"w-[50%] btn-classic jump-05 bg-[var(--color-third)]"} onClick={onReject}>Cancel</Button>
-        <Button className={"w-[50%] btn-classic jump-05 bg-[var(--color-sec)]"} onClick={onAccept}>Confirm</Button>
+        <Button className={"w-[50%] btn-classic jump-05 bg-(--color-third)"} onClick={onReject}>Cancel</Button>
+        <Button className={"w-[50%] btn-classic jump-05 bg-(--color-sec)"} onClick={onAccept}>Confirm</Button>
       </div>
     </div>, document.body);
 }
