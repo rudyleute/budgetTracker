@@ -3,10 +3,15 @@ import { faRightToBracket, faCircleUser } from '@fortawesome/free-solid-svg-icon
 import IconButton from '../components/simple/IconButton.jsx';
 import { useNavigate } from 'react-router-dom';
 import { useAccount } from '../context/AccountProvider.jsx';
-import { loginResolver } from '../resolvers/loginResolver.js';
+import { loginFormUtils } from '../resolvers/loginResolver.js';
 import { useForm } from 'react-hook-form';
+import { useMemo } from 'react';
 
 const LoginPage = () => {
+  const { resolver: loginResolver } = useMemo(() => {
+    return loginFormUtils();
+  }, []);
+
   const {
     register,
     formState: { errors },

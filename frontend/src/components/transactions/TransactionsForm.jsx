@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useCallback, useEffect, useMemo, useRef } from 'react';
 import Input from '../simple/Input.jsx';
 import Select from '../simple/Select.jsx';
 import { useCategories } from '../../context/CategoriesProvider.jsx';
@@ -11,11 +11,14 @@ import { faPenToSquare, faXmarkCircle } from '@fortawesome/free-regular-svg-icon
 import { useConfirmation } from '../../context/ConfirmationProvider.jsx';
 import { getDatetimeLocal } from '../../helpers/time.js';
 import { useForm } from 'react-hook-form';
-import { transactionResolver } from '../../resolvers/transactionResolver.js';
+import { transactionFormUtils } from '../../resolvers/transactionResolver.js';
 import Button from '../simple/Button.jsx';
 import { validateFields } from '../../helpers/utils.js';
 
 const TransactionsForm = ({ ref, name, categoryId, price, timestamp, onSubmit, isUpdate = false }) => {
+  const { resolver: transactionResolver, fieldsMeta } = useMemo(() => {
+    return transactionFormUtils();
+  }, []);
   const { categories, addCategory, editCategory, deleteCategory } = useCategories();
   const { data: catData, dataMap: catDataMap } = categories;
   const { showConfirmation } = useConfirmation();
@@ -44,6 +47,9 @@ const TransactionsForm = ({ ref, name, categoryId, price, timestamp, onSubmit, i
   });
 
   const fields = watch();
+  const updateCategory = useCallback((id) => setValue("categoryId", id, {
+    shouldDirty: true
+  }), [setValue]);
 
   useEffect(() => {
     if (ref) ref.current = {
@@ -61,7 +67,7 @@ const TransactionsForm = ({ ref, name, categoryId, price, timestamp, onSubmit, i
     const category = await editCategory(id, data);
 
     if (category) {
-      if (category.id === fields.categoryId) setValue("categoryId", category.id);
+      if (category.id === fields.categoryId) updateCategory(category.id);
       hideModal();
     }
   }
@@ -76,7 +82,7 @@ const TransactionsForm = ({ ref, name, categoryId, price, timestamp, onSubmit, i
     return <span className={"flex items-center justify-between gap-2.5"}>
         <span className={"text-clipped"}>
           <Color value={color}/>
-          <span className={"ml-[10px]"}>{name}</span>
+          <span className={"ml-2.5"}>{name}</span>
         </span>
         <span>
           <IconButton title={"Edit category"} size={"xs"} icon={faPenToSquare} onClick={() => {
@@ -89,9 +95,8 @@ const TransactionsForm = ({ ref, name, categoryId, price, timestamp, onSubmit, i
           }}/>
           <IconButton title={"Delete category"} size={"xs"} icon={faXmarkCircle} onClick={() => {
             showConfirmation(
-              () => {
-                deleteCategory(id)
-                if (id === fields.categoryId) setValue("categoryId", "")
+              async () => {
+                if (await deleteCategory(id) && id === fields.categoryId) updateCategory("")
               },
               `'${name}' category`
             )
@@ -104,7 +109,7 @@ const TransactionsForm = ({ ref, name, categoryId, price, timestamp, onSubmit, i
     const category = await addCategory(data);
 
     if (category) {
-      setValue("categoryId", category.id);
+      updateCategory(category.id)
       hideModal();
     }
   }
@@ -134,15 +139,15 @@ const TransactionsForm = ({ ref, name, categoryId, price, timestamp, onSubmit, i
         if (data) onSubmit(data);
       }
     }} className={"grid max-modal:grid-cols-1 modal:grid-cols-[2fr_1fr] gap-2.5"}>
-      <Input wClassName={"col-span-full modal:row-start-1"} label={"Name"} id={"name"} type={"text"} {...register("name", {
+      <Input required={fieldsMeta.name.required} wClassName={"col-span-full modal:row-start-1"} label={"Name"} id={"name"} type={"text"} {...register("name", {
         onChange: () => clearErrors("name")
       })} error={errors.name?.message}
       />
-      <Input label={"Timestamp"} id={"timestamp"} type={"datetime-local"} {...register("timestamp", {
+      <Input required={fieldsMeta.timestamp.required} label={"Timestamp"} id={"timestamp"} type={"datetime-local"} {...register("timestamp", {
         onChange: () => clearErrors("timestamp")
       })} error={errors.timestamp?.message}
       />
-      <Input label={"Price"} id={"price"} type={"number"} min={0} step={0.01} {...register("price", {
+      <Input required={fieldsMeta.price.required} label={"Price"} id={"price"} type={"number"} min={0} step={0.01} {...register("price", {
         onChange: () => clearErrors("price")
       })} error={errors.price?.message}
       />
@@ -151,6 +156,7 @@ const TransactionsForm = ({ ref, name, categoryId, price, timestamp, onSubmit, i
         className={"col-span-full"}
         value={fields.categoryId ? formLabel(catDataMap[fields.categoryId]) : ""}
         lClassName={"flex items-center"}
+        required={fieldsMeta.categoryId.required}
         label={
           <>
             <span className={"mr-[3px]"}>Category</span>
@@ -163,9 +169,7 @@ const TransactionsForm = ({ ref, name, categoryId, price, timestamp, onSubmit, i
             />
           </>
         }
-        onOptionClick={({ id }) => setValue("categoryId", id, {
-          shouldValidate: true, shouldDirty: true
-        })}
+        onOptionClick={({ id }) => updateCategory(id)}
         options={options}
         error={errors.categoryId?.message}
       />

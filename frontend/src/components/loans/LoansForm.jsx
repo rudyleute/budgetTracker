@@ -10,8 +10,6 @@ import Input from '../simple/Input.jsx';
 import useAutocomplete from '../../hooks/useAutocomplete.jsx';
 import Autocomplete from '../simple/Autocomplete.jsx';
 
-const Asterisk = () => <span title={"Required"} className={"text-[var(--color-third)]"}>*</span>
-
 const LoansForm = ({ data = {}, ref, isUpdate = false, onSubmit, counterparty }) => {
   const { priorities, types } = useLoans();
   const { resolver: loanResolver, fieldsMeta } = useMemo(() => {
@@ -95,17 +93,17 @@ const LoansForm = ({ data = {}, ref, isUpdate = false, onSubmit, counterparty })
       e.preventDefault();
       onSubmit && onSubmit()
     }} className={"grid max-modal:grid-cols-1 modal:grid-cols-[2fr_1fr] gap-2.5"}>
-      <Input wClassName={"col-span-full"} label={<>Name{fieldsMeta.name.required && <Asterisk/>}</>} id={"name"}
+      <Input required={fieldsMeta.name.required} wClassName={"col-span-full"} label={<>Name</>} id={"name"}
              type={"text"} {...register("name", {
         onChange: () => clearErrors("name")
       })} error={errors.name?.message}
       />
-      <Input label={<>Timestamp{fieldsMeta.timestamp.required && <Asterisk/>}</>} id={"timestamp"}
+      <Input required={fieldsMeta.timestamp.required} label={<>Timestamp</>} id={"timestamp"}
              type={"datetime-local"} {...register("timestamp", {
         onChange: () => clearErrors("timestamp")
       })} error={errors.timestamp?.message}
       />
-      <Input label={<>Sum{fieldsMeta.sum.required && <Asterisk/>}</>} id={"sum"} type={"number"} min={0}
+      <Input required={fieldsMeta.sum.required} label={<>Sum</>} id={"sum"} type={"number"} min={0}
              step={0.01} {...register("sum", {
         onChange: () => clearErrors("sum")
       })} error={errors.sum?.message}
@@ -113,12 +111,13 @@ const LoansForm = ({ data = {}, ref, isUpdate = false, onSubmit, counterparty })
       <Autocomplete
         {...restAutocompleteProps}
         id={"counterparty"}
-        label={<>Counterparty{fieldsMeta.counterpartyId.required && <Asterisk/>}</>}
+        required={fieldsMeta.counterpartyId.required}
+        label={<>Counterparty</>}
         className={"col-span-full"}
         placeholder={"Search for counterparty..."}
         error={errors.counterpartyId?.message}
       />
-      <Input wClassName={"col-span-full"} label={<>Deadline{fieldsMeta.deadline.required && <Asterisk/>}</>} id={"deadline"}
+      <Input required={fieldsMeta.deadline.required} wClassName={"col-span-full"} label={<>Deadline</>} id={"deadline"}
              type={"datetime-local"} {...register("deadline", {
         onChange: () => clearErrors("deadline")
       })} error={errors.deadline?.message}
@@ -128,7 +127,8 @@ const LoansForm = ({ data = {}, ref, isUpdate = false, onSubmit, counterparty })
         className={"col-span-full"}
         value={fields.type || "--Select type--"}
         lClassName={"flex items-center"}
-        label={<>Type{fieldsMeta.type.required && <Asterisk/>}</>}
+        required={fieldsMeta.type.required}
+        label={<>Type</>}
         onOptionClick={({ label }) => setValue("type", label, {
           shouldValidate: true, shouldDirty: true
         })}
@@ -139,9 +139,8 @@ const LoansForm = ({ data = {}, ref, isUpdate = false, onSubmit, counterparty })
         className={"col-span-full"}
         value={fields.priority || "--Select priority--"}
         lClassName={"flex items-center"}
-        label={<>
-          Priority{fieldsMeta.priority.required && <Asterisk/>}
-        </>}
+        required={fieldsMeta.priority.required}
+        label={<>Priority</>}
         onOptionClick={({ label }) => setValue("priority", label, {
           shouldValidate: true, shouldDirty: true
         })}

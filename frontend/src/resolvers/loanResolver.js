@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { sanitizedZodResolver } from '../helpers/utils.js';
+import { formUtils } from './formUtils.js';
 
 const loanSchema = (typeValues, priorityValues) => {
   return z.object({
@@ -27,13 +27,4 @@ const loanSchema = (typeValues, priorityValues) => {
   });
 }
 
-export const loanFormUtils = (typeValues, priorityValues) => {
-  const schema = loanSchema(typeValues, priorityValues);
-  return {
-    resolver: sanitizedZodResolver(schema),
-    fieldsMeta: Object.keys(schema.shape).reduce((acc, name) => {
-      acc[name] = {required: !schema.shape[name].isOptional()};
-      return acc;
-    }, {})
-  };
-};
+export const loanFormUtils = (typeValues, priorityValues) => formUtils(loanSchema(typeValues, priorityValues))

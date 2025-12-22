@@ -4,10 +4,9 @@ import { counterpartyFormUtils } from '../../resolvers/counterpartyResolver.js';
 import { validateFields } from '../../helpers/utils.js';
 import Button from '../simple/Button.jsx';
 import Input from '../simple/Input.jsx';
-import Asterisk from '../simple/Asterisk.jsx';
 import Textarea from '../simple/Textarea.jsx';
 
-const CounterpartiesForm = ({ data = {}, ref, isUpdate = false, onSubmit }) => {
+const CounterpartiesForm = ({ data = {}, ref, onSubmit }) => {
   const { resolver: counterpartyResolver, fieldsMeta } = useMemo(() => {
     return counterpartyFormUtils();
   }, []);
@@ -44,22 +43,22 @@ const CounterpartiesForm = ({ data = {}, ref, isUpdate = false, onSubmit }) => {
       e.preventDefault();
       onSubmit && onSubmit();
     }} className={"grid grid-cols-1 gap-2.5"}>
-      <Input label={<>Name{fieldsMeta.name.required && <Asterisk/>}</>} id={"name"}
+      <Input required={fieldsMeta.name.required} label={<>Name</>} id={"name"}
              type={"text"} {...register("name", {
         onChange: () => clearErrors("name")
       })} error={errors.name?.message}
       />
-      <Input label={<>Phone{fieldsMeta.phone.required && <Asterisk/>}</>} id={"phone"}
+      <Input required={fieldsMeta.phone.required} label={<>Phone</>} id={"phone"}
              type={"text"} {...register("phone", {
         onChange: () => clearErrors("phone")
       })} error={errors.phone?.message}
       />
-      <Input label={<>Email{fieldsMeta.email.required && <Asterisk/>}</>} id={"email"}
+      <Input required={fieldsMeta.email.required} label={<>Email</>} id={"email"}
              type={"email"} {...register("email", {
         onChange: () => clearErrors("email")
       })} error={errors.email?.message}
       />
-      <Textarea rows={5} className={"text-xl"} label={<>Note{fieldsMeta.note.required && <Asterisk/>}</>} id={"note"}
+      <Textarea required={fieldsMeta.note.required} rows={5} className={"text-xl"} label={<>Note</>} id={"note"}
              {...register("note", {
         onChange: () => clearErrors("note")
       })} error={errors.note?.message}

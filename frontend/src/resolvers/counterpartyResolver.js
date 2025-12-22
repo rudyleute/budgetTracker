@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { sanitizedZodResolver } from '../helpers/utils.js';
+import { formUtils } from './formUtils.js';
 
 const counterpartySchema = () => {
   return z.object({
@@ -23,13 +23,4 @@ const counterpartySchema = () => {
   });
 }
 
-export const counterpartyFormUtils = () => {
-  const schema = counterpartySchema();
-  return {
-    resolver: sanitizedZodResolver(schema),
-    fieldsMeta: Object.keys(schema.shape).reduce((acc, name) => {
-      acc[name] = {required: !schema.shape[name].isOptional()};
-      return acc;
-    }, {})
-  };
-};
+export const counterpartyFormUtils = () => formUtils(counterpartySchema());

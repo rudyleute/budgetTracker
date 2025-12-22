@@ -2,8 +2,9 @@ import React, { useState, useRef, useEffect } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faAngleDown, faAngleUp } from '@fortawesome/free-solid-svg-icons';
 import { twMerge } from 'tailwind-merge';
+import Asterisk from './Asterisk.jsx';
 
-const Select = ({ value, options, onOptionClick, className, label, error, lClassName }) => {
+const Select = ({ value, options, onOptionClick, required, className, label, error, lClassName }) => {
   const [isOpen, setIsOpen] = useState(false);
   const wrapperRef = useRef(null);
 
@@ -20,7 +21,7 @@ const Select = ({ value, options, onOptionClick, className, label, error, lClass
 
   return (
     <div ref={wrapperRef} className={twMerge("field-wrapper", className)}>
-      {label && <label className={twMerge("label", lClassName)}>{label}</label>}
+      {label && <label className={twMerge("label", lClassName)}>{label}{required && <Asterisk />}</label>}
       <div className={"input-wrapper"}>
         <div className={"field relative mb-px bg-(--color-text) overflow-hidden"}>
           <div className={"text-clipped pr-[45px]"}>{value}</div>

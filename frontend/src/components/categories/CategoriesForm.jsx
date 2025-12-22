@@ -1,12 +1,16 @@
-import { useEffect } from 'react';
+import { useEffect, useMemo } from 'react';
 import Input from '../simple/Input.jsx';
 import ColorPicker from '../simple/ColorPicker.jsx';
 import { useForm } from 'react-hook-form';
-import { categoryResolver } from '../../resolvers/categoryResolver.js';
+import { categoryFormUtils } from '../../resolvers/categoryResolver.js';
 import Button from '../simple/Button.jsx';
 import { validateFields } from '../../helpers/utils.js';
 
 const CategoriesForm = ({ ref, color, name, onSubmit, isUpdate = false }) => {
+  const { resolver: categoryResolver, fieldsMeta } = useMemo(() => {
+    return categoryFormUtils();
+  }, []);
+
   const {
     register,
     trigger,
@@ -20,7 +24,7 @@ const CategoriesForm = ({ ref, color, name, onSubmit, isUpdate = false }) => {
     resolver: categoryResolver,
     defaultValues: {
       name: name || "",
-      color: ""
+      color: color || ""
     },
     mode: "onSubmit",
     reValidateMode: "onSubmit"
@@ -36,8 +40,7 @@ const CategoriesForm = ({ ref, color, name, onSubmit, isUpdate = false }) => {
 
   useEffect(() => {
     //The color should be dirtied up before when creating a new category as there is a preset valid value
-    if (isUpdate) setValue("color", color)
-    else setValue("color", "#1100ff", { shouldDirty: true })
+    if (!isUpdate) setValue("color", "#1100ff", { shouldDirty: true })
   }, [setValue, isUpdate, color]);
 
   return (
@@ -48,10 +51,10 @@ const CategoriesForm = ({ ref, color, name, onSubmit, isUpdate = false }) => {
         if (res) onSubmit(res);
       }
     }} ref={ref} className={"form"}>
-      <Input {...register("name", {
+      <Input required={fieldsMeta.name.required} {...register("name", {
         onChange: () => clearErrors("name")
       })} error={errors.name?.message} label={"name"} id={"name"}/>
-      <ColorPicker error={errors.color?.message} value={fields.color} onChange={(newColor) => setValue("color", newColor, {
+      <ColorPicker required={fieldsMeta.color.required} error={errors.color?.message} value={fields.color} onChange={(newColor) => setValue("color", newColor, {
         shouldValidate: true, shouldDirty: true
       })}/>
 
