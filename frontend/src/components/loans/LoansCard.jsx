@@ -13,6 +13,7 @@ import { faCircleXmark } from '@fortawesome/free-regular-svg-icons';
 import { useConfirmation } from '../../context/ConfirmationProvider.jsx';
 import _ from 'lodash';
 import IconCell from '../simple/IconCell.jsx';
+import { onFormSubmit } from '../../helpers/utils.js';
 
 const LoansCard = ({ loan, onAfterEdit, onAfterDeleteSuccess }) => {
   const { showModal, hideModal } = useModal();
@@ -32,28 +33,22 @@ const LoansCard = ({ loan, onAfterEdit, onAfterDeleteSuccess }) => {
 
   const timestamp = useMemo(() => formatTimestamp(loan.timestamp), [loan.timestamp])
 
-  const onSubmitEdit = useCallback(async () => {
-    const fields = await formRef.current.getData();
-
-    if (_.isEmpty(fields)) return null;
-
-    const res = await editLoan(loan.id, fields);
-    if (res) {
+  const onLoanEdit = useCallback(
+    async () => onFormSubmit(formRef.current.getData, editLoan, (loan) => {
       hideModal();
-      onAfterEdit && onAfterEdit(res);
-    }
-
-    return null;
-  }, [editLoan, hideModal, loan.id, onAfterEdit]);
+      onAfterEdit && onAfterEdit(loan);
+    }, loan.id),
+    [editLoan, hideModal, loan.id, onAfterEdit]
+  )
 
   const handleOnEdit = useCallback(() => {
     showModal(
       "Edit loan",
-      <LoansForm onSubmit={onSubmitEdit} data={loan} ref={formRef} isUpdate={true}/>,
-      onSubmitEdit,
+      <LoansForm onSubmit={onLoanEdit} data={loan} ref={formRef} isUpdate={true}/>,
+      onLoanEdit,
       false
     )
-  }, [loan, onSubmitEdit, showModal]);
+  }, [loan, onLoanEdit, showModal]);
 
   return (
     <div className={"w-full h-fit hover:cursor-pointer sml:lift-scale"} title={"Edit loan"} onClick={handleOnEdit}>

@@ -11,8 +11,8 @@ import { faCircleXmark } from '@fortawesome/free-regular-svg-icons';
 import IconButton from '../simple/IconButton.jsx';
 import { Link } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
-import _ from 'lodash';
 import IconCell from '../simple/IconCell.jsx';
+import { onFormSubmit } from '../../helpers/utils.js';
 
 const CounterpartiesCard = ({ counterparty }) => {
   const { showModal, hideModal } = useModal();
@@ -21,25 +21,19 @@ const CounterpartiesCard = ({ counterparty }) => {
   const formRef = useRef(null);
   const navigate = useNavigate();
 
-  const onSubmitEdit = useCallback(async () => {
-    const fields = await formRef.current.getData();
-
-    if (_.isEmpty(fields)) return null;
-
-    const res = await editCounterparty(counterparty.id, fields);
-    if (res) hideModal();
-
-    return null;
-  }, [editCounterparty, hideModal, counterparty.id]);
+  const onCounterpartyEdit = useCallback(
+    async () => onFormSubmit(formRef.current.getData, editCounterparty, hideModal, counterparty.id),
+    [counterparty.id, editCounterparty, hideModal]
+  )
 
   const handleOnEdit = useCallback(() => {
     showModal(
       "Edit counterparty",
-      <CounterpartiesForm onSubmit={onSubmitEdit} data={counterparty} ref={formRef} isUpdate={true}/>,
-      onSubmitEdit,
+      <CounterpartiesForm onSubmit={onCounterpartyEdit} data={counterparty} ref={formRef} isUpdate={true}/>,
+      onCounterpartyEdit,
       false
     )
-  }, [counterparty, onSubmitEdit, showModal]);
+  }, [counterparty, onCounterpartyEdit, showModal]);
 
   return (
     <div className={"w-full h-fit hover:cursor-pointer sml:lift-scale text-xl"} title={"Edit counterparty"}
@@ -92,8 +86,8 @@ const CounterpartiesCard = ({ counterparty }) => {
           <span className={"text-clipped grow"}>{counterparty.email}</span>
         </span>}
         <span className={twMerge(
-          "price-wrapper !bg-[var(--color-pos)]/80",
-          counterparty.balance > 0 && "!bg-[var(--color-third)]/80"
+          "price-wrapper bg-(--color-pos)/80!",
+          counterparty.balance > 0 && "bg-(--color-third)/80!"
         )}>
           {Math.abs(counterparty.balance)} €
         </span>

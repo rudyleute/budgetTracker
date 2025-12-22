@@ -43,9 +43,7 @@ const LoansForm = ({ data = {}, ref, isUpdate = false, onSubmit, counterparty })
   });
 
   const onOptionClick = useCallback(
-    (item) => setValue("counterpartyId", item.id, {
-      shouldValidate: true, shouldDirty: true
-    }),
+    (item) => setValue("counterpartyId", item.id, { shouldDirty: true }),
     [setValue]
   );
 
@@ -73,9 +71,7 @@ const LoansForm = ({ data = {}, ref, isUpdate = false, onSubmit, counterparty })
 
     //default counterparty should be marked as dirtied up
     if (!isUpdate && counterparty?.id) {
-      setValue("counterpartyId", counterparty.id, {
-        shouldValidate: true, shouldDirty: true
-      })
+      setValue("counterpartyId", counterparty.id, { shouldDirty: true })
     }
   }, [setValue, isUpdate, timestamp, deadline, counterparty]);
 
@@ -91,6 +87,7 @@ const LoansForm = ({ data = {}, ref, isUpdate = false, onSubmit, counterparty })
   return (
     <form onSubmit={async (e) => {
       e.preventDefault();
+      console.log(onSubmit)
       onSubmit && onSubmit()
     }} className={"grid max-modal:grid-cols-1 modal:grid-cols-[2fr_1fr] gap-2.5"}>
       <Input required={fieldsMeta.name.required} wClassName={"col-span-full"} label={<>Name</>} id={"name"}

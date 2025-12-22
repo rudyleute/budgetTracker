@@ -11,10 +11,10 @@ import Select from '../simple/Select.jsx';
 import IconButton from '../simple/IconButton.jsx';
 import Input from '../simple/Input.jsx';
 import React, { useCallback, useMemo, useRef } from 'react';
-import _ from 'lodash';
 import LoansForm from '../loans/LoansForm.jsx';
 import { useModal } from '../../context/ModalProvider.jsx';
 import { useLoans } from '../../context/LoansProvider.jsx';
+import { onFormSubmit } from '../../helpers/utils.js';
 
 const CounterpartyFilters = ({counterparty}) => {
   const { updateLoansQueryParams, resetLoansQueryParams, priorities, types, loansQueryParams, addLoan } = useLoans();
@@ -31,25 +31,19 @@ const CounterpartyFilters = ({counterparty}) => {
     [loansQueryParams.type, types]
   );
 
-  const onSubmitCreate = useCallback(async () => {
-    const fields = await formRef.current.getData();
-
-    if (_.isEmpty(fields)) return null;
-
-    const res = await addLoan(fields);
-    if (res) hideModal();
-
-    return res;
-  }, [addLoan, hideModal]);
+  const onLoanCreate = useCallback(
+    async () => onFormSubmit(formRef.current.getData, addLoan, hideModal),
+    [addLoan, hideModal]
+  );
 
   const handleCreation = useCallback(() => {
     showModal(
       "New loan",
-      <LoansForm onSubmit={onSubmitCreate} ref={formRef} counterparty={counterparty}/>,
-      onSubmitCreate,
+      <LoansForm onSubmit={onLoanCreate} ref={formRef} counterparty={counterparty}/>,
+      onLoanCreate,
       false
     )
-  }, [counterparty, onSubmitCreate, showModal]);
+  }, [counterparty, onLoanCreate, showModal]);
 
   return (
     <div

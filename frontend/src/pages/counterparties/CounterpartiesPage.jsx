@@ -10,6 +10,7 @@ import PillButtons from '../../components/simple/PillButtons.jsx';
 import TransactionsForm from '../../components/transactions/TransactionsForm.jsx';
 import { useModal } from '../../context/ModalProvider.jsx';
 import CounterpartiesForm from '../../components/counterparties/CounterpartiesForm.jsx';
+import { onFormSubmit } from '../../helpers/utils.js';
 
 const CounterpartiesPage = () => {
   const [searchValue, setSearchValue] = useState("");
@@ -24,31 +25,25 @@ const CounterpartiesPage = () => {
     [updateCounterpartiesQueryParams]
   );
 
-  const handleSearchChange = (e) => {
+  const handleSearchChange = useCallback((e) => {
     const value = e.target.value;
     setSearchValue(value);
     debouncedSearch(value);
-  }
+  }, [debouncedSearch]);
 
-  const onSubmitCreate = async () => {
-    const fields = await formRef.current.getData();
+  const onCounterpartyCreate = useCallback(
+    async () => onFormSubmit(formRef.current.getData, addCounterparty, hideModal),
+    [addCounterparty, hideModal]
+  );
 
-    if (_.isEmpty(fields)) return null;
-
-    const res = addCounterparty(fields);
-    if (res) hideModal();
-
-    return null;
-  }
-
-  const handleCreation = () => {
+  const handleCreation = useCallback(() => {
     showModal(
       "New counterparty",
-      <CounterpartiesForm onSubmit={onSubmitCreate} ref={formRef}/>,
-      onSubmitCreate,
+      <CounterpartiesForm onSubmit={onCounterpartyCreate} ref={formRef}/>,
+      onCounterpartyCreate,
       false
     )
-  }
+  }, [onCounterpartyCreate, showModal])
 
   return (
     <>

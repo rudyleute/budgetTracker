@@ -46,10 +46,7 @@ const CategoriesForm = ({ ref, color, name, onSubmit, isUpdate = false }) => {
   return (
     <form onSubmit={async (e) => {
       e.preventDefault();
-      if (onSubmit) {
-        const res = await validateFields(trigger, getValues(), formState.dirtyFields);
-        if (res) onSubmit(res);
-      }
+      onSubmit && onSubmit()
     }} ref={ref} className={"form"}>
       <Input required={fieldsMeta.name.required} {...register("name", {
         onChange: () => clearErrors("name")

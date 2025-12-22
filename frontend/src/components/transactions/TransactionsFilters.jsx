@@ -18,6 +18,7 @@ import _ from 'lodash';
 import { createTimeFilters } from '../../helpers/time.js';
 import TransactionsForm from './TransactionsForm.jsx';
 import { v4 as uuidv4 } from 'uuid';
+import { onFormSubmit } from '../../helpers/utils.js';
 
 const defaultOption = { label: "---Select the period---" }
 const TransactionsFilters = () => {
@@ -46,23 +47,19 @@ const TransactionsFilters = () => {
 
   const options = useMemo(() => createTimeFilters(setValues, uuidv4), [setValues]);
 
-  const addTrans = useCallback(async (data) => {
-    if (await addTransaction(data)) hideModal();
-  }, [addTransaction, hideModal]);
-
-  const onSubmitCreate = useCallback(async () => {
-    const fields = await formRef.current.getData();
-    if (fields) await addTrans(fields);
-  }, [addTrans]);
+  const onTransactionCreate = useCallback(
+    async () => onFormSubmit(formRef.current.getData, addTransaction, hideModal),
+    [addTransaction, hideModal]
+  );
 
   const handleCreation = useCallback(() => {
     showModal(
       "New transaction",
-      <TransactionsForm onSubmit={addTrans} ref={formRef}/>,
-      onSubmitCreate,
+      <TransactionsForm onSubmit={onTransactionCreate} ref={formRef}/>,
+      onTransactionCreate,
       false
     )
-  }, [addTrans, onSubmitCreate, showModal])
+  }, [onTransactionCreate, showModal])
 
   return (
     <div className={"grid filters-4-grid gap-2.5 animate-fade-in"}>

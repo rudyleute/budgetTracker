@@ -18,6 +18,7 @@ import useAutocomplete from '../../hooks/useAutocomplete.jsx';
 import LoansForm from '../../components/loans/LoansForm.jsx';
 import LoansList from '../../components/loans/LoansList.jsx';
 import _ from 'lodash';
+import { onFormSubmit } from '../../helpers/utils.js';
 
 const LoansPage = () => {
   const {
@@ -50,25 +51,19 @@ const LoansPage = () => {
     [loansQueryParams.type, types]
   );
 
-  const onSubmitCreate = async () => {
-    const fields = await formRef.current.getData();
+  const onLoanCreate = useCallback(
+    async () => onFormSubmit(formRef.current.getData, addLoan, hideModal),
+    [addLoan, hideModal]
+  )
 
-    if (_.isEmpty(fields)) return null;
-
-    const res = await addLoan(fields);
-    if (res) hideModal();
-
-    return res;
-  }
-
-  const handleCreation = () => {
+  const handleCreation = useCallback(() => {
     showModal(
       "New loan",
-      <LoansForm onSubmit={onSubmitCreate} ref={formRef}/>,
-      onSubmitCreate,
+      <LoansForm onSubmit={onLoanCreate} ref={formRef}/>,
+      onLoanCreate,
       false
     )
-  }
+  }, [onLoanCreate, showModal]);
 
   return (
     <>

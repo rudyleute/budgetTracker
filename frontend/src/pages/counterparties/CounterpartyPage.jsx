@@ -19,6 +19,7 @@ import { useCounterparties } from '../../context/CounterpartiesProvider.jsx';
 import { useConfirmation } from '../../context/ConfirmationProvider.jsx';
 import IconButton from '../../components/simple/IconButton.jsx';
 import { faCircleXmark } from '@fortawesome/free-regular-svg-icons';
+import { onFormSubmit } from '../../helpers/utils.js';
 
 const CounterpartyPage = () => {
   const { showModal, hideModal } = useModal();
@@ -34,26 +35,22 @@ const CounterpartyPage = () => {
     LoaderElement: GetLoader
   } = useLoader({ isLoading: true, color: "var(--color-sec)", global: false, LoaderComp: ScaleLoader });
 
-  const onSubmitEdit = useCallback(async () => {
-    const fields = await formRef.current.getData();
-
-    if (_.isEmpty(fields)) return null;
-
-    const res = await editCounterparty(counterparty.id, fields);
-    if (res) hideModal();
-
-    setCounterparty(res)
-    return null;
-  }, [editCounterparty, hideModal, counterparty.id]);
+  const onCounterpartyEdit = useCallback(
+    async () => onFormSubmit(formRef.current.getData, editCounterparty, (counterparty) => {
+      setCounterparty(counterparty);
+      hideModal();
+    }, counterparty.id),
+    [counterparty.id, editCounterparty, hideModal]
+  )
 
   const handleOnEdit = useCallback(() => {
     showModal(
       "Edit counterparty",
-      <CounterpartiesForm onSubmit={onSubmitEdit} data={counterparty} ref={formRef} isUpdate={true}/>,
-      onSubmitEdit,
+      <CounterpartiesForm onSubmit={onCounterpartyEdit} data={counterparty} ref={formRef} isUpdate={true}/>,
+      onCounterpartyEdit,
       false
     )
-  }, [counterparty, onSubmitEdit, showModal]);
+  }, [counterparty, onCounterpartyEdit, showModal]);
 
   useEffect(() => {
     (async () => {

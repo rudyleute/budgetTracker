@@ -13,7 +13,7 @@ import { getDatetimeLocal } from '../../helpers/time.js';
 import { useForm } from 'react-hook-form';
 import { transactionFormUtils } from '../../resolvers/transactionResolver.js';
 import Button from '../simple/Button.jsx';
-import { validateFields } from '../../helpers/utils.js';
+import { onFormSubmit, validateFields } from '../../helpers/utils.js';
 
 const TransactionsForm = ({ ref, name, categoryId, price, timestamp, onSubmit, isUpdate = false }) => {
   const { resolver: transactionResolver, fieldsMeta } = useMemo(() => {
@@ -63,20 +63,21 @@ const TransactionsForm = ({ ref, name, categoryId, price, timestamp, onSubmit, i
     else setValue("timestamp", getDatetimeLocal(new Date(Date.now())), { shouldDirty: true });
   }, [setValue, isUpdate, timestamp]);
 
-  const editCat = async (id, data) => {
-    const category = await editCategory(id, data);
-
-    if (category) {
-      if (category.id === fields.categoryId) updateCategory(category.id);
+  const onCategoryEdit = useCallback(
+    async (id) => onFormSubmit(catFormRef.current.getData, editCategory, (category) => {
+      if (category.id === fields.categoryId) updateCategory(category.id); //if the updated category was the selected one
       hideModal();
-    }
-  }
+    }, id), [editCategory, fields.categoryId, hideModal, updateCategory]
+  )
 
-  const handleCatEdit = async (id) => {
-    const data = await catFormRef.current.getData();
+  const onCategoryCreate = useCallback(
+    async () => onFormSubmit(catFormRef.current.getData, addCategory, (category) => {
+      updateCategory(category.id);
+      hideModal();
+    }),
+    [addCategory, hideModal, updateCategory]
+  )
 
-    if (data) await editCat(id, data);
-  }
 
   const formLabel = ({ id, name, color }) => {
     return <span className={"flex items-center justify-between gap-2.5"}>
@@ -88,8 +89,9 @@ const TransactionsForm = ({ ref, name, categoryId, price, timestamp, onSubmit, i
           <IconButton title={"Edit category"} size={"xs"} icon={faPenToSquare} onClick={() => {
             showModal(
               "Edit category",
-              <CategoriesForm onSubmit={(data) => editCat(id, data)} ref={catFormRef} name={name} color={color} isUpdate={true}/>,
-              () => handleCatEdit(id),
+              <CategoriesForm onSubmit={() => onCategoryEdit(id)} ref={catFormRef} name={name} color={color}
+                              isUpdate={true}/>,
+              () => onCategoryEdit(id),
               false
             )
           }}/>
@@ -105,30 +107,16 @@ const TransactionsForm = ({ ref, name, categoryId, price, timestamp, onSubmit, i
       </span>
   }
 
-  const addCat = async (data) => {
-    const category = await addCategory(data);
-
-    if (category) {
-      updateCategory(category.id)
-      hideModal();
-    }
-  }
-
-  const handleCatSave = async () => {
-    const data = await catFormRef.current.getData();
-
-    if (data) await addCat(data);
-  }
-
   const options = catData.filter(cat => cat.id !== fields.categoryId).map(item => ({ label: formLabel(item), ...item }))
-  const handleCatCreate = () => {
+
+  const handleCatCreate = useCallback(() => {
     showModal(
       "Add category",
-      <CategoriesForm onSubmit={addCat} ref={catFormRef}/>,
-      handleCatSave,
+      <CategoriesForm onSubmit={onCategoryCreate} ref={catFormRef}/>,
+      onCategoryCreate,
       false
     )
-  }
+  }, [onCategoryCreate, showModal]);
 
   return (
     <form onSubmit={async (e) => {
@@ -139,15 +127,18 @@ const TransactionsForm = ({ ref, name, categoryId, price, timestamp, onSubmit, i
         if (data) onSubmit(data);
       }
     }} className={"grid max-modal:grid-cols-1 modal:grid-cols-[2fr_1fr] gap-2.5"}>
-      <Input required={fieldsMeta.name.required} wClassName={"col-span-full modal:row-start-1"} label={"Name"} id={"name"} type={"text"} {...register("name", {
+      <Input required={fieldsMeta.name.required} wClassName={"col-span-full modal:row-start-1"} label={"Name"}
+             id={"name"} type={"text"} {...register("name", {
         onChange: () => clearErrors("name")
       })} error={errors.name?.message}
       />
-      <Input required={fieldsMeta.timestamp.required} label={"Timestamp"} id={"timestamp"} type={"datetime-local"} {...register("timestamp", {
+      <Input required={fieldsMeta.timestamp.required} label={"Timestamp"} id={"timestamp"}
+             type={"datetime-local"} {...register("timestamp", {
         onChange: () => clearErrors("timestamp")
       })} error={errors.timestamp?.message}
       />
-      <Input required={fieldsMeta.price.required} label={"Price"} id={"price"} type={"number"} min={0} step={0.01} {...register("price", {
+      <Input required={fieldsMeta.price.required} label={"Price"} id={"price"} type={"number"} min={0}
+             step={0.01} {...register("price", {
         onChange: () => clearErrors("price")
       })} error={errors.price?.message}
       />
