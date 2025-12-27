@@ -1,8 +1,9 @@
 import { useEffect, useState, createContext, useContext, useMemo, useCallback } from "react";
-import { auth } from "../services/firebase.js";
+import { auth, provider } from "../services/firebase.js";
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
+  signInWithPopup,
   signOut,
   sendEmailVerification,
   onAuthStateChanged,
@@ -41,13 +42,41 @@ const AccountProvider = ({ children, onAuthReady }) => {
       debouncedAuthHandler.cancel();
       unsubscribe();
     };
-  }, []);
+  }, [onAuthReady]);
+
+  const signInWithGoogle = useCallback(async () => {
+    showActionLoader();
+    try {
+      const res = await signInWithPopup(auth, provider);
+
+      //if there are several providers associated with the account, or if it is a sign in, the date has already been saved on the backend
+      if (res._tokenResponse?.isNewUser) {
+        const userRes = await api.post("/users");
+
+        if (!userRes.data) {
+          toast.error(formToast(userRes.message));
+          await signOut(auth);
+          return false;
+        }
+      }
+
+      return true;
+    } catch (e) {
+      if (e.code === 'auth/popup-closed-by-user') return false;
+      else toast.error(formToast(processErrors(e.code)));
+
+      return false;
+    } finally {
+      hideActionLoader();
+    }
+  }, [hideActionLoader, showActionLoader]);
 
   const signUp = useCallback(async (data) => {
     showActionLoader();
     try {
       const result = await createUserWithEmailAndPassword(auth, data.email, data.password);
 
+      //No need to check whether the user is new here as the function above will throw an error in this case
       const userRes = await api.post("/users");
 
       if (!userRes.data) {
@@ -99,7 +128,7 @@ const AccountProvider = ({ children, onAuthReady }) => {
     }
   }, [hideActionLoader, showActionLoader]);
 
-  const value = useMemo(() => ({ isAuthenticated, signUp, logIn, logOut }), [isAuthenticated, logIn, logOut, signUp])
+  const value = useMemo(() => ({ isAuthenticated, signUp, logIn, logOut, signInWithGoogle }), [isAuthenticated, logIn, logOut, signUp, signInWithGoogle])
   return (
     <AccountContext.Provider value={value}>
       {children}

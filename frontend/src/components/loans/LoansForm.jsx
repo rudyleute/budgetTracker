@@ -87,7 +87,6 @@ const LoansForm = ({ data = {}, ref, isUpdate = false, onSubmit, counterparty })
   return (
     <form onSubmit={async (e) => {
       e.preventDefault();
-      console.log(onSubmit)
       onSubmit && onSubmit()
     }} className={"grid max-modal:grid-cols-1 modal:grid-cols-[2fr_1fr] gap-2.5"}>
       <Input required={fieldsMeta.name.required} wClassName={"col-span-full"} label={<>Name</>} id={"name"}

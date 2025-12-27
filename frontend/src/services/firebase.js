@@ -12,7 +12,12 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const auth = getAuth();
-auth.useDeviceLanguage();
+auth.useDeviceLanguage(); //Use the language of the device
 const provider = new GoogleAuthProvider();
+
+provider.setCustomParameters({
+  'login_hint': 'user@example.com',
+  prompt: 'select_account'
+})
 
 export {auth, provider, app};

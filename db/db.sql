@@ -2,14 +2,12 @@ CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
 CREATE TYPE loan_types AS ENUM ('borrowed', 'lent');
 CREATE TYPE priority_types AS ENUM ('low', 'medium', 'high');
-CREATE TYPE provider_types AS ENUM ('google', 'password');
 
 
 CREATE TABLE IF NOT EXISTS users
 (
     uid        VARCHAR(128) PRIMARY KEY,
     email      VARCHAR(255) UNIQUE      NOT NULL CHECK ( LENGTH(email) >= 5 ),
-    provider provider_types NOT NULL DEFAULT 'password',
     created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP CHECK ( created_at <= NOW() ),
     updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP CHECK ( updated_at <= NOW() )
 );
