@@ -54,7 +54,7 @@ router.get('/', async (req, res) => {
                          0
                  ) AS balance
           FROM counterparties cp
-                   LEFT JOIN loans l ON cp.id = l.counterparty_id AND l.user_uid = $${params.length - 2}
+                   LEFT JOIN loans l ON cp.id = l.counterparty_id AND l.user_uid = $${params.length - 2} AND l.closed_at IS NULL
           WHERE ${cond.join(' AND ')}
           GROUP BY cp.id
           ORDER BY balance DESC, cp.name
@@ -125,7 +125,7 @@ router.get('/:id', async (req, res) => {
                        0
                ) AS balance
         FROM counterparties cp
-                 LEFT JOIN loans l ON cp.id = l.counterparty_id AND l.user_uid = $1
+                 LEFT JOIN loans l ON cp.id = l.counterparty_id AND l.user_uid = $1 AND l.closed_at IS NULL
         WHERE cp.user_uid = $1
           AND cp.id = $2
         GROUP BY cp.id

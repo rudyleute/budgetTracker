@@ -3,10 +3,10 @@ const db = require('../db');
 const router = express.Router();
 const logger = require('../logger')
 const { handleDelete, handleUpsert, validateCounterparty } = require('./generic');
-const { buildPostQuery, buildPatchQuery } = require('../helpers/loans.query');
+const { buildPostQuery, buildPatchQuery, formDefaultSelectQuery } = require('../helpers/loans.query');
 
 const pageSize = 30;
-const optAllowedFields = ["deadline", "priority"]
+const optAllowedFields = ["deadline", "priority"] //closed_at should not be processed should it come from the frontend. A separate route handles that
 const reqAllowedFields = ["name", "timestamp", "counterparty_id", "type", "sum"];
 
 router.get('/', async (req, res) => {
@@ -17,68 +17,44 @@ router.get('/', async (req, res) => {
     logger.debug('Fetching loans', { uid, offset, reqType, priority, sort, order, from, to, due, limit, counterparty });
     const params = [];
 
-    params.push(uid);
-
-    //Calculate all the deadlines that are due to within 2 weeks
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-
-    const twoWeeksFromNow = new Date();
-    twoWeeksFromNow.setDate(twoWeeksFromNow.getDate() + 14);
-    twoWeeksFromNow.setHours(23, 59, 59, 999);
-    params.push(twoWeeksFromNow.toISOString());
-
-    const cond = ["l.user_uid = $1"];
+    const dateInd = params.length + 1
+    const { query: defaultQuery, date, alias } = formDefaultSelectQuery(false, dateInd);
+    params.push(date);
+    const cond = [`${alias}.user_uid = $${params.length + 1}`];
+    params.push(uid)
 
     //'borrowed' or 'lent'
     if (reqType) {
       params.push(reqType);
-      cond.push(`l.type = $${params.length}`);
+      cond.push(`${alias}.type = $${params.length}`);
     }
     if (from) {
       params.push(from);
-      cond.push(`l.timestamp >= $${params.length}`);
+      cond.push(`${alias}.timestamp >= $${params.length}`);
     }
     if (to) {
       const nextDay = new Date(to);
       nextDay.setDate(nextDay.getDate() + 1);
       params.push(nextDay.toISOString());
-      cond.push(`l.timestamp < $${params.length}`);
+      cond.push(`${alias}.timestamp < $${params.length}`);
     }
     if (priority) {
       params.push(priority);
-      cond.push(`l.priority = $${params.length}`);
+      cond.push(`${alias}.priority = $${params.length}`);
     }
     if (counterparty) {
       params.push(counterparty);
-      cond.push(`l.counterparty_id = $${params.length}`);
+      cond.push(`${alias}.counterparty_id = $${params.length}`);
     }
     //In this case we are only interested in the overdue and soon-to-be overdue deadlines
-    if (due === "true") cond.push(`(l.priority = 'high' OR (l.deadline IS NOT NULL AND DATE(l.deadline) <= DATE($2)))`)
+    if (due === "true") cond.push(`
+      ${alias}.closed_at IS NULL AND
+      (${alias}.priority = 'high' OR
+      (${alias}.deadline IS NOT NULL AND DATE(${alias}.deadline) <= DATE($${dateInd})))`
+    )
 
     let query = `
-      SELECT
-        l.id,
-        l.name,
-        l.timestamp,
-        l.deadline,
-        l.type,
-        l.priority,
-        l.sum,
-        json_build_object(
-          'id', cp.id,
-          'name', cp.name,
-          'email', cp.email,
-          'note', cp.note,
-          'phone', cp.phone
-        ) AS counterparty,
-        (CASE
-             WHEN l.priority = 'high' THEN true
-             WHEN l.deadline IS NOT NULL AND DATE(l.deadline) <= DATE($2) THEN true
-             ELSE false
-        END) AS is_due /* All overdue loans and loans that will be overdue max in 2 weeks */
-      FROM loans l
-      LEFT JOIN counterparties cp ON l.counterparty_id = cp.id
+      ${defaultQuery}
       WHERE ${cond.join(' AND ')}
     `;
 
@@ -88,25 +64,27 @@ router.get('/', async (req, res) => {
     //It should be possible to overwrite the default sorting by overdue, deadline and stuff via sort param
     if (sort && sortable.includes(sort)) {
       const dir = order.toUpperCase() === 'ASC' ? 'ASC' : 'DESC';
-      orderClause = `ORDER BY l.${sort} ${dir} NULLS LAST`;
+      orderClause = `ORDER BY ${alias}.${sort} ${dir} NULLS LAST`;
     } else {
       /*Default sorting
-      1 - overdue deadlines are on top
-      2 - deadlines with the least time to be met/the most overdue ones are on top
-      3 - deadlines in the order of importance from the most important to the least important/not set are on top
-      4 - the most recently added loans are on top
+      1 - non-closed loans are on top
+      2 - overdue deadlines are on top
+      3 - deadlines with the least time to be met/the most overdue ones are on top
+      4 - deadlines in the order of importance from the most important to the least important/not set are on top
+      5 - the most recently added loans are on top
       */
       orderClause = `
         ORDER BY
-          CASE WHEN DATE(l.deadline) < CURRENT_DATE THEN 0 ELSE 1 END,
-          DATE(l.deadline) NULLS LAST,
+          ${alias}.closed_at DESC NULLS FIRST,
+          CASE WHEN DATE(${alias}.deadline) < CURRENT_DATE THEN 0 ELSE 1 END,
+          DATE(${alias}.deadline) NULLS LAST,
           CASE
-            WHEN l.priority = 'high' THEN 1
-            WHEN l.priority = 'medium' THEN 2
-            WHEN l.priority = 'low' THEN 3
+            WHEN ${alias}.priority = 'high' THEN 1
+            WHEN ${alias}.priority = 'medium' THEN 2
+            WHEN ${alias}.priority = 'low' THEN 3
             ELSE 4
           END,
-          CASE WHEN l.deadline IS NULL THEN l.timestamp END DESC
+          CASE WHEN ${alias}.deadline IS NULL THEN ${alias}.timestamp END DESC
       `;
     }
 
@@ -161,6 +139,51 @@ router.get('/', async (req, res) => {
   }
 });
 
+router.patch("/:id/close", async (req, res) => {
+  try {
+    const uid = req.user.uid;
+    const { id } = req.params;
+
+    logger.debug('Closing the loan', { uid, id });
+
+    const { date, query: defaultQuery } = formDefaultSelectQuery(true, 3);
+
+    const result = await db.query(
+      `WITH changed AS (
+          UPDATE loans
+              SET closed_at = CURRENT_TIMESTAMP
+              WHERE user_uid = $1 AND id = $2 AND closed_at IS NULL
+              RETURNING *)
+           ${defaultQuery};
+      `,
+      [uid, id, date]
+    );
+
+    if (result.rows.length === 0) {
+      logger.warn('Requested loan has not been updated', { uid, id })
+      return res.status(404).json({
+        message: "Requested loan has not been found"
+      })
+    }
+
+    logger.info('Requested loan has been retrieved successfully', {
+      uid,
+      loan_id: id
+    });
+
+    return res.status(200).json(result.rows[0]);
+  } catch (error) {
+    const { id } = req.params;
+    logger.error(`Failed to close the loan`, {
+      error: error.message,
+      stack: error.stack,
+      uid: req.user.uid,
+      loan_id: id
+    });
+    res.status(500).json({ message: `Failed to close the loan` });
+  }
+})
+
 router.get("/:id", async (req, res) => {
   try {
     const uid = req.user.uid;
@@ -168,33 +191,20 @@ router.get("/:id", async (req, res) => {
 
     logger.debug('Fetching a loan', { uid, id });
 
+    const { date, query: defaultQuery, alias } = formDefaultSelectQuery(false, 3);
+
     const result = await db.query(
-      `SELECT loans.id,
-              loans.name,
-              loans.deadline,
-              loans.priority,
-              loans.timestamp,
-              loans.type,
-              loans.sum,
-              json_build_object(
-                      'id', cp.id,
-                      'name', cp.name,
-                      'email', cp.email,
-                      'note', cp.note,
-                      'phone', cp.phone
-              ) AS counterparty
-       FROM loans
-                LEFT JOIN counterparties cp ON loans.counterparty_id = cp.id
-       WHERE loans.user_uid = $1
-         AND loans.id = $2
+      `${defaultQuery}
+       WHERE ${alias}.user_uid = $1
+         AND ${alias}.id = $2
        LIMIT 1;`,
-      [uid, id]
+      [uid, id, date]
     );
 
     if (result.rows.length === 0) {
-      logger.warn('Requested loan has not been found', {uid, id})
+      logger.warn('Requested loan has not been found', { uid, id })
       return res.status(404).json({
-        message: "Requested loan has not been found",
+        message: "Requested loan has not been found"
       })
     }
 

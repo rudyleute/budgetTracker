@@ -180,7 +180,13 @@ export const usePaginatedResource = ({
     deleteItem,
     getNextPage,
     updateQueryParams,
-    resetQueryParams
+    resetQueryParams,
+    fetchItemsFromStart,
+    showGetLoader,
+    showChangeLoader,
+    hideGetLoader,
+    hideChangeLoader,
+    total: items.total
   };
 };
 

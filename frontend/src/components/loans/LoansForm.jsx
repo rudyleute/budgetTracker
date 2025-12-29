@@ -43,7 +43,7 @@ const LoansForm = ({ data = {}, ref, isUpdate = false, onSubmit, counterparty })
   });
 
   const onOptionClick = useCallback(
-    (item) => setValue("counterpartyId", item.id, { shouldDirty: true }),
+    (item) => setValue("counterpartyId", item.id, { shouldDirty: true, shouldValidate: true }),
     [setValue]
   );
 

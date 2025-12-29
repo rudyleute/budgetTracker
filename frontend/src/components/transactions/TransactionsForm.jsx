@@ -48,7 +48,7 @@ const TransactionsForm = ({ ref, name, categoryId, price, timestamp, onSubmit, i
 
   const fields = watch();
   const updateCategory = useCallback((id) => setValue("categoryId", id, {
-    shouldDirty: true
+    shouldDirty: true, shouldValidate: true
   }), [setValue]);
 
   useEffect(() => {

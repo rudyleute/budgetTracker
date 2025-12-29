@@ -21,7 +21,7 @@ function buildPostQuery({ fields, values, uid }) {
             0
           ) AS balance
       FROM inserted
-          LEFT JOIN loans l ON inserted.id = l.counterparty_id AND l.user_uid = $${allValues.length}
+          LEFT JOIN loans l ON inserted.id = l.counterparty_id AND l.user_uid = $${allValues.length} AND l.closed_at IS NULL
       GROUP BY inserted.id, inserted.name, inserted.email, inserted.phone, inserted.note;
   `;
 
@@ -51,7 +51,7 @@ function buildPatchQuery({ fields, values, uid, id }) {
                   0
           ) AS balance
       FROM updated
-               LEFT JOIN loans l ON updated.id = l.counterparty_id AND l.user_uid = $${idx}
+               LEFT JOIN loans l ON updated.id = l.counterparty_id AND l.user_uid = $${idx} AND l.closed_at IS NULL
       GROUP BY updated.id, updated.name, updated.email, updated.phone, updated.note;
     `;
 

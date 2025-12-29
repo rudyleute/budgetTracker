@@ -96,7 +96,7 @@ const Sidebar = () => {
         <span className={twMerge(
           "price-wrapper bg-(--color-pos)/80!",
           item.balance > 0 && "bg-(--color-third)/80!"
-        )}>{item.balance} €</span>
+        )}>{Math.abs(item.balance)} €</span>
       </>
     )
 
