@@ -15,12 +15,13 @@ import { formToast } from '../helpers/toast.jsx';
 import { debounce } from 'lodash';
 import useLoader from '../hooks/useLoader.jsx';
 import api from '../services/axios.js';
+import { authStatuses } from '../helpers/variables.js';
 
 const AccountContext = createContext({});
 const useAccount = () => useContext(AccountContext);
 
 const AccountProvider = ({ children, onAuthReady }) => {
-  const [isAuthenticated, setAuthenticated] = useState(false);
+  const [authStatus, setAuthStatus] = useState(authStatuses.anon);
 
   const {
     showLoader: showActionLoader,
@@ -31,8 +32,10 @@ const AccountProvider = ({ children, onAuthReady }) => {
   useEffect(() => {
     //Debouncer is needed for enforcing email verification - the user is logged out immediately after signing up successfully
     const debouncedAuthHandler = debounce(async (user) => {
-      if (user && user.emailVerified) setAuthenticated(true);
-      else setAuthenticated(false);
+      if (user) {
+        if (user.emailVerified) setAuthStatus(authStatuses.loggedVerified)
+        else setAuthStatus(authStatuses.loggedUnverified)
+      } else setAuthStatus(authStatuses.anon);
 
       onAuthReady();
     }, 600);
@@ -102,13 +105,7 @@ const AccountProvider = ({ children, onAuthReady }) => {
   const logIn = useCallback(async (data) => {
     showActionLoader();
     try {
-      const result = await signInWithEmailAndPassword(auth, data.email, data.password);
-      const user = result.user;
-
-      if (!user.emailVerified) {
-        await signOut(auth);
-        toast.info(formToast("Please, verify your account in order to be able to log in"));
-      }
+      await signInWithEmailAndPassword(auth, data.email, data.password);
     } catch (e) {
       toast.error(formToast(processErrors(e.code)));
     } finally {
@@ -118,7 +115,6 @@ const AccountProvider = ({ children, onAuthReady }) => {
 
   const logOut = useCallback(async () => {
     showActionLoader();
-
     try {
       await signOut(auth);
     } catch (e) {
@@ -128,11 +124,48 @@ const AccountProvider = ({ children, onAuthReady }) => {
     }
   }, [hideActionLoader, showActionLoader]);
 
-  const value = useMemo(() => ({ isAuthenticated, signUp, logIn, logOut, signInWithGoogle }), [isAuthenticated, logIn, logOut, signUp, signInWithGoogle])
+  const requestVerificationEmail = useCallback(async () => {
+    showActionLoader();
+    try {
+      await sendEmailVerification(auth.currentUser);
+
+      toast.success(formToast("The verification link has been sent to your email!"))
+      return true;
+    } catch (e) {
+      toast.error(formToast(processErrors(e.code)));
+      return false;
+    } finally {
+      hideActionLoader();
+    }
+  }, [hideActionLoader, showActionLoader])
+
+  const checkEmailVerification = useCallback(async () => {
+    showActionLoader();
+    try {
+      await auth.currentUser.reload();
+      if (auth.currentUser.emailVerified) setAuthStatus(authStatuses.loggedVerified);
+      return auth.currentUser.emailVerified;
+    } catch (e) {
+      toast.error(formToast(processErrors(e.code)));
+      return auth.currentUser.emailVerified;
+    } finally {
+      hideActionLoader();
+    }
+  }, [hideActionLoader, showActionLoader])
+
+  const value = useMemo(() => ({
+    authStatus,
+    signUp,
+    logIn,
+    logOut,
+    signInWithGoogle,
+    requestVerificationEmail,
+    checkEmailVerification
+  }), [authStatus, logIn, logOut, signUp, signInWithGoogle, requestVerificationEmail, checkEmailVerification])
   return (
     <AccountContext.Provider value={value}>
       {children}
-      <Loader />
+      <Loader/>
     </AccountContext.Provider>
   )
 }

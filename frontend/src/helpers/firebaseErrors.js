@@ -16,6 +16,7 @@ const codeMessageMapping = {
   "auth/wrong-password": "Wrong password",
   "auth/user-not-found": "The user associated with the provided credentials has not been found",
   "auth/invalid-email": "Invalid email address",
+  "auth/too-many-requests": "The verification email has recently been resent",
   "default": "Unknown error has occurred. Please try again later.",
 }
 
