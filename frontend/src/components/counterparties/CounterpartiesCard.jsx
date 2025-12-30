@@ -9,17 +9,15 @@ import { useConfirmation } from '../../context/ConfirmationProvider.jsx';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCircleXmark } from '@fortawesome/free-regular-svg-icons';
 import IconButton from '../simple/IconButton.jsx';
-import { Link } from 'react-router-dom';
-import { useNavigate } from 'react-router-dom';
 import IconCell from '../simple/IconCell.jsx';
 import { onFormSubmit } from '../../helpers/utils.js';
+import LinkIcon from '../simple/LinkIcon.jsx';
 
 const CounterpartiesCard = ({ counterparty }) => {
   const { showModal, hideModal } = useModal();
   const { editCounterparty, deleteCounterparty } = useCounterparties();
   const { showConfirmation } = useConfirmation();
   const formRef = useRef(null);
-  const navigate = useNavigate();
 
   const onCounterpartyEdit = useCallback(
     async () => onFormSubmit(formRef.current.getData, editCounterparty, hideModal, counterparty.id),
@@ -43,9 +41,8 @@ const CounterpartiesCard = ({ counterparty }) => {
       >
         <span className={"w-full grid grid-cols-3"}>
           <IconCell>
-            <IconButton title={`See the loans of ${counterparty.name}`}
-                        iconClassName={"icon-xs !text-(--color-third)"}
-                        onClick={() => navigate(`/counterparties/${counterparty.id}`)} icon={faCoins}
+            <LinkIcon to={`/counterparties/${counterparty.id}`} title={`See the loans of ${counterparty.name}`}
+                      icon={faCoins} iClassName={"icon-xs text-(--color-third)!"}
             />
           </IconCell>
           <FontAwesomeIcon className={"justify-self-center"} size={"3x"} color={"var(--color-third)"} icon={faCircleUser}/>
@@ -71,17 +68,13 @@ const CounterpartiesCard = ({ counterparty }) => {
         </span>
         {counterparty.phone && <span className={"flex items-center gap-[5px]"}>
           <IconCell>
-            <Link title={"Call the number"} to={`tel:+${counterparty.phone}`} onClick={(e) => e.stopPropagation()}>
-              <FontAwesomeIcon color={"var(--color-third)"} icon={faPhone}/>
-            </Link>
+            <LinkIcon title={"Call the number"} to={`tel:+${counterparty.phone}`} color={"var(--color-third)"} icon={faPhone}/>
           </IconCell>
           <span className={"text-clipped grow"}>+{counterparty.phone}</span>
         </span>}
         {counterparty.email && <span className={"flex items-center gap-[5px]"}>
           <IconCell>
-            <Link title={"Send an email"} to={`mailto:${counterparty.email}`} onClick={(e) => e.stopPropagation()}>
-              <FontAwesomeIcon color={"var(--color-third)"} icon={faAt}/>
-            </Link>
+            <LinkIcon title={"Send an email"} to={`mailto:${counterparty.email}`} color={"var(--color-third)"} icon={faAt}/>
           </IconCell>
           <span className={"text-clipped grow"}>{counterparty.email}</span>
         </span>}

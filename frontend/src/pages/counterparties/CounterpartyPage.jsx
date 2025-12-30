@@ -1,5 +1,5 @@
 import { useLoans } from '../../context/LoansProvider.jsx';
-import { Link, useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import api from '../../services/axios.js';
 import { formToast } from '../../helpers/toast.jsx';
@@ -20,6 +20,7 @@ import { useConfirmation } from '../../context/ConfirmationProvider.jsx';
 import IconButton from '../../components/simple/IconButton.jsx';
 import { faCircleXmark } from '@fortawesome/free-regular-svg-icons';
 import { onFormSubmit } from '../../helpers/utils.js';
+import LinkIcon from '../../components/simple/LinkIcon.jsx';
 
 const CounterpartyPage = () => {
   const { showModal, hideModal } = useModal();
@@ -100,19 +101,13 @@ const CounterpartyPage = () => {
           </span>
           {counterparty.phone && <span className={"flex items-center gap-[5px]"}>
                 <IconCell>
-                  <Link title={"Call the number"} to={`tel:+${counterparty.phone}`}
-                        onClick={(e) => e.stopPropagation()}>
-                    <FontAwesomeIcon color={"var(--color-third)"} icon={faPhone}/>
-                  </Link>
+                  <LinkIcon title={"Call the number"} to={`tel:+${counterparty.phone}`} color={"var(--color-third)"} icon={faPhone}/>
                 </IconCell>
                 <span className={"text-clipped grow"}>+{counterparty.phone}</span>
               </span>}
           {counterparty.email && <span className={"flex items-center gap-[5px]"}>
                 <IconCell>
-                  <Link title={"Send an email"} to={`mailto:${counterparty.email}`}
-                        onClick={(e) => e.stopPropagation()}>
-                    <FontAwesomeIcon color={"var(--color-third)"} icon={faAt}/>
-                  </Link>
+                  <LinkIcon title={"Send an email"} to={`mailto:${counterparty.email}`} color={"var(--color-third)"} icon={faAt}/>
                 </IconCell>
                 <span className={"text-clipped grow"}>{counterparty.email}</span>
               </span>}

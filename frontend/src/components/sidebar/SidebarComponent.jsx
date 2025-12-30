@@ -1,25 +1,24 @@
-import { useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import Empty from '../simple/Empty.jsx';
 import { twMerge } from 'tailwind-merge';
 
-const ComponentItem = ({ onClick, gridCols, children, className }) => {
+const ComponentItem = ({ gridCols, children, className }) => {
   return (
-    <div onClick={onClick}
-         className={twMerge(`hover:cursor-pointer grid ${gridCols} gap-[5px] items-border text-xl lrg:lift-scale max-lrg:lift-scale-small`, className)}
+    <div
+      className={twMerge(`grid ${gridCols} gap-[5px]`, className)}
     >
       {children}
     </div>
   )
 }
 
-const SidebarComponent = ({ items, title, emptyText, gridCols, renderItem, getItemLink, iwClass, className }) => {
-  const navigate = useNavigate();
-
+const SidebarComponent = ({ items, title, emptyText, gridCols, renderItem, getItemLink, lClassName, className }) => {
   const content = items.map(item => (
-      <ComponentItem key={item.id} onClick={() => navigate(getItemLink(item))}
-                     gridCols={gridCols} className={iwClass}>
-        {renderItem(item)}
-      </ComponentItem>
+      <Link to={getItemLink(item)} key={item.id} className={twMerge("block items-border text-xl lrg:lift-scale max-lrg:lift-scale-small", lClassName)}>
+        <ComponentItem key={item.id} gridCols={gridCols} className={className}>
+          {renderItem(item)}
+        </ComponentItem>
+      </Link>
     )
   );
 

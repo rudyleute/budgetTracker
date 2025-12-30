@@ -4,16 +4,18 @@ import { formToast } from '../../helpers/toast.jsx';
 import { daysUntilDateOnly } from '../../helpers/time.js';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faAt, faFlag, faPhone, faVault, faWallet } from '@fortawesome/free-solid-svg-icons';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import SidebarComponent from './SidebarComponent.jsx';
 import { formatTimestamp } from '../../helpers/time.js';
 import api from '../../services/axios.js';
 import { priorityColorMap } from '../../helpers/variables.js';
 import { twMerge } from 'tailwind-merge';
+import IconButton from '../simple/IconButton.jsx';
 
 const defaultValue = { loans: [], balance: [] }
 const Sidebar = () => {
   const [data, setData] = useState(defaultValue);
+  const navigate = useNavigate();
 
   useEffect(() => {
     (async () => {
@@ -63,7 +65,7 @@ const Sidebar = () => {
             const days = daysUntilDateOnly(loan.deadline);
 
             return (
-              <span className={twMerge("font-b text-clipped !text-(--color-pos)", days <= 0 && "!text-(--color-third)" )}
+              <span className={twMerge("font-b text-clipped text-(--color-pos)!", days <= 0 && "text-(--color-third)!" )}
                     title={formatTimestamp(loan.deadline, {
                       day: '2-digit',
                       month: 'short',
@@ -82,15 +84,12 @@ const Sidebar = () => {
     )
   }
   const renderCounterItem = (item) => {
+    //IconLink can't be used here as there will be nested <a>'s
     return (
       <>
         <span className={"flex justify-center w-full shrink-0 whitespace-nowrap text-(--color-text)"}>
-          {item.phone && <Link title={`Call +${item.phone}`} to={`tel:+${item.phone}`} onClick={(e) => e.stopPropagation()}>
-            <FontAwesomeIcon color={"var(--color-third)"} icon={faPhone}/>
-          </Link>}
-          {item.email && <Link title={`Mail ${item.email}`} to={`mailto:${item.email}`} onClick={(e) => e.stopPropagation()}>
-            <FontAwesomeIcon color={"var(--color-third)"} icon={faAt}/>
-          </Link>}
+          {item.phone && <IconButton title={`Call +${item.phone}`} onClick={() => navigate(`tel:+${item.phone}`)} icon={faPhone} iconClassName={"text-(--color-third)"} />}
+          {item.email && <IconButton title={`Mail ${item.email}`} onClick={() => navigate(`mailto:${item.email}`)} icon={faAt} iconClassName={"text-(--color-third)"} />}
         </span>
         <span className={"text-clipped"}>{item.name}</span>
         <span className={twMerge(
@@ -99,7 +98,6 @@ const Sidebar = () => {
         )}>{Math.abs(item.balance)} €</span>
       </>
     )
-
   }
 
   return (<div
@@ -107,7 +105,7 @@ const Sidebar = () => {
     <SidebarComponent items={data.loans} title={"Upcoming Deadlines"} emptyText={"No urgent loans found"}
                       getItemLink={getLoansLink} renderItem={renderLoanItem}
                       gridCols={"grid-cols-[1fr_1fr_3fr_4fr_4fr]"}
-                      iwClass={"items-center text-(--color-text) !pt-[5px] !pb-[5px]"}/>
+                      lClassName={"items-center text-(--color-text) !pt-[5px] !pb-[5px]"}/>
     <SidebarComponent items={data.balance} title={"Balance"} emptyText={"No counterparties found"}
                       getItemLink={getCounterLink} renderItem={renderCounterItem} gridCols={"grid-cols-[2fr_5fr_5fr]"}/>
   </div>)

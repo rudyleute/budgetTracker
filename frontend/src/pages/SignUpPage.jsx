@@ -7,6 +7,7 @@ import { signUpFormUtils } from '../resolvers/signUpResolver.js';
 import { useForm } from 'react-hook-form';
 import { useMemo } from 'react';
 import { faGoogle } from '@fortawesome/free-brands-svg-icons';
+import LinkIcon from '../components/simple/LinkIcon.jsx';
 
 const SignUpPage = () => {
   const { resolver: signUpResolver, fieldsMeta } = useMemo(() => {
@@ -42,9 +43,7 @@ const SignUpPage = () => {
       >
         <div className={"grid grid-cols-[2fr_4fr_2fr] gap-[5px] items-center"}>
           <div className={"w-fit"}>
-            <IconButton className={"mr-1"} title={"Sign in"} iconClassName={"text-(--color-third)"}
-                        onClick={() => navigate("/login")}
-                        icon={faUser}/>
+            <LinkIcon to={"/login"} className={"mr-1"} title={"Sign in"} iClassName={"text-(--color-third)"} icon={faUser} />
             <IconButton title={"Sign in with google"} iconClassName={"text-(--color-third)"}
                         onClick={signInWithGoogle}
                         icon={faGoogle}/>

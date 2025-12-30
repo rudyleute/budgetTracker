@@ -1,12 +1,12 @@
 import Input from '../components/simple/Input.jsx';
 import { faRightToBracket, faUserCircle } from '@fortawesome/free-solid-svg-icons';
 import IconButton from '../components/simple/IconButton.jsx';
-import { useNavigate } from 'react-router-dom';
 import { useAccount } from '../context/AccountProvider.jsx';
 import { loginFormUtils } from '../resolvers/loginResolver.js';
 import { useForm } from 'react-hook-form';
 import { useMemo } from 'react';
 import { faGoogle } from '@fortawesome/free-brands-svg-icons';
+import LinkIcon from '../components/simple/LinkIcon.jsx';
 
 const LoginPage = () => {
   const { resolver: loginResolver } = useMemo(() => {
@@ -28,7 +28,6 @@ const LoginPage = () => {
     reValidateMode: "onSubmit",
   });
 
-  const navigate = useNavigate();
   const { logIn, signInWithGoogle } = useAccount();
 
   return (
@@ -38,9 +37,7 @@ const LoginPage = () => {
       >
         <div className={"grid grid-cols-[2fr_4fr_2fr] gap-[5px] items-center"}>
           <div className={"w-fit"}>
-            <IconButton className={"mr-1"} title={"Sign up"} iconClassName={"text-(--color-third)"}
-                      onClick={() => navigate("/signup")}
-                      icon={faUserCircle}/>
+            <LinkIcon to={"/signup"} className={"mr-1"} title={"Sign up"} iClassName={"text-(--color-third)"} icon={faUserCircle} />
             <IconButton title={"Sign in with google"} iconClassName={"text-(--color-third)"}
                         onClick={signInWithGoogle}
                         icon={faGoogle}/>
