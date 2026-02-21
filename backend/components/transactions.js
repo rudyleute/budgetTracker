@@ -1,7 +1,7 @@
 const express = require('express');
-const db = require('../db');
+const db = require('../utils/db');
 const router = express.Router();
-const logger = require('../logger')
+const logger = require('../utils/logger')
 const { handleDelete, handleUpsert, validateCategory } = require('./generic');
 const { buildPostQuery, buildPatchQuery } = require('../helpers/transactions.query');
 

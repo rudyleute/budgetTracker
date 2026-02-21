@@ -1,0 +1,28 @@
+import {Pool, PoolClient} from "pg";
+import logger from "./logger";
+import {QueryParam} from "../types/basic";
+import {checkRequired} from "./general";
+
+export const pool = new Pool({
+    user: checkRequired('DB_USER'),
+    host: checkRequired('DB_HOST'),
+    database: checkRequired('DB_NAME'),
+    password: checkRequired('DB_PASSWORD'),
+    port: Number(process.env.DB_PORT || 5432),
+    max: 5,
+    idleTimeoutMillis: 10000,
+    connectionTimeoutMillis: 2000
+});
+
+pool.on('connect', () => logger.info('Database connection has been established'));
+
+pool.on('error', (error) => {
+    logger.error('Unexpected error on idle database client', {
+        error: error.message,
+        stack: error.stack
+    });
+    process.exit(-1);
+});
+
+export const query = (text: string, params: QueryParam[]) => pool.query(text, params);
+export const getClient = (): Promise<PoolClient> => pool.connect();
