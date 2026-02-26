@@ -1,10 +1,9 @@
 import express from 'express';
-import {query, getClient} from '../utils/db';
+import db from '../utils/db';
 import admin from '../utils/firebase';
 import logger from '../utils/logger';
-import {UserGet, UserPost} from "../types/users";
+import {UserGet, UserPost, usersGetSchema, usersPostSchema} from "../types/users";
 import {Response, Request} from "express";
-import {convertToUserGet, convertToUserPost} from "../utils/entities/users";
 import {CustomError} from "../types/basic";
 import {isUser} from "../utils/general";
 import {PoolClient} from "pg";
@@ -18,7 +17,7 @@ const getUser = async (req: Request, res: Response<UserGet | CustomError>) => {
         const uid = req.user.uid;
         logger.debug('Fetching a user', { uid });
 
-        const result = await query(
+        const result = await db.query(
             'SELECT uid, created_at FROM users WHERE uid = $1;',
             [uid]
         );
@@ -31,7 +30,7 @@ const getUser = async (req: Request, res: Response<UserGet | CustomError>) => {
 
         logger.info('User retrieved successfully', { uid });
 
-        res.json(convertToUserGet(result.rows[0]));
+        res.json(usersGetSchema.parse(result.rows[0]));
     } catch (error) {
         res.status(500).json(parseError(error, req.user.uid, 'user', 'retrieve'));
     }
@@ -44,13 +43,13 @@ const createUser = async (req: Request, res: Response<UserPost | CustomError>) =
 
         logger.info("Creating new user", { uid });
 
-        const result = await query(
+        const result = await db.query(
             "INSERT INTO users (uid) VALUES ($1) RETURNING *;",
             [uid]
         );
 
         logger.info('User created successfully', { uid });
-        res.status(201).json(convertToUserPost(result.rows[0]));
+        res.status(201).json(usersPostSchema.parse(result.rows[0]));
     } catch (error) {
         res.status(500).json(parseError(error, req.user.uid, 'user', 'create'));
     }
@@ -62,7 +61,7 @@ const deleteUser =  async (req: Request, res: Response<CustomError | void>) => {
 
     try {
         const uid = req.user.uid;
-        client = await getClient();
+        client = await db.getClient();
 
         logger.info('Attempting to delete user', { uid });
 

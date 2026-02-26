@@ -16,3 +16,7 @@ export const isUser = (req: Request, res: Response): req is Request & {user: Dec
 
     return true;
 };
+
+export const isBody = (body: Request["body"]): body is Record<string, unknown> => {
+    return !!body && typeof body === 'object' && !Array.isArray(body);
+};

@@ -2,24 +2,22 @@ import logger from "./logger";
 import {CustomError} from "../types/basic";
 import {ZodError} from "zod";
 
-export const parseError = (error: unknown, uid: string, entityName: string, actionName: string): CustomError => {
+export const parseError = (error: unknown, uid: string, entityName: string, actionName: string, addErrorInfo: Record<string, unknown> = {}): CustomError => {
+    let errorMsg: string;
+    let errorInfo: Record<string, unknown> = { uid, ...addErrorInfo };
+
     if (error instanceof ZodError) {
-        logger.error(`Data validation failed for ${entityName}`, {
-            uid,
-            data: error.issues
-        });
-
-        return { message: 'Data integrity error' };
+        errorMsg = `Data validation failed for ${entityName}`;
+        errorInfo.data = error.issues;
     } else if (error instanceof Error) {
-        logger.error(`Failed to ${actionName} the ${entityName}`, {
+        errorMsg = `Failed to ${actionName} the ${entityName}`;
+        errorInfo = {
+            ...errorInfo,
             error: error.message,
-            stack: error.stack,
-            uid
-        });
+            stack: error.stack
+        };
+    } else errorMsg = 'Unknown error occurred';
 
-        return { message: error.message };
-    } else {
-        logger.error('Unknown error occurred');
-        return { message: 'Unknown error occurred' };
-    }
+    logger.error(errorMsg, errorInfo);
+    return { message: errorMsg };
 };

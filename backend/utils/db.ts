@@ -24,5 +24,13 @@ pool.on('error', (error) => {
     process.exit(-1);
 });
 
-export const query = (text: string, params: QueryParam[]) => pool.query(text, params);
-export const getClient = (): Promise<PoolClient> => pool.connect();
+const query = (text: string, params: QueryParam[]) => pool.query(text, params);
+const getClient = (): Promise<PoolClient> => pool.connect();
+
+const db = {
+    query,
+    getClient
+};
+
+export type DB = typeof db;
+export default db;
