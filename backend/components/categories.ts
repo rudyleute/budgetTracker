@@ -3,14 +3,19 @@ import db from '../utils/db';
 import logger from '../utils/logger';
 import {handleUpsert, handleDelete} from './generic';
 import {buildPostQuery, buildPatchQuery} from "../helpers/categoriesQuery";
-import { categoriesGetSchema, categoriesPatchSchema, categoriesPostSchema, CategoryGet } from "../types/categories";
+import {
+    categoriesGetSchema,
+    categoriesPatchSchema,
+    categoriesPostSchema,
+    CategoryGet
+} from "../types/components/categories";
 import {CustomError, GetRes} from "../types/basic";
 import {Response, Request} from "express";
-import {processCategories} from "../utils/entities/categories";
+import {processCategories} from "../utils/processers";
 import {isUser} from "../utils/general";
 import {parseError} from "../utils/parsers";
 
-const entityName = "categories";
+const entityName = "category";
 const router = express.Router();
 
 const getCategories = async (req: Request, res: Response<GetRes | CustomError>) => {
@@ -36,38 +41,29 @@ const getCategories = async (req: Request, res: Response<GetRes | CustomError>) 
         res.status(500).json(parseError(error, req.user.uid, entityName, 'retrieve'));
     }
 };
-
-const createCategory = (req: Request, res: Response<CategoryGet | CustomError>) =>
-    handleUpsert({
-            req,
-            res,
-            entityName: "category",
-            schema: categoriesPostSchema,
-            responseSchema: categoriesGetSchema,
-            buildQuery: buildPostQuery
-        }, db, logger
-    );
-
-const updateCategory = (req: Request, res: Response<CategoryGet | CustomError>) =>
-    handleUpsert({
-            req,
-            res,
-            entityName: "category",
-            schema: categoriesPatchSchema,
-            responseSchema: categoriesGetSchema,
-            buildQuery: buildPatchQuery
-        }, db, logger
-    );
-
-const deleteCategory = (req: Request, res: Response<CustomError | void>) =>
-    handleDelete({
-            table: 'categories',
-            idField: 'id',
-            entityName: 'category',
-            req,
-            res
-        }, db, logger
-    );
+const createCategory = (req: Request, res: Response<CategoryGet | CustomError>) => handleUpsert({
+    req,
+    res,
+    entityName,
+    schema: categoriesPostSchema,
+    responseSchema: categoriesGetSchema,
+    buildQuery: buildPostQuery
+}, db, logger);
+const updateCategory = (req: Request, res: Response<CategoryGet | CustomError>) => handleUpsert({
+    req,
+    res,
+    entityName,
+    schema: categoriesPatchSchema,
+    responseSchema: categoriesGetSchema,
+    buildQuery: buildPatchQuery
+}, db, logger);
+const deleteCategory = (req: Request, res: Response<CustomError | void>) => handleDelete({
+    table: 'categories',
+    idField: 'id',
+    entityName,
+    req,
+    res
+}, db, logger);
 
 router.get('/', getCategories);
 router.post('/', createCategory);

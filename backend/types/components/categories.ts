@@ -1,5 +1,5 @@
 import {z} from "zod";
-import {uidSchema} from "./basic";
+import {userUidField} from "../basic";
 
 const categoriesSchema = z.object({
     id: z.uuid(),
@@ -13,7 +13,7 @@ const categoriesSchema = z.object({
         (date) => date <= new Date(),
         {message: "Updated_at date cannot be in the future"}
     ).optional(),
-    user_uid: uidSchema
+    user_uid: userUidField
 });
 
 export const categoriesGetSchema = categoriesSchema.omit({

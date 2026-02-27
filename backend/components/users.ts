@@ -2,7 +2,7 @@ import express from 'express';
 import db from '../utils/db';
 import admin from '../utils/firebase';
 import logger from '../utils/logger';
-import {UserGet, UserPost, usersGetSchema, usersPostSchema} from "../types/users";
+import {UserGet, UserPost, usersGetSchema, usersPostSchema} from "../types/components/users";
 import {Response, Request} from "express";
 import {CustomError} from "../types/basic";
 import {isUser} from "../utils/general";
