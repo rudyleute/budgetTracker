@@ -1,6 +1,9 @@
-import {CategoriesGet} from "./components/categories";
-import { z } from "zod";
-import {CounterpartiesGet} from "./components/counterparties";
+import {CategoryGet} from "./components/categories";
+import {z} from "zod";
+import {CounterpartyGet} from "./components/counterparties";
+import {Logger} from "../utils/logger";
+import {DB} from "../utils/db";
+import {LoanGet} from "./components/loans";
 
 export interface CustomError {
     message: string;
@@ -8,31 +11,54 @@ export interface CustomError {
 
 export const userUidField = z.string()
     .min(1, "Uid field must be of at least length 1")
-    .max(128, "Uid field must be less than 128 characters");
+    .max(128, "Uid field must be less than 128 characters"
+);
+
 export const createdAtField = z.coerce.date().refine(
     (date) => date <= new Date(),
     {message: "Created_at date cannot be in the future"}
 );
+
 export const updatedAtField = z.coerce.date().refine(
     (date) => date <= new Date(),
     {message: "Updated_at date cannot be in the future"}
 ).optional();
 
 export type QueryParam = string | number | boolean;
-export type EntityName = 'category' | 'counterparty';
-
+export type EntityName = 'category' | 'counterparty' | 'loan';
 export type TableName = 'categories' | 'users' | 'counterparties' | 'loans' | 'transactions';
 export type TableIdField = 'id' | 'uid';
 
-type GetArray = CategoriesGet | CounterpartiesGet;
-export interface GetRes {
-    data: GetArray,
+export type AllowedResponseType = CategoryGet | CounterpartyGet | LoanGet;
+export interface GetRes<T extends AllowedResponseType> {
+    data: T[],
     is_last_page?: boolean
 }
 
-export interface RequestQuery {
-    filter?: string,
-    offset?: number,
-    limit?: number,
-    balance?: boolean
+export const basicRequestQuerySchema = z.object({
+    filter: z.string().optional(),
+    offset: z.coerce.number().min(0, 'Offset must be positive'),
+    limit: z.coerce.number().optional(),
+    order: z.enum(['asc', 'desc', 'ASC', 'DESC']).default('DESC').optional()
+});
+
+export type BasicRequestQuery = z.infer<typeof basicRequestQuerySchema>;
+export type SortOrder = z.infer<typeof basicRequestQuerySchema>['order'];
+
+export type Schemas<
+    TGet extends z.ZodType = z.ZodType,
+    TPost extends z.ZodType = z.ZodType,
+    TPatch extends z.ZodType = z.ZodType
+> = {
+    get: TGet;
+    post: TPost;
+    patch: TPatch;
+};
+
+export interface ConstructorParams<TGet extends z.ZodType = z.ZodType> {
+    db: DB,
+    logger: Logger,
+    entityName: EntityName,
+    tableName: TableName,
+    schemas: Schemas<TGet>
 }

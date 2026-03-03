@@ -7,16 +7,15 @@ import cors from 'cors';
 import { corsOptions } from './utils/middleware';
 import users from './components/users';
 import transactions from './components/transactions';
-import categories from './components/categories';
-import loans from './components/loans';
-import counterparties from './components/counterparties';
 import {DecodedIdToken} from "firebase-admin/auth";
 import {Response, Request, NextFunction} from "express";
-
 import express from 'express';
-const app = express();
 import {authenticateUser} from "./utils/middleware";
 import {CustomError} from "./types/basic";
+import {CounterpartiesController} from "./controllers/counterparties";
+import db from "./utils/db";
+import {CategoriesController} from "./controllers/categories";
+import {LoansController} from "./controllers/loans";
 
 declare global {
     // eslint-disable-next-line @typescript-eslint/no-namespace
@@ -33,18 +32,19 @@ const morganStream = {
     }
 };
 
+const app = express();
+
 app.use(cors(corsOptions));
 app.use(morgan('combined', { stream: morganStream }));
 app.use(express.json());
 
 const apiRouter = express.Router();
 apiRouter.use(authenticateUser);
-
 apiRouter.use("/users", users);
 apiRouter.use("/transactions", transactions);
-apiRouter.use("/categories", categories);
-apiRouter.use("/loans", loans);
-apiRouter.use("/counterparties", counterparties);
+apiRouter.use("/categories", (new CategoriesController(db, logger)).getRouters());
+apiRouter.use("/loans", (new LoansController(db, logger)).getRouters());
+apiRouter.use("/counterparties", (new CounterpartiesController(db, logger)).getRouters());
 
 app.use('/api', apiRouter);
 app.use((_req: Request, res: Response<CustomError>) => {

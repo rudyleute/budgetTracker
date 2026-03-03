@@ -1,6 +1,6 @@
 import {DB} from "../utils/db";
 import {Request, Response} from "express";
-import {CustomError, EntityName, QueryParam, TableIdField, TableName} from "./basic";
+import {CustomError, EntityName, QueryParam, AllowedResponseType, TableIdField, TableName} from "./basic";
 import {z} from "zod";
 
 export interface BuildQueryParams {
@@ -28,7 +28,7 @@ export type QueryBuilder = (params: BuildQueryParams) => BuildQueryResult;
 export type QueryIdBuilder = (params: BuildQueryIdParams) => BuildQueryResult;
 export type QueryBuilders = QueryBuilder | QueryIdBuilder;
 
-export interface Options<T extends z.ZodType, TR extends z.ZodType> {
+export interface Options<T extends z.ZodType, TR extends z.ZodType<AllowedResponseType>> {
     req: Request;
     res: Response<z.infer<TR> | CustomError>;
     entityName: EntityName;

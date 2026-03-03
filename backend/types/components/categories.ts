@@ -35,4 +35,5 @@ export const categoriesPatchSchema = categoriesGetSchema.omit({
 );
 
 export type CategoryGet = z.infer<typeof categoriesGetSchema>;
+export type CategoryGetSchema = typeof categoriesGetSchema;
 export type CategoriesGet = CategoryGet[];
