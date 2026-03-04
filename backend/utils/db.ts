@@ -6,7 +6,7 @@ import {checkRequired} from "./general";
 export const pool = new Pool({
     user: checkRequired('DB_USER'),
     host: checkRequired('DB_HOST'),
-    database: checkRequired('DB_NAME'),
+    database: checkRequired('DB_DATABASE'),
     password: checkRequired('DB_PASSWORD'),
     port: Number(process.env.DB_PORT || 5432),
     max: 5,
