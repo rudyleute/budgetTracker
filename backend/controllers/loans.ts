@@ -1,4 +1,3 @@
-import {BaseController} from "./base";
 import {
     loansGetSchema,
     loansPatchSchema,
@@ -14,8 +13,9 @@ import {GetRes, QueryParam} from "../types/basic";
 import {CustomError} from "../types/basic";
 import {processLoans} from "../utils/processers";
 import {isBody} from "../utils/general";
+import {EntityController} from "./entity";
 
-export class LoansController extends BaseController<LoanGetSchema> {
+export class LoansController extends EntityController<LoanGetSchema> {
     constructor(db: DB, logger: Logger) {
         super({
             db, logger,

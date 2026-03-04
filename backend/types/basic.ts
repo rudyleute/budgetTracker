@@ -4,6 +4,8 @@ import {CounterpartyGet} from "./components/counterparties";
 import {Logger} from "../utils/logger";
 import {DB} from "../utils/db";
 import {LoanGet} from "./components/loans";
+import {UserGet} from "./components/users";
+import {TransactionGet} from "./components/transactions";
 
 export interface CustomError {
     message: string;
@@ -25,11 +27,11 @@ export const updatedAtField = z.coerce.date().refine(
 ).optional();
 
 export type QueryParam = string | number | boolean;
-export type EntityName = 'category' | 'counterparty' | 'loan';
+export type EntityName = 'category' | 'counterparty' | 'loan' | 'user' | 'transaction';
 export type TableName = 'categories' | 'users' | 'counterparties' | 'loans' | 'transactions';
 export type TableIdField = 'id' | 'uid';
 
-export type AllowedResponseType = CategoryGet | CounterpartyGet | LoanGet;
+export type AllowedResponseType = CategoryGet | CounterpartyGet | LoanGet | UserGet | TransactionGet;
 export interface GetRes<T extends AllowedResponseType> {
     data: T[],
     is_last_page?: boolean
@@ -42,9 +44,6 @@ export const basicRequestQuerySchema = z.object({
     order: z.enum(['asc', 'desc', 'ASC', 'DESC']).default('DESC').optional()
 });
 
-export type BasicRequestQuery = z.infer<typeof basicRequestQuerySchema>;
-export type SortOrder = z.infer<typeof basicRequestQuerySchema>['order'];
-
 export type Schemas<
     TGet extends z.ZodType = z.ZodType,
     TPost extends z.ZodType = z.ZodType,
@@ -55,10 +54,12 @@ export type Schemas<
     patch: TPatch;
 };
 
-export interface ConstructorParams<TGet extends z.ZodType = z.ZodType> {
+export interface BaseConstructorParams {
     db: DB,
     logger: Logger,
     entityName: EntityName,
-    tableName: TableName,
+    tableName: TableName
+}
+export interface EntityConstructorParams<TGet extends z.ZodType = z.ZodType> extends BaseConstructorParams {
     schemas: Schemas<TGet>
 }

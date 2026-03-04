@@ -1,4 +1,3 @@
-import {BaseController} from "./base";
 import {
     CounterpartiesGet,
     counterpartiesGetSchema,
@@ -13,8 +12,9 @@ import {CustomError, GetRes, QueryParam} from "../types/basic";
 import {processCounterparties} from "../utils/processers";
 import {parseError} from "../utils/parsers";
 import {QueryBuilder, QueryIdBuilder} from "../types/components";
+import {EntityController} from "./entity";
 
-export class CounterpartiesController extends BaseController<CounterpartyGetSchema> {
+export class CounterpartiesController extends EntityController<CounterpartyGetSchema> {
     constructor(db: DB, logger: Logger) {
         super({
             db, logger,

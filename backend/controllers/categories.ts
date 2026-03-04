@@ -1,4 +1,3 @@
-import {BaseController} from "./base";
 import {
     categoriesGetSchema,
     categoriesPatchSchema,
@@ -12,8 +11,9 @@ import {CustomError, GetRes} from "../types/basic";
 import {processCategories} from "../utils/processers";
 import {parseError} from "../utils/parsers";
 import {QueryBuilder, QueryIdBuilder} from "../types/components";
+import {EntityController} from "./entity";
 
-export class CategoriesController extends BaseController<CategoryGetSchema> {
+export class CategoriesController extends EntityController<CategoryGetSchema> {
     constructor(db: DB, logger: Logger) {
         super({
             db, logger,

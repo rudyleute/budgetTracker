@@ -5,8 +5,6 @@ import morgan from 'morgan';
 import logger from './utils/logger';
 import cors from 'cors';
 import { corsOptions } from './utils/middleware';
-import users from './components/users';
-import transactions from './components/transactions';
 import {DecodedIdToken} from "firebase-admin/auth";
 import {Response, Request, NextFunction} from "express";
 import express from 'express';
@@ -16,6 +14,8 @@ import {CounterpartiesController} from "./controllers/counterparties";
 import db from "./utils/db";
 import {CategoriesController} from "./controllers/categories";
 import {LoansController} from "./controllers/loans";
+import {UsersController} from "./controllers/users";
+import {TransactionsController} from "./controllers/transactions";
 
 declare global {
     // eslint-disable-next-line @typescript-eslint/no-namespace
@@ -40,8 +40,8 @@ app.use(express.json());
 
 const apiRouter = express.Router();
 apiRouter.use(authenticateUser);
-apiRouter.use("/users", users);
-apiRouter.use("/transactions", transactions);
+apiRouter.use("/users", (new UsersController(db, logger)).getRouters());
+apiRouter.use("/transactions", (new TransactionsController(db, logger)).getRouters());
 apiRouter.use("/categories", (new CategoriesController(db, logger)).getRouters());
 apiRouter.use("/loans", (new LoansController(db, logger)).getRouters());
 apiRouter.use("/counterparties", (new CounterpartiesController(db, logger)).getRouters());
