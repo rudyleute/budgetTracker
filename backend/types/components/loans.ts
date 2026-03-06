@@ -1,5 +1,6 @@
 import {z} from "zod";
 import {basicRequestQuerySchema, createdAtField, updatedAtField, userUidField} from "../basic";
+import {counterpartiesGetSchema} from "./counterparties";
 
 export enum LoanTypes {
     'borrowed' = 'borrowed',
@@ -16,34 +17,42 @@ const loansSchema = z.object({
     id: z.uuid(),
     name: z.string().min(3, 'The loan\'s name length must be of length 3 at least').max(100, 'The loan\'s name length can\'t be bigger than 100'),
     timestamp: z.coerce.date(),
-    deadline: z.coerce.date().optional(),
+    deadline: z.coerce.date().nullish(),
     type: z.enum(LoanTypes),
-    priority: z.enum(PriorityTypes).optional(),
-    sum: z.number().min(0, 'The sum must be bigger than 0'),
+    priority: z.enum(PriorityTypes).nullish(),
+    sum: z.coerce.number().min(0, 'The sum must be bigger than 0'),
     counterparty_id: z.uuid(),
     closed_at: z.coerce.date().refine(
         (date) => date <= new Date(),
         {message: "Closed_at date cannot be in the future"}
-    ).optional(),
+    ).nullish(),
     created_at: createdAtField,
     updated_at: updatedAtField,
     user_uid: userUidField
 });
 
-export const loansGetSchema = loansSchema.omit({
-    user_uid: true
+const loansCounterpartySchema = counterpartiesGetSchema.omit({
+    created_at: true,
+    updated_at: true,
+    balance: true
 });
 
-export const loansPostSchema = loansGetSchema.omit({
+export const loansUserlessSchema = loansSchema.omit({ user_uid: true });
+
+export const loansGetSchema = loansUserlessSchema.omit({
+    counterparty_id: true
+}).extend({
+    counterparty: loansCounterpartySchema
+});
+
+export const loansWriteSchema = loansUserlessSchema.omit({
     created_at: true,
     id: true,
-    updated_at: true
+    updated_at: true,
 });
 
-export const loansPatchSchema = loansGetSchema.omit({
-    created_at: true,
-    id: true
-}).partial().refine(
+export const loansPostSchema = loansWriteSchema;
+export const loansPatchSchema = loansWriteSchema.partial().refine(
     (data) => Object.values(data).some(value => value !== undefined),
     {message: "At least one field must be provided for update"}
 );

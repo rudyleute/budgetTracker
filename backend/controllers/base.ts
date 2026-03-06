@@ -14,7 +14,6 @@ export abstract class BaseController<TGetSchema extends z.ZodType<AllowedRespons
     protected readonly logger: Logger;
     protected readonly entityName: EntityName;
     protected readonly tableName: TableName;
-    protected readonly pageSize: number = 30;
     protected router: Router;
 
     protected constructor({db, logger, entityName, tableName}: BaseConstructorParams) {

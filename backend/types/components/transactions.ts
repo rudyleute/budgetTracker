@@ -1,5 +1,6 @@
 import {z} from "zod";
 import {createdAtField, userUidField, updatedAtField, basicRequestQuerySchema} from "../basic";
+import {categoriesGetSchema} from "./categories";
 
 const transactionsSchema = z.object({
     id: z.uuid(),
@@ -12,26 +13,36 @@ const transactionsSchema = z.object({
     created_at: createdAtField,
     updated_at: updatedAtField,
     user_uid: userUidField,
-    category_id: z.uuid().optional()
+    category_id: z.uuid().nullish()
 });
 
-export const transactionsGetSchema = transactionsSchema.omit({
-    user_uid: true
-});
-
-export const transactionsPostSchema = transactionsGetSchema.omit({
+export const transactionsCategorySchema = categoriesGetSchema.omit({
     created_at: true,
-    id: true,
     updated_at: true
 });
 
-export const transactionsPatchSchema = transactionsGetSchema.omit({
-    created_at: true,
-    id: true
-}).partial().refine(
-    (data) => Object.values(data).some(value => value !== undefined),
-    { message: "At least one field must be provided for update" }
-);
+const transactionsUserlessSchema = transactionsSchema.omit({user_uid: true});
+export const transactionsGetSchema = transactionsUserlessSchema.omit({
+    category_id: true
+}).extend({
+    category: transactionsCategorySchema.nullish()
+});
+
+const transactionsWriteSchema = transactionsUserlessSchema.pick({
+    name: true,
+    price: true,
+    timestamp: true,
+    category_id: true
+});
+
+export const transactionsPostSchema = transactionsWriteSchema;
+export const transactionsPatchSchema = transactionsWriteSchema
+    .partial()
+    .refine(
+        (data) => Object.values(data).some(value => value !== undefined),
+        { message: "At least one field must be provided for update" }
+    );
+
 
 export type TransactionGet = z.infer<typeof transactionsGetSchema>;
 export type TransactionGetSchema = typeof transactionsGetSchema;

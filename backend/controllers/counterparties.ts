@@ -24,82 +24,75 @@ export class CounterpartiesController extends EntityController<CounterpartyGetSc
                 get: counterpartiesGetSchema,
                 post: counterpartiesPostSchema,
                 patch: counterpartiesPatchSchema
-            }
+            },
+            getFields: counterpartiesGetSchema.omit({balance: true}).keyof().options
         });
 
         this.router.get('/', this.getCounterparties);
         this.router.get('/:id', this.getCounterpartyById);
     }
 
+    protected getBasicQuery = (alias: string, userUidInd: number): string => {
+        return `
+            SELECT ${this.getQueryFields(alias)},
+                   COALESCE(
+                           SUM(CASE WHEN l.type = 'borrowed' THEN l.sum ELSE 0 END) -
+                           SUM(CASE WHEN l.type = 'lent' THEN l.sum ELSE 0 END),
+                           0
+                   ) AS balance
+            FROM ${alias}
+                     LEFT JOIN loans l ON ${alias}.id = l.counterparty_id AND l.user_uid = $${userUidInd} AND l.closed_at IS NULL
+        `;
+    };
+
     private getCounterparties = async (req: Request, res: Response<GetRes<CounterpartyGet> | CustomError>) => {
         const uid = req.user!.uid;
 
         try {
-            const {filter, offset, limit, balance}: CounterpartiesRequestQuery = counterpartiesRequestQuerySchema.parse(req.query);
+            const {
+                filter,
+                offset,
+                limit
+            }: CounterpartiesRequestQuery = counterpartiesRequestQuerySchema.parse(req.query);
 
-            this.logger.debug('Fetching counterparties', {uid, balance, offset, limit, filter});
+            this.logger.debug('Fetching counterparties', {uid, offset, limit, filter});
             const params: QueryParam[] = [], cond: string[] = [];
 
             params.push(uid);
-            cond.push(`cp.user_uid = $${params.length}`);
+            cond.push(`${this.tableName}.user_uid = $${params.length}`);
 
             if (filter) {
                 params.push(`%${filter}%`);
-                cond.push(`LOWER(cp.name) LIKE LOWER($${params.length})`);
+                cond.push(`LOWER(${this.tableName}.name) LIKE LOWER($${params.length})`);
             }
 
-            const rawLimit: number = Number(limit ?? 0);
-            let effectiveLimit: number = 0, includeLimit = true;
+            const rawLimit = Number(limit ?? this.pageSize);
+            let realLimit: number = 0, includeLimit = true;
 
-            if (isNaN(rawLimit) || rawLimit === 0) effectiveLimit = this.pageSize;
-            else if (rawLimit > 0) effectiveLimit = rawLimit;
+            if (rawLimit > 0) realLimit = rawLimit;
             else includeLimit = false;
 
-            if (includeLimit) params.push(effectiveLimit + 1);
+            if (includeLimit) params.push(realLimit + 1);
             params.push(Number(offset ?? 0));
 
             const limitClause = includeLimit ? `LIMIT $${params.length - 1}` : "";
             const offsetClause = `OFFSET $${params.length}`;
 
-            let query;
-            if (balance) {
-                query = `
-                    SELECT cp.id,
-                           cp.name,
-                           cp.email,
-                           cp.phone,
-                           cp.note,
-                           COALESCE(
-                                   SUM(CASE WHEN l.type = 'borrowed' THEN l.sum ELSE 0 END) -
-                                   SUM(CASE WHEN l.type = 'lent' THEN l.sum ELSE 0 END),
-                                   0
-                           ) AS balance
-                    FROM counterparties cp
-                             LEFT JOIN loans l ON cp.id = l.counterparty_id AND l.user_uid = $${params.length - 2} AND l.closed_at IS NULL
-                    WHERE ${cond.join(' AND ')}
-                        GROUP BY cp.id
-                        ORDER BY balance DESC, cp.name
-                `;
-            } else {
-                query = `
-                    SELECT id, name, email, note, phone
-                    FROM counterparties cp
-                    WHERE ${cond.join(' AND ')}
-                    ORDER BY name
-                `;
-            }
-            query = `
-              ${query}
-              ${limitClause}
-              ${offsetClause};
+            const query = `
+                ${this.getBasicQuery(this.tableName, params.length - 2)}
+                WHERE ${cond.join(' AND ')}
+                    GROUP BY ${this.tableName}.id
+                    ORDER BY balance DESC, ${this.tableName}.name
+                ${limitClause}
+                ${offsetClause};
             `;
 
             const result = await this.db.query(query, params);
 
             let counterparties: CounterpartiesGet, isLastPage: boolean;
             if (includeLimit) {
-                isLastPage = result.rows.length <= effectiveLimit;
-                counterparties = processCounterparties(result.rows.slice(0, effectiveLimit));
+                isLastPage = result.rows.length <= realLimit;
+                counterparties = processCounterparties(result.rows.slice(0, realLimit));
             } else {
                 isLastPage = true;
                 counterparties = processCounterparties(result.rows);
@@ -127,21 +120,10 @@ export class CounterpartiesController extends EntityController<CounterpartyGetSc
             this.logger.debug('Fetching counterparties', {uid});
 
             const query = `
-                SELECT cp.id,
-                       cp.name,
-                       cp.email,
-                       cp.phone,
-                       cp.note,
-                       COALESCE(
-                               SUM(CASE WHEN l.type = 'borrowed' THEN l.sum ELSE 0 END) -
-                               SUM(CASE WHEN l.type = 'lent' THEN l.sum ELSE 0 END),
-                               0
-                       ) AS balance
-                FROM counterparties cp
-                         LEFT JOIN loans l ON cp.id = l.counterparty_id AND l.user_uid = $1 AND l.closed_at IS NULL
-                WHERE cp.user_uid = $1
-                  AND cp.id = $2
-                GROUP BY cp.id
+                ${this.getBasicQuery(this.tableName, 1)}
+                WHERE ${this.tableName}.user_uid = $1
+                  AND ${this.tableName}.id = $2
+                GROUP BY ${this.tableName}.id
                 LIMIT 1;`;
 
             const result = await this.db.query(query, [uid, id]);
@@ -170,19 +152,8 @@ export class CounterpartiesController extends EntityController<CounterpartyGetSc
                 INSERT INTO counterparties (${allFields.join(", ")})
                     VALUES (${placeholders})
                     RETURNING *)
-            SELECT inserted.id,
-                   inserted.name,
-                   inserted.email,
-                   inserted.phone,
-                   inserted.note,
-                   COALESCE(
-                           SUM(CASE WHEN l.type = 'borrowed' THEN l.sum ELSE 0 END) -
-                           SUM(CASE WHEN l.type = 'lent' THEN l.sum ELSE 0 END),
-                           0
-                   ) AS balance
-            FROM inserted
-                     LEFT JOIN loans l ON inserted.id = l.counterparty_id AND l.user_uid = $${allValues.length} AND l.closed_at IS NULL
-            GROUP BY inserted.id, inserted.name, inserted.email, inserted.phone, inserted.note;
+            ${this.getBasicQuery("inserted", allValues.length)}
+            GROUP BY ${this.getQueryFields("inserted")};
         `;
 
         return {query, queryValues: allValues};
@@ -198,19 +169,8 @@ export class CounterpartiesController extends EntityController<CounterpartyGetSc
                     SET ${setClauses.join(", ")}, updated_at = CURRENT_TIMESTAMP
                     WHERE user_uid = $${idx} AND id = $${idx + 1}
                   RETURNING *)
-            SELECT updated.id,
-                   updated.name,
-                   updated.email,
-                   updated.phone,
-                   updated.note,
-                   COALESCE(
-                           SUM(CASE WHEN l.type = 'borrowed' THEN l.sum ELSE 0 END) -
-                           SUM(CASE WHEN l.type = 'lent' THEN l.sum ELSE 0 END),
-                           0
-                   ) AS balance
-            FROM updated
-                     LEFT JOIN loans l ON updated.id = l.counterparty_id AND l.user_uid = $${idx} AND l.closed_at IS NULL
-                      GROUP BY updated.id, updated.name, updated.email, updated.phone, updated.note;
+            ${this.getBasicQuery("updated", idx)}
+            GROUP BY ${this.getQueryFields("updated")};
         `;
 
         return {query, queryValues: [...values, uid, id]};

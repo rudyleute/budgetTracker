@@ -37,9 +37,11 @@ export interface GetRes<T extends AllowedResponseType> {
     is_last_page?: boolean
 }
 
+export type SchemaFields<T extends z.ZodType<AllowedResponseType>> = (keyof T['_output'])[];
+
 export const basicRequestQuerySchema = z.object({
     filter: z.string().optional(),
-    offset: z.coerce.number().min(0, 'Offset must be positive'),
+    offset: z.coerce.number().min(0, 'Offset must be positive').default(0),
     limit: z.coerce.number().optional(),
     order: z.enum(['asc', 'desc', 'ASC', 'DESC']).default('DESC').optional()
 });
@@ -60,6 +62,7 @@ export interface BaseConstructorParams {
     entityName: EntityName,
     tableName: TableName
 }
-export interface EntityConstructorParams<TGet extends z.ZodType = z.ZodType> extends BaseConstructorParams {
-    schemas: Schemas<TGet>
+export interface EntityConstructorParams<TGet extends z.ZodType<AllowedResponseType> = z.ZodType<AllowedResponseType>> extends BaseConstructorParams {
+    schemas: Schemas<TGet>,
+    getFields: SchemaFields<TGet>
 }

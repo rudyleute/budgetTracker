@@ -17,21 +17,19 @@ const categoriesSchema = z.object({
 });
 
 export const categoriesGetSchema = categoriesSchema.omit({
-   user_uid: true
+    user_uid: true
 });
 
-export const categoriesPostSchema = categoriesGetSchema.omit({
+const categoriesWriteSchema = categoriesGetSchema.omit({
     created_at: true,
     id: true,
     updated_at: true
 });
 
-export const categoriesPatchSchema = categoriesGetSchema.omit({
-   created_at: true,
-   id: true
-}).partial().refine(
+export const categoriesPostSchema = categoriesWriteSchema;
+export const categoriesPatchSchema = categoriesWriteSchema.partial().refine(
     (data) => Object.values(data).some(value => value !== undefined),
-    { message: "At least one field must be provided for update" }
+    {message: "At least one field must be provided for update"}
 );
 
 export type CategoryGet = z.infer<typeof categoriesGetSchema>;

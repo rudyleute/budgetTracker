@@ -23,7 +23,8 @@ export class CategoriesController extends EntityController<CategoryGetSchema> {
                 get: categoriesGetSchema,
                 post: categoriesPostSchema,
                 patch: categoriesPatchSchema
-            }
+            },
+            getFields: categoriesGetSchema.keyof().options
         });
 
         this.router.get('/', this.getCategories);
@@ -36,7 +37,7 @@ export class CategoriesController extends EntityController<CategoryGetSchema> {
             this.logger.debug('Fetching categories', {uid});
 
             const result = await this.db.query(
-                "SELECT * FROM categories WHERE user_uid = $1;",
+                `SELECT ${this.getQueryFields(this.tableName)} FROM categories WHERE user_uid = $1;`,
                 [uid]
             );
 
@@ -57,9 +58,9 @@ export class CategoriesController extends EntityController<CategoryGetSchema> {
         const placeholders = allValues.map((_, i) => `$${i + 1}`).join(", ");
 
         const query = `
-            INSERT INTO categories (${allFields.join(", ")})
+            INSERT INTO ${this.tableName} (${allFields.join(", ")})
             VALUES (${placeholders})
-            RETURNING id, color, name, created_at, updated_at;
+            RETURNING ${this.getQueryFields(this.tableName)};
         `;
         return {query, queryValues: allValues};
     };
@@ -71,12 +72,12 @@ export class CategoriesController extends EntityController<CategoryGetSchema> {
         const idPlaceholder = `$${idx}`;
 
         const query = `
-            UPDATE categories
+            UPDATE ${this.tableName}
             SET ${setClauses.join(", ")},
                 updated_at = CURRENT_TIMESTAMP
             WHERE user_uid = ${uidPlaceholder}
               AND id = ${idPlaceholder}
-            RETURNING id, color, name, created_at, updated_at;
+            RETURNING ${this.getQueryFields(this.tableName)};
         `;
         return {query, queryValues: [...values, uid, id]};
     };

@@ -4,28 +4,30 @@ import {createdAtField, userUidField, updatedAtField, basicRequestQuerySchema} f
 const counterpartiesSchema = z.object({
     id: z.uuid(),
     name: z.string().min(3, 'The counterparty\'s name length must be of length 3 at least').max(100, 'The counterparty\'s name length can\'t be bigger than 100'),
-    email: z.email('Incorrect email format').min(5, 'Email can\'t be shorter than 5 characters').max(255, 'Email can\'t be longer than 256 characters').optional(),
-    phone: z.string().max(15, 'Phone numbers can\'t be longer than 15 characters').regex(/^[1-9][0-9]{6,14}$/, "Incorrect phone format - no symbols are allowed apart from numbers").optional(),
-    note: z.string().max(200, 'Note\'s length can\'t be bigger than 200 characters').optional(),
+    email: z.email('Incorrect email format').min(5, 'Email can\'t be shorter than 5 characters').max(255, 'Email can\'t be longer than 256 characters').nullish(),
+    phone: z.string().max(15, 'Phone numbers can\'t be longer than 15 characters').regex(/^[1-9][0-9]{6,14}$/, "Incorrect phone format - no symbols are allowed apart from numbers").nullish(),
+    note: z.string().max(200, 'Note\'s length can\'t be bigger than 200 characters').nullish(),
     created_at: createdAtField,
     updated_at: updatedAtField,
     user_uid: userUidField
 });
 
-export const counterpartiesGetSchema = counterpartiesSchema.omit({
+const counterpartiesUserlessSchema = counterpartiesSchema.omit({
     user_uid: true
 });
 
-export const counterpartiesPostSchema = counterpartiesGetSchema.omit({
+export const counterpartiesGetSchema = counterpartiesUserlessSchema.extend({
+    balance: z.coerce.number()
+});
+
+const counterpartiesWriteSchema = counterpartiesUserlessSchema.omit({
     created_at: true,
     id: true,
     updated_at: true
 });
 
-export const counterpartiesPatchSchema = counterpartiesGetSchema.omit({
-    created_at: true,
-    id: true
-}).partial().refine(
+export const counterpartiesPostSchema = counterpartiesWriteSchema;
+export const counterpartiesPatchSchema = counterpartiesWriteSchema.partial().refine(
     (data) => Object.values(data).some(value => value !== undefined),
     { message: "At least one field must be provided for update" }
 );
@@ -34,7 +36,5 @@ export type CounterpartyGet = z.infer<typeof counterpartiesGetSchema>;
 export type CounterpartyGetSchema = typeof counterpartiesGetSchema;
 export type CounterpartiesGet = CounterpartyGet[];
 
-export const counterpartiesRequestQuerySchema = basicRequestQuerySchema.extend({
-    balance: z.coerce.boolean().optional()
-}).omit({ order: true });
+export const counterpartiesRequestQuerySchema = basicRequestQuerySchema.omit({ order: true });
 export type CounterpartiesRequestQuery = z.infer<typeof counterpartiesRequestQuerySchema>;

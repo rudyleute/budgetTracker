@@ -4,7 +4,7 @@ import {
     EntityConstructorParams,
     CustomError,
     QueryParam,
-    AllowedResponseType,
+    AllowedResponseType, SchemaFields,
 } from "../types/basic";
 import {DeleteData, Options, QueryBuilder, QueryIdBuilder} from "../types/components";
 import {isBody} from "../utils/general";
@@ -18,20 +18,25 @@ import {UserGet} from "../types/components/users";
 export abstract class EntityController<TGetSchema extends z.ZodType<Exclude<AllowedResponseType, UserGet>>> extends BaseController<TGetSchema> {
     protected readonly schemas: Schemas<TGetSchema>;
     protected readonly pageSize: number = 30;
+    protected readonly getFields: SchemaFields<TGetSchema>;
+    protected getBasicQuery = (_alias: string, _idx: number): string => "";
 
-    protected constructor({db, logger, entityName, tableName, schemas}: EntityConstructorParams<TGetSchema>) {
+    protected constructor({db, logger, entityName, tableName, schemas, getFields}: EntityConstructorParams<TGetSchema>) {
         super({
             db,
             logger,
             entityName,
-            tableName
+            tableName,
         });
         this.schemas = schemas;
+        this.getFields = getFields;
 
         this.router.post('/', this.createEntity);
         this.router.delete('/:id', this.deleteEntity);
         this.router.patch('/:id', this.updateEntity);
     }
+
+    protected getQueryFields = (source: string): string => this.getFields.map((field) => `${source}.${field as string}`).join(', ');
 
     protected createEntity = (req: Request, res: Response<z.infer<TGetSchema> | CustomError>) => this.handleUpsert({
         req,

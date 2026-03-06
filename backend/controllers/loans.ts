@@ -25,7 +25,8 @@ export class LoansController extends EntityController<LoanGetSchema> {
                 get: loansGetSchema,
                 post: loansPostSchema,
                 patch: loansPatchSchema
-            }
+            },
+            getFields: loansGetSchema.omit({counterparty: true}).keyof().options
         });
 
         this.router.get('/', this.getLoans);
@@ -58,39 +59,40 @@ export class LoansController extends EntityController<LoanGetSchema> {
             const params: QueryParam[] = [];
 
             const dateInd = params.length + 1;
-            const {query: defaultQuery, date, alias} = this.formDefaultSelectQuery(false, dateInd);
+            const {query: defaultQuery, date} = this.formDefaultSelectQuery(this.tableName, dateInd);
+
             params.push(date);
-            const cond = [`${alias}.user_uid = $${params.length + 1}`];
+            const cond = [`${this.tableName}.user_uid = $${params.length + 1}`];
             params.push(uid);
 
             //'borrowed' or 'lent'
             if (reqType) {
                 params.push(reqType);
-                cond.push(`${alias}.type = $${params.length}`);
+                cond.push(`${this.tableName}.type = $${params.length}`);
             }
             if (from) {
                 params.push(from);
-                cond.push(`${alias}.timestamp >= $${params.length}`);
+                cond.push(`${this.tableName}.timestamp >= $${params.length}`);
             }
             if (to) {
                 const nextDay = new Date(to);
                 nextDay.setDate(nextDay.getDate() + 1);
                 params.push(nextDay.toISOString());
-                cond.push(`${alias}.timestamp < $${params.length}`);
+                cond.push(`${this.tableName}.timestamp < $${params.length}`);
             }
             if (priority) {
                 params.push(priority);
-                cond.push(`${alias}.priority = $${params.length}`);
+                cond.push(`${this.tableName}.priority = $${params.length}`);
             }
             if (counterparty) {
                 params.push(counterparty);
-                cond.push(`${alias}.counterparty_id = $${params.length}`);
+                cond.push(`${this.tableName}.counterparty_id = $${params.length}`);
             }
             //In this case we are only interested in the overdue and soon-to-be overdue deadlines
             if (due === "true") cond.push(`
-              ${alias}.closed_at IS NULL AND
-              (${alias}.priority = 'high' OR
-              (${alias}.deadline IS NOT NULL AND DATE(${alias}.deadline) <= DATE($${dateInd})))`
+              ${this.tableName}.closed_at IS NULL AND
+              (${this.tableName}.priority = 'high' OR
+              (${this.tableName}.deadline IS NOT NULL AND DATE(${this.tableName}.deadline) <= DATE($${dateInd})))`
             );
 
             let query = `
@@ -102,7 +104,7 @@ export class LoansController extends EntityController<LoanGetSchema> {
             //It should be possible to overwrite the default sorting by overdue, deadline and stuff via sort param
             if (sort) {
                 const dir = order.toUpperCase() === 'ASC' ? 'ASC' : 'DESC';
-                orderClause = `ORDER BY ${alias}.${sort} ${dir} NULLS LAST`;
+                orderClause = `ORDER BY ${this.tableName}.${sort} ${dir} NULLS LAST`;
             } else {
                 /*Default sorting
                 1 - non-closed loans are on top
@@ -113,28 +115,26 @@ export class LoansController extends EntityController<LoanGetSchema> {
                 */
                 orderClause = `
                     ORDER BY
-                      ${alias}.closed_at DESC NULLS FIRST,
-                      CASE WHEN DATE(${alias}.deadline) < CURRENT_DATE THEN 0 ELSE 1 END,
-                      DATE(${alias}.deadline) NULLS LAST,
+                      ${this.tableName}.closed_at DESC NULLS FIRST,
+                      CASE WHEN DATE(${this.tableName}.deadline) < CURRENT_DATE THEN 0 ELSE 1 END,
+                      DATE(${this.tableName}.deadline) NULLS LAST,
                       CASE
-                        WHEN ${alias}.priority = 'high' THEN 1
-                        WHEN ${alias}.priority = 'medium' THEN 2
-                        WHEN ${alias}.priority = 'low' THEN 3
+                        WHEN ${this.tableName}.priority = 'high' THEN 1
+                        WHEN ${this.tableName}.priority = 'medium' THEN 2
+                        WHEN ${this.tableName}.priority = 'low' THEN 3
                         ELSE 4
                       END,
-                      CASE WHEN ${alias}.deadline IS NULL THEN ${alias}.timestamp END DESC
+                      CASE WHEN ${this.tableName}.deadline IS NULL THEN ${this.tableName}.timestamp END DESC
                 `;
             }
 
-            const rawLimit = Number(limit ?? 0);
-            let effectiveLimit: number = this.pageSize;
-            let includeLimit = true;
+            const rawLimit = Number(limit ?? this.pageSize);
+            let realLimit: number = 0, includeLimit = true;
 
-            if (isNaN(rawLimit) || rawLimit === 0) effectiveLimit = this.pageSize;
-            else if (rawLimit > 0) effectiveLimit = rawLimit;
+            if (rawLimit > 0) realLimit = rawLimit;
             else includeLimit = false;
 
-            if (includeLimit) params.push(effectiveLimit + 1);
+            if (includeLimit) params.push(realLimit + 1);
             params.push(Number(offset ?? 0));
 
             const limitClause = includeLimit ? `LIMIT $${params.length - 1}` : "";
@@ -149,8 +149,8 @@ export class LoansController extends EntityController<LoanGetSchema> {
 
             let loans: LoansGet, isLastPage;
             if (includeLimit) {
-                isLastPage = result.rows.length <= effectiveLimit;
-                loans = processLoans(result.rows.slice(0, effectiveLimit));
+                isLastPage = result.rows.length <= realLimit;
+                loans = processLoans(result.rows.slice(0, realLimit));
             } else {
                 isLastPage = true;
                 loans = processLoans(result.rows);
@@ -168,7 +168,7 @@ export class LoansController extends EntityController<LoanGetSchema> {
                 is_last_page: isLastPage
             });
         } catch (error) {
-            parseError(error, uid, this.entityName, 'retrieve');
+            res.status(500).json(parseError(error, uid, this.entityName, 'retrieve'));
         }
     };
 
@@ -179,15 +179,15 @@ export class LoansController extends EntityController<LoanGetSchema> {
         try {
             this.logger.debug('Closing the loan', {uid, id});
 
-            const {date, query: defaultQuery} = this.formDefaultSelectQuery(true, 3);
+            const {date, query: defaultQuery} = this.formDefaultSelectQuery('changed', 3);
 
-            const result = await this.db.query(
-                `WITH changed AS (
-                    UPDATE loans
-                        SET closed_at = CURRENT_TIMESTAMP
-                        WHERE user_uid = $1 AND id = $2 AND closed_at IS NULL
-                        RETURNING *)
-                     ${defaultQuery};
+            const result = await this.db.query(`
+                    WITH changed AS (
+                        UPDATE loans
+                            SET closed_at = CURRENT_TIMESTAMP
+                            WHERE user_uid = $1 AND id = $2 AND closed_at IS NULL
+                            RETURNING *)
+                    ${defaultQuery};
                 `,
                 [uid, id, date]
             );
@@ -219,12 +219,12 @@ export class LoansController extends EntityController<LoanGetSchema> {
         try {
             this.logger.debug('Fetching a loan', {uid, id});
 
-            const {date, query: defaultQuery, alias} = this.formDefaultSelectQuery(false, 3);
+            const {date, query: defaultQuery} = this.formDefaultSelectQuery(this.tableName, 3);
 
             const result = await this.db.query(
                 `${defaultQuery}
-                   WHERE ${alias}.user_uid = $1
-                     AND ${alias}.id = $2
+                   WHERE ${this.tableName}.user_uid = $1
+                     AND ${this.tableName}.id = $2
                    LIMIT 1;`,
                 [uid, id, date]
             );
@@ -249,10 +249,7 @@ export class LoansController extends EntityController<LoanGetSchema> {
         }
     };
 
-    private formDefaultSelectQuery = (isChanged = false, dateParamNumber: number) => {
-        const table = isChanged ? "changed" : "loans"; //helps to prevent potential injections as the parameter is not pasted directly
-        const alias = 't';
-
+    protected formDefaultSelectQuery = (source: string, idx: number) => {
         //Calculate all the deadlines that are due to within 2 weeks
         const today = new Date();
         today.setHours(0, 0, 0, 0);
@@ -263,14 +260,7 @@ export class LoansController extends EntityController<LoanGetSchema> {
 
         return {
             query: `
-                SELECT ${alias}.id,
-                       ${alias}.name,
-                       ${alias}.timestamp,
-                       ${alias}.deadline,
-                       ${alias}.priority,
-                       ${alias}.type,
-                       ${alias}.sum,
-                       ${alias}.closed_at,
+                SELECT ${this.getQueryFields(source)},
                        json_build_object(
                                'id', cp.id,
                                'name', cp.name,
@@ -279,15 +269,14 @@ export class LoansController extends EntityController<LoanGetSchema> {
                                'phone', cp.phone
                        ) AS counterparty,
                        (CASE
-                            WHEN ${alias}.priority = 'high' THEN true
-                            WHEN ${alias}.closed_at IS NULL AND ${alias}.deadline IS NOT NULL AND
-                                 DATE(${alias}.deadline) <= DATE($${dateParamNumber}) THEN true
+                            WHEN ${source}.priority = 'high' THEN true
+                            WHEN ${source}.closed_at IS NULL AND ${source}.deadline IS NOT NULL AND
+                                 DATE(${source}.deadline) <= DATE($${idx}) THEN true
                             ELSE false
                        END) AS is_due /* All overdue loans and loans that will be overdue max in 2 weeks */
-                FROM ${table} as ${alias}
-                     LEFT JOIN counterparties cp ON ${alias}.counterparty_id = cp.id /*the semicolon is purposefully omitted as the query might be expanded*/
+                FROM ${source}
+                     LEFT JOIN counterparties cp ON ${source}.counterparty_id = cp.id /*the semicolon is purposefully omitted as the query might be expanded*/
             `,
-            alias,
             date: twoWeeksFromNow.toISOString()
         };
     };
@@ -297,11 +286,12 @@ export class LoansController extends EntityController<LoanGetSchema> {
         const allValues = [...values, uid];
         const placeholders = allValues.map((_, i) => `$${i + 1}`).join(", ");
 
-        const defaultSelect = this.formDefaultSelectQuery(true, allValues.length + 1);
+        const source: string = 'changed';
+        const defaultSelect = this.formDefaultSelectQuery(source, allValues.length + 1);
         allValues.push(defaultSelect.date); //date formed for calculating is_due
 
         const query = `
-            WITH changed AS (
+            WITH ${source} AS (
                 INSERT INTO loans (${allFields.join(', ')})
                     VALUES (${placeholders})
             RETURNING *)
@@ -318,15 +308,16 @@ export class LoansController extends EntityController<LoanGetSchema> {
         const uidPlaceholder = `$${idx++}`;
         const idPlaceholder = `$${idx++}`;
 
-        const defaultSelect = this.formDefaultSelectQuery(true, idx);
+        const source: string = 'changed';
+        const defaultSelect = this.formDefaultSelectQuery(source, idx);
 
         const query = `
-            WITH changed AS (
+            WITH ${source} AS (
                 UPDATE loans
                     SET ${setClauses.join(', ')}
                     WHERE user_uid = ${uidPlaceholder} AND id = ${idPlaceholder}
                     RETURNING *)
-                ${defaultSelect.query};
+            ${defaultSelect.query};
         `;
 
         return {query, queryValues: [...values, uid, id, defaultSelect.date]};

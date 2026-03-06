@@ -25,75 +25,82 @@ export class TransactionsController extends EntityController<TransactionGetSchem
                 get: transactionsGetSchema,
                 post: transactionsPostSchema,
                 patch: transactionsPatchSchema
-            }
+            },
+            getFields: transactionsGetSchema.omit({category: true}).keyof().options
         });
 
         this.router.get('/', this.getTransactions);
     }
 
+    protected getBasicQuery = (source: string): string => {
+        return `
+            SELECT ${this.getQueryFields(source)},
+                   CASE
+                       WHEN c.id IS NOT NULL THEN json_build_object(
+                               'id', c.id,
+                               'name', c.name,
+                               'color', c.color
+                       )
+                   END AS category
+            FROM ${source}
+                     LEFT JOIN categories c ON ${source}.category_id = c.id
+        `;
+    };
+
     private getTransactions = async (req: Request, res: Response<GetRes<TransactionGet> | CustomError>) => {
         const uid = req.user!.uid;
         try {
-            const { from, to, filter, offset, limit }: TransactionsRequestQuery = transactionsRequestQuerySchema.parse(req.query);
+            const {
+                from,
+                to,
+                filter,
+                offset,
+                limit
+            }: TransactionsRequestQuery = transactionsRequestQuerySchema.parse(req.query);
 
-            this.logger.debug('Fetching transactions', { uid, offset, from, to, filter, limit });
-            const params: QueryParam[] = [uid], cond: string[] = ["t.user_uid = $1"];
+            this.logger.debug('Fetching transactions', {uid, offset, from, to, filter, limit});
+            const params: QueryParam[] = [uid], cond: string[] = [`${this.tableName}.user_uid = $1`];
 
             if (from) {
                 params.push(from);
-                cond.push(`t.timestamp >= $${params.length}`);
+                cond.push(`${this.tableName}.timestamp >= $${params.length}`);
             }
             if (to) {
                 const nextDay = new Date(to);
                 nextDay.setDate(nextDay.getDate() + 1);
                 params.push(nextDay.toISOString());
-                cond.push(`t.timestamp < $${params.length}`);
+                cond.push(`${this.tableName}.timestamp < $${params.length}`);
             }
             if (filter) {
                 params.push(`%${filter}%`);
-                cond.push(`LOWER(t.name) LIKE LOWER($${params.length})`);
+                cond.push(`LOWER(${this.tableName}.name) LIKE LOWER($${params.length})`);
             }
 
-            const rawLimit = Number(limit ?? 0);
-            let effectiveLimit: number = 0;
-            let includeLimit = true;
+            const rawLimit = Number(limit ?? this.pageSize);
+            let realLimit: number = 0, includeLimit = true;
 
-            if (isNaN(rawLimit) || rawLimit === 0) effectiveLimit = this.pageSize;
-            else if (rawLimit > 0) effectiveLimit = rawLimit;
+            if (rawLimit > 0) realLimit = rawLimit;
             else includeLimit = false;
 
-            if (includeLimit) params.push(effectiveLimit + 1);
+            if (includeLimit) params.push(realLimit + 1);
             params.push(Number(offset ?? 0));
 
             const limitClause = includeLimit ? `LIMIT $${params.length - 1}` : "";
             const offsetClause = `OFFSET $${params.length}`;
 
             const query = `
-                SELECT t.id,
-                       t.timestamp,
-                       t.created_at,
-                       t.updated_at,
-                       t.name,
-                       t.price,
-                       json_build_object(
-                               'id', c.id,
-                               'name', c.name,
-                               'color', c.color
-                       ) AS category
-                FROM transactions t
-                         LEFT JOIN categories c ON t.category_id = c.id
-                    where ${cond.join(' AND ')}
-                ORDER BY t.timestamp DESC
-                ${limitClause}
-                ${offsetClause};
+                ${this.getBasicQuery(this.tableName)}
+                where ${cond.join(' AND ')}
+                ORDER BY ${this.tableName}.timestamp DESC
+                    ${limitClause} ${offsetClause};
             `;
 
             const result = await this.db.query(query, params);
 
             let transactions: TransactionsGet, isLastPage: boolean;
             if (includeLimit) {
-                isLastPage = result.rows.length <= effectiveLimit;
-                transactions = processTransactions(result.rows.slice(0, effectiveLimit));
+                isLastPage = result.rows.length <= realLimit;
+                transactions = processTransactions(result.rows.slice(0, realLimit));
             } else {
                 isLastPage = true;
                 transactions = processTransactions(result.rows);
@@ -131,26 +138,13 @@ export class TransactionsController extends EntityController<TransactionGetSchem
 
         const query = `
             WITH inserted AS (
-                INSERT INTO transactions (${allFields.join(", ")})
+                INSERT INTO ${this.tableName} (${allFields.join(", ")})
                     VALUES (${placeholders})
-                    RETURNING *
-            )
-            SELECT inserted.id,
-                   inserted.timestamp,
-                   inserted.created_at,
-                   inserted.updated_at,
-                   inserted.name,
-                   inserted.price,
-                   json_build_object(
-                           'id', c.id,
-                           'name', c.name,
-                           'color', c.color
-                   ) AS category
-            FROM inserted
-                     LEFT JOIN categories c ON inserted.category_id = c.id;
+                    RETURNING *)
+            ${this.getBasicQuery('inserted')};
         `;
 
-        return { query, queryValues: allValues };
+        return {query, queryValues: allValues};
     };
 
     protected buildPatchQuery: QueryIdBuilder = ({fields, values, uid, id}) => {
@@ -160,27 +154,14 @@ export class TransactionsController extends EntityController<TransactionGetSchem
         const idPlaceholder = `$${idx}`;
 
         const query = `
-          WITH updated AS (
-            UPDATE transactions
-            SET ${setClauses.join(", ")}, updated_at = CURRENT_TIMESTAMP
-            WHERE user_uid = ${uidPlaceholder} AND id = ${idPlaceholder}
-            RETURNING *
-          )
-          SELECT updated.id,
-                 updated.timestamp,
-                 updated.created_at,
-                 updated.updated_at,
-                 updated.name,
-                 updated.price,
-                 json_build_object(
-                   'id', c.id,
-                   'name', c.name,
-                   'color', c.color
-                 ) AS category
-          FROM updated
-          LEFT JOIN categories c ON updated.category_id = c.id;
+            WITH updated AS (
+                UPDATE ${this.tableName}
+                    SET ${setClauses.join(", ")}, updated_at = CURRENT_TIMESTAMP
+                    WHERE user_uid = ${uidPlaceholder} AND id = ${idPlaceholder}
+                    RETURNING *)
+            ${this.getBasicQuery('updated')};
         `;
-        return { query, queryValues: [...values, uid, id] };
+        return {query, queryValues: [...values, uid, id]};
     };
 
     private validateCategory: Validator = async (db: DB, req: Request, uid: string) => {
@@ -192,7 +173,10 @@ export class TransactionsController extends EntityController<TransactionGetSchem
             [req.body.category_id, uid]
         );
 
-        if (catResult.rows.length === 0) return {message: "Invalid category", context: {categoryId: req.body.category_id}};
+        if (catResult.rows.length === 0) return {
+            message: "Invalid category",
+            context: {categoryId: req.body.category_id}
+        };
         return null;
     };
 }
