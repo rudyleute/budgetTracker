@@ -86,7 +86,7 @@ export const validateFields = async (trigger, values, dirtyFields) => {
   }, {});
 };
 
-export const onFormSubmit = async (validateFields, submit, onSuccess, id = null) => {
+export const onFormSubmit = async (validateFields, submit, onSuccess = null, id = null) => {
   const fields = await validateFields();
 
   if (_.isEmpty(fields)) return null;

@@ -1,18 +1,15 @@
 import { LoansProvider } from '../context/LoansProvider.jsx';
-import { ModalProvider } from '../context/ModalProvider.jsx';
-import { ConfirmationProvider } from '../context/ConfirmationProvider.jsx';
 import { Outlet } from 'react-router-dom';
 import { CounterpartiesProvider } from '../context/CounterpartiesProvider.jsx';
+import SupplementaryProviders from '../context/SupplementaryProviders.jsx';
 
 const LayoutCounterparties = () => {
   return (
     <CounterpartiesProvider>
       <LoansProvider skipInitFetch={true}>
-        <ModalProvider>
-          <ConfirmationProvider>
+        <SupplementaryProviders>
             <Outlet/>
-          </ConfirmationProvider>
-        </ModalProvider>
+        </SupplementaryProviders>
       </LoansProvider>
     </CounterpartiesProvider>
   )

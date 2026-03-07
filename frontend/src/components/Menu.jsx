@@ -8,11 +8,22 @@ import {
 import IconButton from './simple/IconButton.jsx';
 import { useAccount } from '../context/AccountProvider.jsx';
 import LinkIcon from './simple/LinkIcon.jsx';
+import { useModal } from '../context/ModalProvider.jsx';
+import { useCallback } from 'react';
+import Profile from './profile/Profile.jsx';
 
 const MenuLink = ({ to, title, icon }) => <LinkIcon to={to} title={title} icon={icon} iClassName={"max-lrg:icon-s lrg:icon-b"} />
 
 const Menu = () => {
   const { logOut } = useAccount();
+  const { showModal, hideModal } = useModal();
+
+  const onProfileShow = useCallback(() => {
+    showModal(
+      null,
+      <Profile />
+    )
+  }, [showModal]);
 
   return (
     <aside
@@ -28,7 +39,8 @@ const Menu = () => {
       </div>
 
       <div className={"flex justify-center gap-[5px] lrg:gap-2.5"}>
-        {/*<MenuLink to={"/profile"} title={"Profile"} icon={faCircleUser} />*/}
+        <IconButton onClick={onProfileShow} title={"Profile"} icon={faCircleUser}
+                    iconClassName={"icon-s"}/>
         <IconButton onClick={() => logOut()} title={"Log out"} icon={faRightFromBracket}
                     iconClassName={"icon-s"}/>
       </div>

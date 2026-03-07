@@ -7,7 +7,13 @@ import {
   signOut,
   sendEmailVerification,
   onAuthStateChanged,
-  deleteUser
+  deleteUser,
+  verifyBeforeUpdateEmail,
+  reauthenticateWithCredential,
+  EmailAuthProvider,
+  reauthenticateWithPopup,
+  GoogleAuthProvider,
+  unlink
 } from "firebase/auth";
 import { processErrors } from '../helpers/firebaseErrors.js';
 import { toast } from 'react-toastify';
@@ -17,6 +23,7 @@ import useLoader from '../hooks/useLoader.jsx';
 import api from '../services/axios.js';
 import { authStatuses } from '../helpers/variables.js';
 
+const CODES = { "SUCCESS": 0, "ERROR": -1, "WRONG_PWD": -2 };
 const AccountContext = createContext({});
 const useAccount = () => useContext(AccountContext);
 
@@ -59,16 +66,15 @@ const AccountProvider = ({ children, onAuthReady }) => {
         if (!userRes.data) {
           toast.error(formToast(userRes.message));
           await signOut(auth);
-          return false;
+          return CODES.ERROR;
         }
       }
 
-      return true;
+      return CODES.SUCCESS;
     } catch (e) {
-      if (e.code === 'auth/popup-closed-by-user') return false;
-      else toast.error(formToast(processErrors(e.code)));
+      if (e.code !== 'auth/popup-closed-by-user') toast.error(formToast(processErrors(e.code)));
 
-      return false;
+      return CODES.ERROR;
     } finally {
       hideActionLoader();
     }
@@ -85,7 +91,7 @@ const AccountProvider = ({ children, onAuthReady }) => {
       if (!userRes.data) {
         toast.error(formToast(userRes.message));
         await deleteUser(result.user);
-        return false;
+        return CODES.ERROR;
       }
       const user = result.user;
 
@@ -93,10 +99,10 @@ const AccountProvider = ({ children, onAuthReady }) => {
       await signOut(auth)
 
       toast.success(formToast("Account created! Please check your email to verify your account"))
-      return true;
+      return CODES.SUCCESS;
     } catch (e) {
       toast.error(formToast(processErrors(e.code)));
-      return false;
+      return CODES.ERROR;
     } finally {
       hideActionLoader();
     }
@@ -130,10 +136,10 @@ const AccountProvider = ({ children, onAuthReady }) => {
       await sendEmailVerification(auth.currentUser);
 
       toast.success(formToast("The verification link has been sent to your email!"))
-      return true;
+      return CODES.SUCCESS;
     } catch (e) {
       toast.error(formToast(processErrors(e.code)));
-      return false;
+      return CODES.ERROR;
     } finally {
       hideActionLoader();
     }
@@ -144,14 +150,60 @@ const AccountProvider = ({ children, onAuthReady }) => {
     try {
       await auth.currentUser.reload();
       if (auth.currentUser.emailVerified) setAuthStatus(authStatuses.loggedVerified);
-      return auth.currentUser.emailVerified;
+      return auth.currentUser.emailVerified ? CODES.SUCCESS : CODES.ERROR;
     } catch (e) {
       toast.error(formToast(processErrors(e.code)));
-      return auth.currentUser.emailVerified;
+      return CODES.ERROR;
     } finally {
       hideActionLoader();
     }
   }, [hideActionLoader, showActionLoader])
+
+  const reauthenticate = useCallback(async (password = null) => {
+    try {
+      const user = auth.currentUser;
+
+      const hasPassword = user.providerData.some(p => p.providerId === 'password');
+      const hasGoogle = user.providerData.some(p => p.providerId === 'google.com');
+
+      if (hasPassword && password) {
+        const credential = EmailAuthProvider.credential(auth.currentUser.email, password);
+        await reauthenticateWithCredential(auth.currentUser, credential);
+      } else if (hasGoogle && !password) {
+        const provider = new GoogleAuthProvider();
+        await reauthenticateWithPopup(user, provider);
+      } else {
+        toast.error(formToast("Invalid provider"));
+        return CODES.ERROR;
+      }
+
+      return CODES.SUCCESS;
+    } catch (e) {
+      if (e.code !== 'auth/popup-closed-by-user') toast.error(formToast(processErrors(e.code)));
+      if (e.code === "auth/wrong-password") return CODES.WRONG_PWD;
+      return CODES.ERROR;
+    }
+  }, [])
+
+  const requestEmailChange = useCallback(async (newEmail, password) => {
+    showActionLoader();
+    try {
+      const reauthCode = await reauthenticate(password);
+      if (reauthCode === CODES.SUCCESS) {
+        //In order to enable changing the email, the google account must be unlinked as it is not possible to have providers with different emails attached to the same account
+        if (auth.currentUser.providerData.some(p => p.providerId === 'google.com')) await unlink(auth.currentUser, "google.com");
+        await verifyBeforeUpdateEmail(auth.currentUser, newEmail);
+        toast.success(formToast("A verification link has been sent to the new email!"));
+      } else return reauthCode;
+
+      return CODES.SUCCESS;
+    } catch (e) {
+      toast.error(formToast(processErrors(e.code)));
+      return CODES.ERROR;
+    } finally {
+      hideActionLoader();
+    }
+  }, [hideActionLoader, reauthenticate, showActionLoader])
 
   const value = useMemo(() => ({
     authStatus,
@@ -160,8 +212,11 @@ const AccountProvider = ({ children, onAuthReady }) => {
     logOut,
     signInWithGoogle,
     requestVerificationEmail,
-    checkEmailVerification
-  }), [authStatus, logIn, logOut, signUp, signInWithGoogle, requestVerificationEmail, checkEmailVerification])
+    checkEmailVerification,
+    requestEmailChange,
+    CODES
+  }), [authStatus, requestEmailChange, logIn, logOut, signUp, signInWithGoogle, requestVerificationEmail, checkEmailVerification])
+
   return (
     <AccountContext.Provider value={value}>
       {children}

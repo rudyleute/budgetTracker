@@ -27,11 +27,11 @@ const TransactionsItem = ({ data }) => {
   const handleEditing = useCallback(() => {
     showModal(
       "Edit transaction",
-      <TransactionsForm onSubmit={onTransactionEdit} ref={formRef} name={name} categoryId={category.id} timestamp={timestamp} price={price} isUpdate={true}/>,
+      <TransactionsForm onSubmit={onTransactionEdit} ref={formRef} name={name} categoryId={category?.id} timestamp={timestamp} price={price} isUpdate={true}/>,
       onTransactionEdit,
       false
     )
-  }, [category.id, name, onTransactionEdit, price, showModal, timestamp])
+  }, [category?.id, name, onTransactionEdit, price, showModal, timestamp])
 
   return (
     <div
@@ -41,9 +41,9 @@ const TransactionsItem = ({ data }) => {
         <span className={"text-3xl max-esml:icon-s leading-3 max-esml:leading-6"}>{transDay}</span>
       </div>
       <div className="text-clipped text-hbg h-full flex items-center max-esml:row-start-3 max-esml:col-start-2 max-esml:row-span-2">
-        <span className="text-clipped" style={{ color: category.color }}>
+        {category && <span className="text-clipped" style={{ color: category.color }}>
           {category.name}
-        </span>
+        </span>}
       </div>
       <div className="text-clipped h-full flex items-center max-esml:pl-[5px] max-esml:pr-[5px] max-esml:bg-(--color-third)/40 max-esml:rounded-[5px] max-esml:row-start-1 max-esml:col-start-2 max-esml:col-span-2 max-esml:row-span-2">
         <span className="text-clipped">

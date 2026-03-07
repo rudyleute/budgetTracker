@@ -12,7 +12,7 @@ import { formToast } from '../helpers/toast.jsx';
 import { toast } from 'react-toastify';
 
 const VerifyPage = () => {
-  const { logOut, requestVerificationEmail, checkEmailVerification } = useAccount();
+  const { logOut, requestVerificationEmail, checkEmailVerification, CODES } = useAccount();
   return (
     <div className={"w-full h-screen bg-(--color-sec) relative"}>
       <div className={"text-(--color-text) text-xl min-w-[350px] max-w-[400px] h-fit min-h-fit max-esml:w-[95%] flex flex-col window-center gap-[25px] relative bg-(--color-main) rounded-[15px] p-[30px_20px]"}>
@@ -26,7 +26,7 @@ const VerifyPage = () => {
           { content: <FontAwesomeIcon icon={faEnvelopesBulk}/>, title: "Resend a verification email", onClick: requestVerificationEmail },
           { content: <FontAwesomeIcon icon={faEnvelopeCircleCheck}/>, title: "Confirm successful verification",
             onClick: async () => {
-              if (!await checkEmailVerification()) toast.error(formToast("The email has not yet been verified"));
+              if (await checkEmailVerification() === CODES.ERROR) toast.error(formToast("The email has not yet been verified"));
           }},
           { content: <FontAwesomeIcon icon={faRightFromBracket}/>, title: "Log out", onClick: logOut },
         ]}/>

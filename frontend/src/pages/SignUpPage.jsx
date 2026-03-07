@@ -30,12 +30,12 @@ const SignUpPage = () => {
   })
 
   const navigate = useNavigate();
-  const { signUp, signInWithGoogle } = useAccount();
+  const { signUp, signInWithGoogle, CODES } = useAccount();
 
   return (
     <div onSubmit={handleSubmit(async (values) => {
       const res = await signUp(values);
-      if (res) navigate('/login');
+      if (res === CODES.SUCCESS) navigate('/login');
     })}
          className={"w-full h-screen bg-(--color-sec) relative"}>
       <form

@@ -1,16 +1,13 @@
-import { ModalProvider } from '../context/ModalProvider.jsx';
-import { ConfirmationProvider } from '../context/ConfirmationProvider.jsx';
 import { Outlet } from 'react-router-dom';
 import { LoansProvider } from '../context/LoansProvider.jsx';
+import SupplementaryProviders from '../context/SupplementaryProviders.jsx';
 
 const LayoutLoans = () => {
   return (
     <LoansProvider>
-      <ModalProvider>
-        <ConfirmationProvider>
-          <Outlet/>
-        </ConfirmationProvider>
-      </ModalProvider>
+      <SupplementaryProviders>
+        <Outlet />
+      </SupplementaryProviders>
     </LoansProvider>
   )
 }

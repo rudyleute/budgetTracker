@@ -1,18 +1,15 @@
 import { Outlet } from 'react-router-dom';
 import { TransactionsProvider } from '../context/TransactionsProvider.jsx';
 import { CategoriesProvider } from '../context/CategoriesProvider.jsx';
-import { ConfirmationProvider } from '../context/ConfirmationProvider.jsx';
-import { ModalProvider } from '../context/ModalProvider.jsx';
+import SupplementaryProviders from '../context/SupplementaryProviders.jsx';
 
 const LayoutTransactions = () => {
   return (
     <TransactionsProvider>
       <CategoriesProvider>
-        <ModalProvider>
-          <ConfirmationProvider>
-            <Outlet/>
-          </ConfirmationProvider>
-        </ModalProvider>
+        <SupplementaryProviders>
+          <Outlet/>
+        </SupplementaryProviders>
       </CategoriesProvider>
     </TransactionsProvider>
   );

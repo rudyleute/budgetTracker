@@ -2,7 +2,7 @@ import { createRoot } from 'react-dom/client'
 import { ToastContainer } from 'react-toastify';
 import { RouterProvider } from 'react-router-dom';
 import "./styles/main.css"
-import router from './routes/router.jsx';
+import router from './router.jsx';
 
 createRoot(document.getElementById('root')).render(
   <>
