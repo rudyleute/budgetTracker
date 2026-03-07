@@ -9,10 +9,7 @@
     "noImplicitReturns": true,
     "noFallthroughCasesInSwitch": true,
     "esModuleInterop": true,
-    "resolveJsonModule": true,
-    "paths": {
-      "@app/shared": ["../shared/src/index.ts"]
-    },
-    "references": [{ "path": "../shared" }]
-  }
+    "resolveJsonModule": true
+  },
+  "include": ["src"]
 }

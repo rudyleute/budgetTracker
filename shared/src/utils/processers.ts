@@ -1,8 +1,8 @@
-import {CategoriesGet, categoriesGetSchema} from "../types/components/categories";
+import {CategoriesGet, categoriesGetSchema} from "../types/controllers/categories";
 import {QueryResult} from "pg";
-import {CounterpartiesGet, counterpartiesGetSchema} from "../types/components/counterparties";
-import {LoansGet, loansGetSchema} from "../types/components/loans";
-import {TransactionsGet, transactionsGetSchema} from "../types/components/transactions";
+import {CounterpartiesGet, counterpartiesGetSchema} from "../types/controllers/counterparties";
+import {LoansGet, loansGetSchema} from "../types/controllers/loans";
+import {TransactionsGet, transactionsGetSchema} from "../types/controllers/transactions";
 
 export const processCategories = (values: QueryResult['rows']): CategoriesGet => {
     return values.map(elem => categoriesGetSchema.parse(elem));

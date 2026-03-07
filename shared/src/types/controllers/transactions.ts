@@ -1,6 +1,6 @@
 import {z} from "zod";
-import {createdAtField, userUidField, updatedAtField, basicRequestQuerySchema} from "../basic";
 import {categoriesGetSchema} from "./categories";
+import {createdAtField, updatedAtField, userUidField} from "../basic";
 
 const transactionsSchema = z.object({
     id: z.uuid(),
@@ -47,17 +47,3 @@ export const transactionsPatchSchema = transactionsWriteSchema
 export type TransactionGet = z.infer<typeof transactionsGetSchema>;
 export type TransactionGetSchema = typeof transactionsGetSchema;
 export type TransactionsGet = TransactionGet[];
-
-export const transactionsRequestQuerySchema = basicRequestQuerySchema.extend({
-    from: z.coerce.date().optional(),
-    to: z.coerce.date().optional()
-}).omit({
-    order: true,
-}).transform(data =>
-    Object.fromEntries(
-        Object.entries(data)
-            .filter(([, v]) => v !== undefined)
-            .map(([k, v]) => [k, String(v)])
-    ) as Record<string, string>
-);
-export type TransactionsRequestQuery = z.infer<typeof transactionsRequestQuerySchema>;

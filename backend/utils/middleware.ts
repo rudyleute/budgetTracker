@@ -2,7 +2,7 @@ import admin from './firebase';
 import logger from './logger';
 
 import {Response, NextFunction, Request} from 'express';
-import {CustomError} from "../types/basic";
+import {CustomError} from "@app/shared";
 import {FirebaseAuthError} from "firebase-admin/auth";
 import { CorsOptions} from "cors";
 

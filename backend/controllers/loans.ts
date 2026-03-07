@@ -2,16 +2,15 @@ import {
     loansGetSchema,
     loansPatchSchema,
     loansPostSchema, LoanGet,
-    LoanGetSchema, loansRequestQuerySchema, LoansRequestQuery, LoansGet
-} from "../types/components/loans";
+    LoanGetSchema, LoansGet,
+    LoansRequestQuery, loansRequestQuerySchema,
+    CustomError, GetRes, processLoans
+} from "@app/shared";
 import {Logger} from "../utils/logger";
 import {DB} from "../utils/db";
 import {Request, Response} from "express";
 import {parseError} from "../utils/parsers";
-import {QueryBuilder, QueryIdBuilder, Validator} from "../types/components";
-import {GetRes, QueryParam} from "../types/basic";
-import {CustomError} from "../types/basic";
-import {processLoans} from "../utils/processers";
+import {QueryBuilder, QueryIdBuilder, QueryParam, Validator} from "../types/controllers";
 import {isBody} from "../utils/general";
 import {EntityController} from "./entity";
 
@@ -100,7 +99,7 @@ export class LoansController extends EntityController<LoanGetSchema> {
               WHERE ${cond.join(' AND ')}
             `;
 
-            let orderClause = ``;
+            let orderClause: string;
             //It should be possible to overwrite the default sorting by overdue, deadline and stuff via sort param
             if (sort) {
                 const dir = order.toUpperCase() === 'ASC' ? 'ASC' : 'DESC';

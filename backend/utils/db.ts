@@ -1,6 +1,6 @@
 import {Pool, PoolClient} from "pg";
 import logger from "./logger";
-import {QueryParam} from "../types/basic";
+import {QueryParam} from "../types/controllers";
 import {checkRequired} from "./general";
 
 export const pool = new Pool({

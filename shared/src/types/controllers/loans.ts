@@ -1,6 +1,6 @@
 import {z} from "zod";
-import {basicRequestQuerySchema, createdAtField, updatedAtField, userUidField} from "../basic";
 import {counterpartiesGetSchema} from "./counterparties";
+import {createdAtField, updatedAtField, userUidField} from "../basic";
 
 export enum LoanTypes {
     'borrowed' = 'borrowed',
@@ -60,24 +60,3 @@ export const loansPatchSchema = loansWriteSchema.partial().refine(
 export type LoanGet = z.infer<typeof loansGetSchema>;
 export type LoanGetSchema = typeof loansGetSchema;
 export type LoansGet = LoanGet[];
-
-const SORTABLE = ['timestamp', 'deadline', 'name', 'priority', 'type'] as const satisfies readonly (keyof z.infer<typeof loansGetSchema>)[];
-export type Sortable = typeof SORTABLE[number];
-export const loansRequestQuerySchema = basicRequestQuerySchema.extend({
-    type: z.enum(LoanTypes).optional(),
-    priority: z.enum(PriorityTypes).optional(),
-    sort: z.enum(SORTABLE).optional(),
-    from: z.coerce.date().optional(),
-    to: z.coerce.date().optional(),
-    due: z.coerce.boolean().optional(),
-    counterparty: z.uuid().optional()
-}).omit({
-    filter: true,
-}).transform(data =>
-    Object.fromEntries(
-        Object.entries(data)
-            .filter(([, v]) => v !== undefined)
-            .map(([k, v]) => [k, String(v)])
-    ) as Record<string, string>
-);
-export type LoansRequestQuery = z.infer<typeof loansRequestQuerySchema>;

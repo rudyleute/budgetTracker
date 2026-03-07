@@ -2,9 +2,8 @@ import {BaseController} from "./base";
 import {Logger} from "../utils/logger";
 import {DB} from "../utils/db";
 import {Request, Response} from "express";
-import {CustomError} from "../types/basic";
 import {parseError} from "../utils/parsers";
-import {UserGet, UserGetSchema, usersGetSchema} from "../types/components/users";
+import {UserGet, UserGetSchema, usersGetSchema, CustomError} from "@app/shared";
 import {PoolClient} from "pg";
 import admin from "../utils/firebase";
 

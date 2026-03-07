@@ -1,7 +1,8 @@
 import {DB} from "../utils/db";
 import {Request, Response} from "express";
-import {CustomError, EntityName, QueryParam, AllowedResponseType, TableIdField, TableName} from "./basic";
 import {z} from "zod";
+import {AllowedResponseType, CustomError} from "@app/shared";
+import {Logger} from "../utils/logger";
 
 export interface BuildQueryParams {
     fields: readonly string[];
@@ -44,4 +45,32 @@ export interface DeleteData {
     entityName: EntityName,
     req: Request,
     res: Response<CustomError | void>
+}
+
+export type QueryParam = string | number | boolean;
+export type EntityName = 'category' | 'counterparty' | 'loan' | 'user' | 'transaction';
+export type TableName = 'categories' | 'users' | 'counterparties' | 'loans' | 'transactions';
+export type TableIdField = 'id' | 'uid';
+
+export type SchemaFields<T extends z.ZodType<AllowedResponseType>> = (keyof T['_output'])[];
+
+export type Schemas<
+    TGet extends z.ZodType = z.ZodType,
+    TPost extends z.ZodType = z.ZodType,
+    TPatch extends z.ZodType = z.ZodType
+> = {
+    get: TGet;
+    post: TPost;
+    patch: TPatch;
+};
+
+export interface BaseConstructorParams {
+    db: DB,
+    logger: Logger,
+    entityName: EntityName,
+    tableName: TableName
+}
+export interface EntityConstructorParams<TGet extends z.ZodType<AllowedResponseType> = z.ZodType<AllowedResponseType>> extends BaseConstructorParams {
+    schemas: Schemas<TGet>,
+    getFields: SchemaFields<TGet>
 }

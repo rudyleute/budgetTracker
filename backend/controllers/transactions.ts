@@ -1,19 +1,18 @@
 import {DB} from "../utils/db";
 import {Logger} from "../utils/logger";
 import {Request, Response} from "express";
-import {CustomError, GetRes, QueryParam} from "../types/basic";
 import {parseError} from "../utils/parsers";
-import {QueryBuilder, QueryIdBuilder, Validator} from "../types/components";
+import {QueryBuilder, QueryIdBuilder, QueryParam, Validator} from "../types/controllers";
 import {EntityController} from "./entity";
 import {
     transactionsGetSchema,
     transactionsPatchSchema,
     transactionsPostSchema,
     TransactionGetSchema,
-    TransactionGet, TransactionsRequestQuery, transactionsRequestQuerySchema, TransactionsGet
-} from "../types/components/transactions";
+    TransactionGet, TransactionsGet, TransactionsRequestQuery, transactionsRequestQuerySchema,
+    processTransactions, CustomError, GetRes
+} from "@app/shared";
 import {isBody} from "../utils/general";
-import {processTransactions} from "../utils/processers";
 
 export class TransactionsController extends EntityController<TransactionGetSchema> {
     constructor(db: DB, logger: Logger) {

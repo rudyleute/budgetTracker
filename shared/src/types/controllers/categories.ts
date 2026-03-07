@@ -1,18 +1,12 @@
 import {z} from "zod";
-import {userUidField} from "../basic";
+import {createdAtField, updatedAtField, userUidField} from "../basic";
 
 const categoriesSchema = z.object({
     id: z.uuid(),
     name: z.string().min(3, 'The category\'s name length must be of length 3 at least').max(100, 'The category\'s name length can\'t be bigger than 100'),
     color: z.string().length(7, 'A full-code version of the hex must be provided').regex(/^#[0-9A-Fa-f]{6}$/, "Color must be a valid hex color (e.g., #FF5733)"),
-    created_at: z.coerce.date().refine(
-        (date) => date <= new Date(),
-        {message: "Created_at date cannot be in the future"}
-    ),
-    updated_at: z.coerce.date().refine(
-        (date) => date <= new Date(),
-        {message: "Updated_at date cannot be in the future"}
-    ).optional(),
+    created_at: createdAtField,
+    updated_at: updatedAtField,
     user_uid: userUidField
 });
 

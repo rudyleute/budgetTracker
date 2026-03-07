@@ -2,15 +2,14 @@ import {
     categoriesGetSchema,
     categoriesPatchSchema,
     categoriesPostSchema, CategoryGet,
-    CategoryGetSchema
-} from "../types/components/categories";
+    CategoryGetSchema, CustomError, GetRes,
+    processCategories
+} from "@app/shared";
 import {Logger} from "../utils/logger";
 import {DB} from "../utils/db";
 import {Request, Response} from "express";
-import {CustomError, GetRes} from "../types/basic";
-import {processCategories} from "../utils/processers";
 import {parseError} from "../utils/parsers";
-import {QueryBuilder, QueryIdBuilder} from "../types/components";
+import {QueryBuilder, QueryIdBuilder} from "../types/controllers";
 import {EntityController} from "./entity";
 
 export class CategoriesController extends EntityController<CategoryGetSchema> {

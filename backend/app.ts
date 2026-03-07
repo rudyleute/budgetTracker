@@ -8,13 +8,13 @@ import {DecodedIdToken} from "firebase-admin/auth";
 import {Response, Request, NextFunction} from "express";
 import express from 'express';
 import {authenticateUser} from "./utils/middleware";
-import {CustomError} from "./types/basic";
 import {CounterpartiesController} from "./controllers/counterparties";
 import db from "./utils/db";
 import {CategoriesController} from "./controllers/categories";
 import {LoansController} from "./controllers/loans";
 import {UsersController} from "./controllers/users";
 import {TransactionsController} from "./controllers/transactions";
+import {CustomError} from "@app/shared";
 
 declare global {
     // eslint-disable-next-line @typescript-eslint/no-namespace

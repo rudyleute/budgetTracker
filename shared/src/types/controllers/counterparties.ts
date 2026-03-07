@@ -1,5 +1,5 @@
 import {z} from "zod";
-import {createdAtField, userUidField, updatedAtField, basicRequestQuerySchema} from "../basic";
+import {createdAtField, updatedAtField, userUidField} from "../basic";
 
 const counterpartiesSchema = z.object({
     id: z.uuid(),
@@ -35,6 +35,3 @@ export const counterpartiesPatchSchema = counterpartiesWriteSchema.partial().ref
 export type CounterpartyGet = z.infer<typeof counterpartiesGetSchema>;
 export type CounterpartyGetSchema = typeof counterpartiesGetSchema;
 export type CounterpartiesGet = CounterpartyGet[];
-
-export const counterpartiesRequestQuerySchema = basicRequestQuerySchema.omit({ order: true });
-export type CounterpartiesRequestQuery = z.infer<typeof counterpartiesRequestQuerySchema>;

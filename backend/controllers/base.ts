@@ -1,13 +1,9 @@
 import {Logger} from "../utils/logger";
 import {DB} from "../utils/db";
-import {
-    CustomError,
-    EntityName,
-    AllowedResponseType,
-    TableName, BaseConstructorParams
-} from "../types/basic";
 import {z} from "zod";
 import express, {Request, Response, Router} from "express";
+import {AllowedResponseType, CustomError} from "@app/shared";
+import {BaseConstructorParams, EntityName, TableName} from "../types/controllers";
 
 export abstract class BaseController<TGetSchema extends z.ZodType<AllowedResponseType>> {
     protected readonly db: DB;

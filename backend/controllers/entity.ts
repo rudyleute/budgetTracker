@@ -1,19 +1,20 @@
 import {Logger} from "../utils/logger";
 import {DB} from "../utils/db";
 import {
+    DeleteData,
     EntityConstructorParams,
-    CustomError,
-    QueryParam,
-    AllowedResponseType, SchemaFields,
-} from "../types/basic";
-import {DeleteData, Options, QueryBuilder, QueryIdBuilder} from "../types/components";
+    Options,
+    QueryBuilder,
+    QueryIdBuilder, QueryParam,
+    SchemaFields,
+    Schemas
+} from "../types/controllers";
 import {isBody} from "../utils/general";
 import {parseError} from "../utils/parsers";
 import {z, ZodError} from "zod";
 import {Request, Response, Router} from "express";
-import {Schemas} from "../types/basic";
 import {BaseController} from "./base";
-import {UserGet} from "../types/components/users";
+import {UserGet, AllowedResponseType, CustomError} from "@app/shared";
 
 export abstract class EntityController<TGetSchema extends z.ZodType<Exclude<AllowedResponseType, UserGet>>> extends BaseController<TGetSchema> {
     protected readonly schemas: Schemas<TGetSchema>;
