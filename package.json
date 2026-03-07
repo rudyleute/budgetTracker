@@ -1,5 +1,21 @@
 {
   "name": "app",
   "private": true,
-  "workspaces": ["frontend", "backend", "shared"]
+  "workspaces": ["frontend", "backend", "shared"],
+  "dependencies": {
+    "zod": "^4.1.13",
+    "pg": "^8.16.3",
+    "dotenv": "^17.2.3"
+  },
+  "devDependencies": {
+    "@types/pg": "^8.16.0",
+    "eslint": "^10.0.0",
+    "typescript-eslint": "^8.36.0",
+    "@types/dotenv": "^6.1.1",
+    "@types/eslint__js": "^8.42.3",
+    "@types/firebase": "^2.4.32",
+    "@eslint/js": "^9.39.2",
+    "@stylistic/eslint-plugin": "^5.9.0",
+    "typescript": "^5.9.3"
+  }
 }
