@@ -5,6 +5,7 @@
     "paths": {
       "@app/shared": ["../shared/src/index.ts"]
     },
-    "references": [{ "path": "../shared" }]
+    "references": [{ "path": "../shared" }],
+    "jsx": "react"
   }
 }
