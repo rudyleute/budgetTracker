@@ -22,7 +22,7 @@ const LoanPage = () => {
   const {
     showLoader: showLoanLoader,
     hideLoader: hideGetLoader,
-    LoaderElement: GetLoader
+    LoaderElem: GetLoader
   } = useLoader({ isLoading: true, color: "var(--color-sec)", global: false, LoaderComp: ScaleLoader });
 
   useEffect(() => {

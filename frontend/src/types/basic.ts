@@ -3,7 +3,7 @@ import {CounterpartiesRequestQuery, LoansRequestQuery, TransactionsRequestQuery}
 import {ValidateFields} from "../helpers/utils";
 
 export interface ChildrenProp {
-    children: ReactNode | null
+    children?: ReactNode | null
 }
 
 export interface FormRef {

@@ -33,7 +33,7 @@ const CounterpartyPage = () => {
   const navigate = useNavigate();
   const {
     hideLoader: hideGetLoader,
-    LoaderElement: GetLoader
+    LoaderElem: GetLoader
   } = useLoader({ isLoading: true, color: "var(--color-sec)", global: false, LoaderComp: ScaleLoader });
 
   const onCounterpartyEdit = useCallback(

@@ -5,7 +5,7 @@ import useLoader from '../hooks/useLoader.jsx';
 const RootLayout = () => {
   const {
     hideLoader,
-    LoaderElement: AuthLoader
+    LoaderElem: AuthLoader
   } = useLoader({ isLoading: true, overlayColor: "bg-(--color-main)" });
 
   return (

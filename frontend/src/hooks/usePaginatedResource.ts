@@ -45,12 +45,12 @@ export const usePaginatedResource = <E extends PagEntityName, T extends RequestQ
     const {
         showLoader: showGetLoader,
         hideLoader: hideGetLoader,
-        LoaderElement: GetLoader
+        LoaderElem: GetLoader
     } = useLoader({ color: "var(--color-sec)", global: false, LoaderComp: ScaleLoader });
     const {
         showLoader: showChangeLoader,
         hideLoader: hideChangeLoader,
-        LoaderElement: ChangeLoader
+        LoaderElem: ChangeLoader
     } = useLoader({ color: "var(--color-sec)", LoaderComp: SyncLoader })
 
     const fetchItemsFromStart = useCallback(async (newLimit = limit) => {

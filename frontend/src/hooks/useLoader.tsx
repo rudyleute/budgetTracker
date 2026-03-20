@@ -1,4 +1,4 @@
-import React, {ReactNode, ReactPortal} from "react";
+import React, {ReactNode} from "react";
 import { useCallback, useState } from 'react';
 import { createPortal } from 'react-dom';
 import {GridLoader, ScaleLoader, SyncLoader} from 'react-spinners';
@@ -22,7 +22,7 @@ interface UseLoader {
 
 export type ShowLoader = (message?: string) => void;
 export type HideLoader = () => void;
-export type LoaderElemType = (value: ChildrenProp) => ReactPortal | React.DetailedHTMLProps<React.HTMLAttributes<HTMLSpanElement>, HTMLSpanElement>;
+export type LoaderElemType = (value: ChildrenProp) => ReactNode;
 
 const defaultState: LoaderState = {
     loading: false,
@@ -47,7 +47,7 @@ const useLoader = ({
 
     const hideLoader: HideLoader = useCallback(() => setLoader(defaultState), []);
 
-    const LoaderElement: LoaderElemType = ({children}: {children: ReactNode}) => {
+    const LoaderElem: LoaderElemType = ({children}) => {
         if (!loader.loading) return <>{children}</>;
 
         return global ? createPortal(<div
@@ -67,7 +67,7 @@ const useLoader = ({
     return {
         showLoader,
         hideLoader,
-        LoaderElement
+        LoaderElem
     };
 }
 
