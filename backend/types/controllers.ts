@@ -1,7 +1,7 @@
 import {DB} from "../utils/db";
 import {Request, Response} from "express";
 import {z} from "zod";
-import {AllowedResponseType, CustomError} from "@app/shared";
+import {AllowedResServer, CustomError} from "@app/shared";
 import {Logger} from "../utils/logger";
 
 export interface BuildQueryParams {
@@ -29,7 +29,7 @@ export type QueryBuilder = (params: BuildQueryParams) => BuildQueryResult;
 export type QueryIdBuilder = (params: BuildQueryIdParams) => BuildQueryResult;
 export type QueryBuilders = QueryBuilder | QueryIdBuilder;
 
-export interface Options<T extends z.ZodType, TR extends z.ZodType<AllowedResponseType>> {
+export interface Options<T extends z.ZodType, TR extends z.ZodType<AllowedResServer>> {
     req: Request;
     res: Response<z.infer<TR> | CustomError>;
     entityName: EntityName;
@@ -52,7 +52,7 @@ export type EntityName = 'category' | 'counterparty' | 'loan' | 'user' | 'transa
 export type TableName = 'categories' | 'users' | 'counterparties' | 'loans' | 'transactions';
 export type TableIdField = 'id' | 'uid';
 
-export type SchemaFields<T extends z.ZodType<AllowedResponseType>> = (keyof T['_output'])[];
+export type SchemaFields<T extends z.ZodType<AllowedResServer>> = (keyof T['_output'])[];
 
 export type Schemas<
     TGet extends z.ZodType = z.ZodType,
@@ -70,7 +70,7 @@ export interface BaseConstructorParams {
     entityName: EntityName,
     tableName: TableName
 }
-export interface EntityConstructorParams<TGet extends z.ZodType<AllowedResponseType> = z.ZodType<AllowedResponseType>> extends BaseConstructorParams {
+export interface EntityConstructorParams<TGet extends z.ZodType<AllowedResServer> = z.ZodType<AllowedResServer>> extends BaseConstructorParams {
     schemas: Schemas<TGet>,
     getFields: SchemaFields<TGet>
 }

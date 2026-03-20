@@ -1,18 +1,27 @@
-import {CategoryGet} from "./controllers/categories";
-import {CounterpartyGet} from "./controllers/counterparties";
-import {LoanGet} from "./controllers/loans";
-import {UserGet} from "./controllers/users";
-import {TransactionGet} from "./controllers/transactions";
+import {CategoryGetServer} from "./controllers/categories";
+import {CounterpartyGetServer} from "./controllers/counterparties";
+import {LoanGetServer} from "./controllers/loans";
+import {UserGetServer} from "./controllers/users";
+import {TransactionGetServer} from "./controllers/transactions";
 import {z} from "zod";
 
 export interface CustomError {
     message: string;
 }
 
-export type AllowedResponseType = CategoryGet | CounterpartyGet | LoanGet | UserGet | TransactionGet;
-export interface GetRes<T extends AllowedResponseType> {
-    data: T[],
-    is_last_page?: boolean
+export type AllowedPagResServer = CounterpartyGetServer | LoanGetServer | TransactionGetServer;
+export type AllowedNPagResServer = CategoryGetServer;
+export type AllowedResServer = AllowedPagResServer | AllowedNPagResServer | UserGetServer;
+
+interface GetResServer<T extends AllowedResServer> {
+    data: T[]
+}
+export interface GetNPagResServer<T extends AllowedNPagResServer> extends GetResServer<T> {
+    data: T[]
+}
+
+export interface GetPagResServer<T extends AllowedPagResServer> extends GetResServer<T> {
+    is_last_page: boolean
 }
 
 export const userUidField = z.string()
@@ -29,3 +38,6 @@ export const updatedAtField = z.coerce.date().refine(
     (date) => date <= new Date(),
     {message: "Updated_at date cannot be in the future"}
 ).optional();
+
+
+export type AllowedField<T extends z.ZodType> = keyof z.infer<T>;

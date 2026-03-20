@@ -57,6 +57,8 @@ export const loansPatchSchema = loansWriteSchema.partial().refine(
     {message: "At least one field must be provided for update"}
 );
 
-export type LoanGet = z.infer<typeof loansGetSchema>;
+export type LoanGetServer = z.infer<typeof loansGetSchema>;
 export type LoanGetSchema = typeof loansGetSchema;
-export type LoansGet = LoanGet[];
+export type LoansGetServer = LoanGetServer[];
+export type LoanPostServer = z.infer<typeof loansPostSchema>;
+export type LoanPatchServer = z.infer<typeof loansPatchSchema>;

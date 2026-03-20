@@ -1,10 +1,10 @@
 import {
-    CounterpartiesGet,
+    CounterpartiesGetServer,
     counterpartiesGetSchema,
     counterpartiesPatchSchema,
-    counterpartiesPostSchema, CounterpartyGet, CounterpartyGetSchema,
+    counterpartiesPostSchema, CounterpartyGetServer, CounterpartyGetSchema,
     CounterpartiesRequestQuery, counterpartiesRequestQuerySchema,
-    processCounterparties, CustomError, GetRes
+    processCounterparties, CustomError, GetPagResServer
 } from "@app/shared";
 import {DB} from "../utils/db";
 import {Logger} from "../utils/logger";
@@ -45,7 +45,7 @@ export class CounterpartiesController extends EntityController<CounterpartyGetSc
         `;
     };
 
-    private getCounterparties = async (req: Request, res: Response<GetRes<CounterpartyGet> | CustomError>) => {
+    private getCounterparties = async (req: Request, res: Response<GetPagResServer<CounterpartyGetServer> | CustomError>) => {
         const uid = req.user!.uid;
 
         try {
@@ -89,7 +89,7 @@ export class CounterpartiesController extends EntityController<CounterpartyGetSc
 
             const result = await this.db.query(query, params);
 
-            let counterparties: CounterpartiesGet, isLastPage: boolean;
+            let counterparties: CounterpartiesGetServer, isLastPage: boolean;
             if (includeLimit) {
                 isLastPage = result.rows.length <= realLimit;
                 counterparties = processCounterparties(result.rows.slice(0, realLimit));
@@ -113,7 +113,7 @@ export class CounterpartiesController extends EntityController<CounterpartyGetSc
         }
     };
 
-    private getCounterpartyById = async (req: Request, res: Response<CounterpartyGet | CustomError>) => {
+    private getCounterpartyById = async (req: Request, res: Response<CounterpartyGetServer | CustomError>) => {
         const uid = req.user!.uid;
         const id = req.params.id as string;
         try {

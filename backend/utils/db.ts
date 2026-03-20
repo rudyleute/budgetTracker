@@ -1,13 +1,13 @@
 import {Pool, PoolClient} from "pg";
 import logger from "./logger";
 import {QueryParam} from "../types/controllers";
-import {checkRequired} from "./general";
+import {checkRequiredEnvField} from "@app/shared/src/utils/general";
 
 export const pool = new Pool({
-    user: checkRequired('DB_USER'),
-    host: checkRequired('DB_HOST'),
-    database: checkRequired('DB_DATABASE'),
-    password: checkRequired('DB_PASSWORD'),
+    user: checkRequiredEnvField('DB_USER'),
+    host: checkRequiredEnvField('DB_HOST'),
+    database: checkRequiredEnvField('DB_DATABASE'),
+    password: checkRequiredEnvField('DB_PASSWORD'),
     port: Number(process.env.DB_PORT || 5432),
     max: 5,
     idleTimeoutMillis: 10000,

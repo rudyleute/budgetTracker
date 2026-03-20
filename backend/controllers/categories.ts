@@ -1,8 +1,8 @@
 import {
     categoriesGetSchema,
     categoriesPatchSchema,
-    categoriesPostSchema, CategoryGet,
-    CategoryGetSchema, CustomError, GetRes,
+    categoriesPostSchema, CategoryGetServer,
+    CategoryGetSchema, CustomError, GetNPagResServer,
     processCategories
 } from "@app/shared";
 import {Logger} from "../utils/logger";
@@ -29,7 +29,7 @@ export class CategoriesController extends EntityController<CategoryGetSchema> {
         this.router.get('/', this.getCategories);
     }
 
-    private getCategories = async (req: Request, res: Response<GetRes<CategoryGet> | CustomError>) => {
+    private getCategories = async (req: Request, res: Response<GetNPagResServer<CategoryGetServer> | CustomError>) => {
         const uid = req.user!.uid;
 
         try {

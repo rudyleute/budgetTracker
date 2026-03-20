@@ -3,7 +3,7 @@ import {Logger} from "../utils/logger";
 import {DB} from "../utils/db";
 import {Request, Response} from "express";
 import {parseError} from "../utils/parsers";
-import {UserGet, UserGetSchema, usersGetSchema, CustomError} from "@app/shared";
+import {UserGetServer, UserGetSchema, usersGetSchema, CustomError} from "@app/shared";
 import {PoolClient} from "pg";
 import admin from "../utils/firebase";
 
@@ -20,7 +20,7 @@ export class UsersController extends BaseController<UserGetSchema> {
         this.router.delete('/:id', this.deleteEntity);
     }
 
-    private getUser = async (req: Request, res: Response<UserGet | CustomError>) => {
+    private getUser = async (req: Request, res: Response<UserGetServer | CustomError>) => {
         const uid = req.user!.uid;
 
         try {
@@ -45,7 +45,7 @@ export class UsersController extends BaseController<UserGetSchema> {
         }
     };
 
-    protected createEntity = async (req: Request, res: Response<UserGet | CustomError>) => {
+    protected createEntity = async (req: Request, res: Response<UserGetServer | CustomError>) => {
         const uid = req.user!.uid;
         try {
             this.logger.info("Creating new user", { uid });

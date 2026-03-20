@@ -9,8 +9,8 @@ import {
     transactionsPatchSchema,
     transactionsPostSchema,
     TransactionGetSchema,
-    TransactionGet, TransactionsGet, TransactionsRequestQuery, transactionsRequestQuerySchema,
-    processTransactions, CustomError, GetRes
+    TransactionGetServer, TransactionsGetServer, TransactionsRequestQuery, transactionsRequestQuerySchema,
+    processTransactions, CustomError, GetPagResServer
 } from "@app/shared";
 import {isBody} from "../utils/general";
 
@@ -46,7 +46,7 @@ export class TransactionsController extends EntityController<TransactionGetSchem
         `;
     };
 
-    private getTransactions = async (req: Request, res: Response<GetRes<TransactionGet> | CustomError>) => {
+    private getTransactions = async (req: Request, res: Response<GetPagResServer<TransactionGetServer> | CustomError>) => {
         const uid = req.user!.uid;
         try {
             const {
@@ -96,7 +96,7 @@ export class TransactionsController extends EntityController<TransactionGetSchem
 
             const result = await this.db.query(query, params);
 
-            let transactions: TransactionsGet, isLastPage: boolean;
+            let transactions: TransactionsGetServer, isLastPage: boolean;
             if (includeLimit) {
                 isLastPage = result.rows.length <= realLimit;
                 transactions = processTransactions(result.rows.slice(0, realLimit));
@@ -120,7 +120,7 @@ export class TransactionsController extends EntityController<TransactionGetSchem
         }
     };
 
-    protected updateEntity = (req: Request, res: Response<TransactionGet | CustomError>) => this.handleUpsert({
+    protected updateEntity = (req: Request, res: Response<TransactionGetServer | CustomError>) => this.handleUpsert({
         req,
         res,
         entityName: this.entityName,

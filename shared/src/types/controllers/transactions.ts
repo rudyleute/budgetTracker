@@ -44,6 +44,8 @@ export const transactionsPatchSchema = transactionsWriteSchema
     );
 
 
-export type TransactionGet = z.infer<typeof transactionsGetSchema>;
+export type TransactionGetServer = z.infer<typeof transactionsGetSchema>;
 export type TransactionGetSchema = typeof transactionsGetSchema;
-export type TransactionsGet = TransactionGet[];
+export type TransactionsGetServer = TransactionGetServer[];
+export type TransactionPostServer = z.infer<typeof transactionsPostSchema>;
+export type TransactionPatchServer = z.infer<typeof transactionsPatchSchema>;

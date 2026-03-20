@@ -19,15 +19,15 @@ const TransactionsList = () => {
   const grouped = useMemo(() => {
     if (!transactions.data.length) return { keys: [], groups: {} };
 
-    const { keys, groups } = groupBy(
-      transactions.data,
-      'timestamp',
-      (date) =>
+    const { keys, groups } = groupBy({
+      data: transactions.data,
+      columnName: 'timestamp',
+      getKey: (date) =>
         getDate(date, {
-          year: 'numeric',
-          month: 'long'
-        })
-    );
+        year: 'numeric',
+        month: 'long'
+      })
+    });
 
     return { keys, groups };
   }, [transactions.data]);

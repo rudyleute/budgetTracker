@@ -26,6 +26,8 @@ export const categoriesPatchSchema = categoriesWriteSchema.partial().refine(
     {message: "At least one field must be provided for update"}
 );
 
-export type CategoryGet = z.infer<typeof categoriesGetSchema>;
+export type CategoryGetServer = z.infer<typeof categoriesGetSchema>;
 export type CategoryGetSchema = typeof categoriesGetSchema;
-export type CategoriesGet = CategoryGet[];
+export type CategoriesGetServer = CategoryGetServer[];
+export type CategoryPostServer = z.infer<typeof categoriesPostSchema>;
+export type CategoryPatchServer = z.infer<typeof categoriesPatchSchema>;

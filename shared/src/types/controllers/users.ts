@@ -11,7 +11,5 @@ export const usersPostSchema = usersGetSchema.omit({
 });
 
 export type UserGetSchema = typeof usersGetSchema;
-export type UserGet = z.infer<typeof usersGetSchema>;
-
-export type UserPostSchema = typeof usersPostSchema;
-export type UserPost = z.infer<typeof usersPostSchema>;
+export type UserGetServer = z.infer<typeof usersGetSchema>;
+export type UserPostServer = z.infer<typeof usersPostSchema>;

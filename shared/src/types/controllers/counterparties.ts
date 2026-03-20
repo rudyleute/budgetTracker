@@ -32,6 +32,8 @@ export const counterpartiesPatchSchema = counterpartiesWriteSchema.partial().ref
     { message: "At least one field must be provided for update" }
 );
 
-export type CounterpartyGet = z.infer<typeof counterpartiesGetSchema>;
+export type CounterpartyGetServer = z.infer<typeof counterpartiesGetSchema>;
 export type CounterpartyGetSchema = typeof counterpartiesGetSchema;
-export type CounterpartiesGet = CounterpartyGet[];
+export type CounterpartiesGetServer = CounterpartyGetServer[];
+export type CounterpartyPostServer = z.infer<typeof counterpartiesPostSchema>;
+export type CounterpartyPatchServer = z.infer<typeof counterpartiesPatchSchema>;

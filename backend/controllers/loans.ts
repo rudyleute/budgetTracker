@@ -1,10 +1,10 @@
 import {
     loansGetSchema,
     loansPatchSchema,
-    loansPostSchema, LoanGet,
-    LoanGetSchema, LoansGet,
+    loansPostSchema, LoanGetServer,
+    LoanGetSchema, LoansGetServer,
     LoansRequestQuery, loansRequestQuerySchema,
-    CustomError, GetRes, processLoans
+    CustomError, GetResServer, processLoans, GetPagResServer
 } from "@app/shared";
 import {Logger} from "../utils/logger";
 import {DB} from "../utils/db";
@@ -33,7 +33,7 @@ export class LoansController extends EntityController<LoanGetSchema> {
         this.router.patch("/:id/close", this.closeLoan);
     }
 
-    protected updateEntity = (req: Request, res: Response<LoanGet | CustomError>) => this.handleUpsert({
+    protected updateEntity = (req: Request, res: Response<LoanGetServer | CustomError>) => this.handleUpsert({
         req,
         res,
         entityName: this.entityName,
@@ -43,7 +43,7 @@ export class LoansController extends EntityController<LoanGetSchema> {
         additionalValidation: this.validateCounterparty
     }, this.db, this.logger);
 
-    private getLoans = async (req: Request, res: Response<GetRes<LoanGet> | CustomError>) => {
+    private getLoans = async (req: Request, res: Response<GetPagResServer<LoanGetServer> | CustomError>) => {
         const uid = req.user!.uid;
 
         try {
@@ -146,7 +146,7 @@ export class LoansController extends EntityController<LoanGetSchema> {
 
             const result = await this.db.query(query, params);
 
-            let loans: LoansGet, isLastPage;
+            let loans: LoansGetServer, isLastPage;
             if (includeLimit) {
                 isLastPage = result.rows.length <= realLimit;
                 loans = processLoans(result.rows.slice(0, realLimit));
@@ -171,7 +171,7 @@ export class LoansController extends EntityController<LoanGetSchema> {
         }
     };
 
-    private closeLoan = async (req: Request, res: Response<LoanGet | CustomError>) => {
+    private closeLoan = async (req: Request, res: Response<LoanGetServer | CustomError>) => {
         const uid = req.user!.uid;
         const id = req.params.id as string;
 
@@ -211,7 +211,7 @@ export class LoansController extends EntityController<LoanGetSchema> {
         }
     };
 
-    private getLoanById = async (req: Request, res: Response<LoanGet | CustomError>) => {
+    private getLoanById = async (req: Request, res: Response<LoanGetServer | CustomError>) => {
         const uid = req.user!.uid;
         const id = req.params.id as string;
 

@@ -14,9 +14,9 @@ import {parseError} from "../utils/parsers";
 import {z, ZodError} from "zod";
 import {Request, Response, Router} from "express";
 import {BaseController} from "./base";
-import {UserGet, AllowedResponseType, CustomError} from "@app/shared";
+import {UserGetServer, AllowedResServer, CustomError, AllowedField} from "@app/shared";
 
-export abstract class EntityController<TGetSchema extends z.ZodType<Exclude<AllowedResponseType, UserGet>>> extends BaseController<TGetSchema> {
+export abstract class EntityController<TGetSchema extends z.ZodType<Exclude<AllowedResServer, UserGetServer>>> extends BaseController<TGetSchema> {
     protected readonly schemas: Schemas<TGetSchema>;
     protected readonly pageSize: number = 30;
     protected readonly getFields: SchemaFields<TGetSchema>;
@@ -71,22 +71,21 @@ export abstract class EntityController<TGetSchema extends z.ZodType<Exclude<Allo
         body: Record<string, unknown>,
         schema: T,
     ) => {
-        type AllowedFields = keyof z.infer<T>;
-        let validatedBody: Record<AllowedFields, unknown>;
+        let validatedBody: Record<AllowedField<T>, unknown>;
 
         try {
-            validatedBody = schema.parse(body) as Record<AllowedFields, unknown>;
+            validatedBody = schema.parse(body) as Record<AllowedField<T>, unknown>;
         } catch (e: unknown) {
             if (e instanceof ZodError) return {error: JSON.stringify(e.issues)};
             return {error: 'Unexpected error occurred'};
         }
 
-        const fields: AllowedFields[] = [];
+        const fields: AllowedField<T>[] = [];
         const values: QueryParam[] = [];
 
         for (const [field, value] of Object.entries(validatedBody)) {
             if (value !== undefined) {
-                fields.push(field as AllowedFields);
+                fields.push(field as AllowedField<T>);
                 values.push(value as QueryParam);
             }
         }

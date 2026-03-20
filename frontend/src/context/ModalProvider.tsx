@@ -4,7 +4,15 @@ import {ModalStackProps} from "../types/components/modal";
 import {ChildrenProp} from "../types/basic";
 import React from "react";
 
-const ModalContext = createContext({});
+interface ModalContextProps {
+    showModal: (value: ModalStackProps) => void;
+    hideModal: () => void;
+}
+const ModalContext = createContext<ModalContextProps>({
+    showModal: () => {},
+    hideModal: () => {}
+});
+
 const ModalProvider = ({children}: ChildrenProp) => {
     const [stack, setStack] = useState<ModalStackProps[]>([]);
 
