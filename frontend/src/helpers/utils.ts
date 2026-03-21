@@ -7,7 +7,7 @@ import {FieldNamesMarkedBoolean, FieldValues, Resolver, ResolverResult, UseFormT
 import {FormRef, RequestQueryType} from "../types/basic";
 import {AllowedResClient} from "../types/components/mappings";
 import {ChangeEmailArg} from "../types/accountProvider";
-import {AllowedSchemasClient} from "../resolvers/formUtils";
+import {AllowedSchemasClient, AllowedSchemasZodTypeClient} from "../resolvers/formUtils";
 
 type Key<T extends z.ZodType<AllowedResClient>> = AllowedField<T> | (string & {});
 interface GroupByType<T extends z.ZodType<AllowedResClient>> {
@@ -55,7 +55,7 @@ const sanitizeData = <T extends Sanitizable>(value: T): T => {
     return value;
 };
 
-export const sanitizedZodResolver = <T extends z.ZodType<AllowedSchemasClient>>(schema: T): Resolver => {
+export const sanitizedZodResolver = <T extends z.ZodType<AllowedSchemasZodTypeClient>>(schema: T): Resolver => {
     return async (values, context, options) => {
         const sanitized = sanitizeData(values);
         return zodResolver(schema as Parameters<typeof zodResolver>[0])(sanitized, context, options) as ResolverResult<z.infer<T>>;
