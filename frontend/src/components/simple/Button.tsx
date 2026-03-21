@@ -1,10 +1,10 @@
 import { twMerge } from 'tailwind-merge';
 import React from 'react';
+import {ChildrenProp} from "../../types/basic";
 
-export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-    children: React.ReactNode;
+export type ButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement> & ChildrenProp & {
     className?: string;
-}
+};
 
 const Button = ({ children, className, onClick, ...rest }: ButtonProps) => {
     const handleOnClick = (e: React.MouseEvent<HTMLButtonElement>) => {

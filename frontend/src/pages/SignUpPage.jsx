@@ -58,12 +58,12 @@ const SignUpPage = () => {
         </div>
         <div className={"flex flex-col gap-2.5"}>
           <Input autoComplete={"email"} required={fieldsMeta.email.required}
-                 error={errors.email?.message} {...register("email", {
+                 error={errors.email} {...register("email", {
             onChange: () => clearErrors("email")
           })} lClassName={"!text-[1.2rem]"} wClassName={"!text-[1.1rem]"} type={"text"}
                  label={"Email"} id={"email"} name={"email"}
           />
-          <Input autoComplete={"new-password"} required={fieldsMeta.password.required} error={errors.password?.message}
+          <Input autoComplete={"new-password"} required={fieldsMeta.password.required} error={errors.password}
                  lClassName={"!text-[1.1rem]"}
                  wClassName={"!text-[1.1rem]"}  {...register("password", {
             onChange: () => clearErrors("password")
@@ -71,7 +71,7 @@ const SignUpPage = () => {
           />
 
           <Input autoComplete={"new-password"} required={fieldsMeta.confirmPassword.required}
-                 error={errors.confirmPassword?.message} lClassName={"!text-[1.1rem]"}
+                 error={errors.confirmPassword} lClassName={"!text-[1.1rem]"}
                  wClassName={"!text-[1.1rem]"}  {...register("confirmPassword", {
             onChange: () => clearErrors("confirmPassword")
           })} type={"password"} label={"Confirm password"} id={"confirmPassword"} name={"confirmPassword"}

@@ -46,22 +46,22 @@ const CounterpartiesForm = ({ data = {}, ref, onSubmit }) => {
       <Input required={fieldsMeta.name.required} label={<>Name</>} id={"name"}
              type={"text"} {...register("name", {
         onChange: () => clearErrors("name")
-      })} error={errors.name?.message}
+      })} error={errors.name}
       />
       <Input required={fieldsMeta.phone.required} label={<>Phone</>} id={"phone"}
              type={"text"} {...register("phone", {
         onChange: () => clearErrors("phone")
-      })} error={errors.phone?.message}
+      })} error={errors.phone}
       />
       <Input required={fieldsMeta.email.required} label={<>Email</>} id={"email"}
              type={"email"} {...register("email", {
         onChange: () => clearErrors("email")
-      })} error={errors.email?.message}
+      })} error={errors.email}
       />
       <Textarea required={fieldsMeta.note.required} rows={5} className={"text-xl"} label={<>Note</>} id={"note"}
              {...register("note", {
         onChange: () => clearErrors("note")
-      })} error={errors.note?.message}
+      })} error={errors.note}
       />
       <Button type={"submit"} className={"hidden"} aria-hidden={"true"} tabIndex={-1}/>
     </form>

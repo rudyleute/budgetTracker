@@ -6,6 +6,8 @@ import {z} from "zod";
 import {FieldNamesMarkedBoolean, FieldValues, Resolver, ResolverResult, UseFormTrigger} from "react-hook-form";
 import {FormRef, RequestQueryType} from "../types/basic";
 import {AllowedResClient} from "../types/components/mappings";
+import {ChangeEmailArg} from "../types/accountProvider";
+import {AllowedSchemasClient} from "../resolvers/formUtils";
 
 type Key<T extends z.ZodType<AllowedResClient>> = AllowedField<T> | (string & {});
 interface GroupByType<T extends z.ZodType<AllowedResClient>> {
@@ -53,7 +55,7 @@ const sanitizeData = <T extends Sanitizable>(value: T): T => {
     return value;
 };
 
-export const sanitizedZodResolver = <T extends z.ZodType<AllowedResClient>>(schema: T): Resolver => {
+export const sanitizedZodResolver = <T extends z.ZodType<AllowedSchemasClient>>(schema: T): Resolver => {
     return async (values, context, options) => {
         const sanitized = sanitizeData(values);
         return zodResolver(schema as Parameters<typeof zodResolver>[0])(sanitized, context, options) as ResolverResult<z.infer<T>>;
@@ -89,7 +91,7 @@ export const validateFields: ValidateFields = async (trigger, values, dirtyField
 
 export type OnSuccessFn<T> = (res: T) => Promise<void>;
 export type SubmitWithId<T> = (id: string, fields: Partial<FieldValues>) => Promise<T>;
-export type SubmitWithoutId<T> = (fields: Partial<FieldValues>) => Promise<T>;
+export type SubmitWithoutId<T> = (fields: Partial<FieldValues> | ChangeEmailArg) => Promise<T>;
 
 export async function onFormSubmit<T>(validateFields: () => ReturnType<FormRef["getData"]>, submit: SubmitWithoutId<T>, onSuccess?: OnSuccessFn<T> | null): Promise<T | null>;
 export async function onFormSubmit<T>(validateFields: () => ReturnType<FormRef["getData"]>, submit: SubmitWithId<T>, onSuccess: OnSuccessFn<T> | null, id: string): Promise<T | null>;

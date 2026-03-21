@@ -50,8 +50,8 @@ const CategoriesForm = ({ ref, color, name, onSubmit, isUpdate = false }) => {
     }} ref={ref} className={"form"}>
       <Input required={fieldsMeta.name.required} {...register("name", {
         onChange: () => clearErrors("name")
-      })} error={errors.name?.message} label={"name"} id={"name"}/>
-      <ColorPicker required={fieldsMeta.color.required} error={errors.color?.message} value={fields.color} onChange={(newColor) => setValue("color", newColor, {
+      })} error={errors.name} label={"name"} id={"name"}/>
+      <ColorPicker required={fieldsMeta.color.required} error={errors.color} value={fields.color} onChange={(newColor) => setValue("color", newColor, {
         shouldValidate: true, shouldDirty: true
       })}/>
 

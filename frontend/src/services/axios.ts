@@ -70,7 +70,7 @@ instance.interceptors.response.use(
 
             errorDetails.status = status;
             errorDetails.statusText = statusText || 'Error';
-            errorDetails.message = data?.message || getDefaultMessage(status);
+            errorDetails.message = data || getDefaultMessage(status);
         } else if (error.request) {
             errorDetails.status = 0;
             errorDetails.message = 'No response from server. Please check your connection.';

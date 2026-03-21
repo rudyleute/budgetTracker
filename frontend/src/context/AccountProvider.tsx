@@ -28,7 +28,20 @@ import React from 'react';
 const CODES = { "SUCCESS": 0, "ERROR": -1, "WRONG_PWD": -2 } as const;
 export type Codes = typeof CODES[keyof typeof CODES];
 
-const AccountContext = createContext({});
+type BasicFunc<E = Codes | void> = () => Promise<E>;
+interface AccountContextType {
+    authStatus: AuthStatus
+    signUp: SignUp
+    logIn: Login
+    logOut: BasicFunc<void>
+    signInWithGoogle: BasicFunc<Codes>
+    requestVerificationEmail: BasicFunc<Codes>
+    checkEmailVerification: BasicFunc<Codes>
+    requestEmailChange: ReqEmailChange
+    CODES: typeof CODES
+}
+
+const AccountContext = createContext<AccountContextType>({} as AccountContextType);
 const useAccount = () => useContext(AccountContext);
 
 const errorHandler = (e: unknown): void => {
@@ -65,7 +78,7 @@ const AccountProvider = ({ children, onAuthReady }: AccountProviderProps) => {
         };
     }, [onAuthReady]);
 
-    const signInWithGoogle = useCallback(async () => {
+    const signInWithGoogle: BasicFunc<Codes> = useCallback(async () => {
         showActionLoader();
         try {
             const res = await signInWithPopup(auth, provider);
@@ -131,7 +144,7 @@ const AccountProvider = ({ children, onAuthReady }: AccountProviderProps) => {
         }
     }, [hideActionLoader, showActionLoader]);
 
-    const logOut = useCallback(async () => {
+    const logOut: BasicFunc<void> = useCallback(async () => {
         showActionLoader();
         try {
             await signOut(auth);
@@ -142,7 +155,7 @@ const AccountProvider = ({ children, onAuthReady }: AccountProviderProps) => {
         }
     }, [hideActionLoader, showActionLoader]);
 
-    const requestVerificationEmail = useCallback(async () => {
+    const requestVerificationEmail: BasicFunc<Codes> = useCallback(async () => {
         showActionLoader();
 
         if (!auth.currentUser) {
@@ -163,7 +176,7 @@ const AccountProvider = ({ children, onAuthReady }: AccountProviderProps) => {
         }
     }, [hideActionLoader, showActionLoader])
 
-    const checkEmailVerification = useCallback(async () => {
+    const checkEmailVerification: BasicFunc<Codes> = useCallback(async () => {
         showActionLoader();
         if (!auth.currentUser) {
             toast.error(formToast("Unauthenticated user"));

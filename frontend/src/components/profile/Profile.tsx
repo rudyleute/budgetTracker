@@ -7,9 +7,10 @@ import { useModal } from '../../context/ModalProvider.jsx';
 import { useCallback, useRef } from 'react';
 import ProfileEmailForm from './ProfileEmailForm.jsx';
 import { onFormSubmit } from '../../helpers/utils.js';
-import { useAccount } from '../../context/AccountProvider.jsx';
-import { useConfirmation } from '../../context/ConfirmationProvider.jsx';
+import { useAccount } from '../../context/AccountProvider';
+import { useConfirmation } from '../../context/ConfirmationProvider';
 import React from "react";
+import {ChangeEmailArg} from "../../types/accountProvider";
 
 const providerIconMap = {
     "google.com": {
@@ -33,21 +34,21 @@ const providerIconMap = {
 const Profile = () => {
     const { showModal, hideModal } = useModal();
     const formRef = useRef(null);
-    const { requestEmailChange, CODES  } = useAccount();
+    const { requestEmailChange, CODES } = useAccount();
     const { showConfirmation } = useConfirmation();
 
-    const onRequiredReauthentication = useCallback(async ({email: newEmail, password}) => {
+    const onRequiredReauthentication = useCallback(async ({email: newEmail, password}: ChangeEmailArg) => {
         //only google and password providers are enabled, so if there is a provider in addition to the password...
-        if (auth.currentUser.providerData.length === 2) {
-            showConfirmation(
-                async () => {
-                    if (await requestEmailChange(newEmail, password) === CODES.SUCCESS) hideModal();
-                },
-                "If you continue, you will not be able to use your Google account to log in and access the data"
-            )
-        } else {
+        const onAccept = async () => {
             if (await requestEmailChange(newEmail, password) === CODES.SUCCESS) hideModal();
-        }
+        };
+
+        if (auth.currentUser!.providerData.length === 2) {
+            showConfirmation({
+                onAccept,
+                text: "If you continue, you will not be able to use your Google account to log in and access the data"
+            });
+        } else await onAccept();
     }, [CODES.SUCCESS, hideModal, requestEmailChange, showConfirmation])
 
 
@@ -57,10 +58,10 @@ const Profile = () => {
     )
 
     const onChangeEmailRequest = useCallback(() => {
-        showModal(
-            "Changing email address",
-            <ProfileEmailForm ref={formRef} onSubmit={onEmailSubmit} />
-        );
+        showModal({
+            title: "Changing email address",
+            content: <ProfileEmailForm ref={formRef} onSubmit={onEmailSubmit}/>
+        });
     }, [onEmailSubmit, showModal])
 
     return (

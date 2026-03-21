@@ -50,12 +50,12 @@ const LoginPage = () => {
           />
         </div>
         <div className={"flex flex-col gap-2.5"}>
-          <Input autoComplete={"email"} error={errors.email?.message} {...register("email", {
+          <Input autoComplete={"email"} error={errors.email} {...register("email", {
             onChange: () => clearErrors("email")
           })} lClassName={"!text-[1.1rem]"} wClassName={"!text-[1.1rem]"} type={"text"}
                  label={"Email"} id={"email"}
           />
-          <Input autoComplete={"current-password"} error={errors.password?.message} lClassName={"!text-[1.1rem]"}
+          <Input autoComplete={"current-password"} error={errors.password} lClassName={"!text-[1.1rem]"}
                  wClassName={"!text-[1.1rem]"}  {...register("password", {
             onChange: () => clearErrors("password")
           })} type={"password"} label={"Password"} id={"password"}

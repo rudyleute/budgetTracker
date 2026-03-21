@@ -92,17 +92,17 @@ const LoansForm = ({ data = {}, ref, isUpdate = false, onSubmit, counterparty })
       <Input required={fieldsMeta.name.required} wClassName={"col-span-full"} label={<>Name</>} id={"name"}
              type={"text"} {...register("name", {
         onChange: () => clearErrors("name")
-      })} error={errors.name?.message}
+      })} error={errors.name}
       />
       <Input required={fieldsMeta.timestamp.required} label={<>Timestamp</>} id={"timestamp"}
              type={"datetime-local"} {...register("timestamp", {
         onChange: () => clearErrors("timestamp")
-      })} error={errors.timestamp?.message}
+      })} error={errors.timestamp}
       />
       <Input required={fieldsMeta.sum.required} label={<>Sum</>} id={"sum"} type={"number"} min={0}
              step={0.01} {...register("sum", {
         onChange: () => clearErrors("sum")
-      })} error={errors.sum?.message}
+      })} error={errors.sum}
       />
       <Autocomplete
         {...restAutocompleteProps}
@@ -111,12 +111,12 @@ const LoansForm = ({ data = {}, ref, isUpdate = false, onSubmit, counterparty })
         label={<>Counterparty</>}
         className={"col-span-full"}
         placeholder={"Search for counterparty..."}
-        error={errors.counterpartyId?.message}
+        error={errors.counterpartyId}
       />
       <Input required={fieldsMeta.deadline.required} wClassName={"col-span-full"} label={<>Deadline</>} id={"deadline"}
              type={"datetime-local"} {...register("deadline", {
         onChange: () => clearErrors("deadline")
-      })} error={errors.deadline?.message}
+      })} error={errors.deadline}
       />
 
       <Select
@@ -129,7 +129,7 @@ const LoansForm = ({ data = {}, ref, isUpdate = false, onSubmit, counterparty })
           shouldValidate: true, shouldDirty: true
         })}
         options={typeOptions}
-        error={errors.type?.message}
+        error={errors.type}
       />
       <Select
         className={"col-span-full"}
@@ -141,7 +141,7 @@ const LoansForm = ({ data = {}, ref, isUpdate = false, onSubmit, counterparty })
           shouldValidate: true, shouldDirty: true
         })}
         options={priorityOptions}
-        error={errors.priority?.message}
+        error={errors.priority}
       />
       <Button type={"submit"} className={"hidden"} aria-hidden={"true"} tabIndex={-1}/>
     </form>

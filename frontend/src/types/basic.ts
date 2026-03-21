@@ -1,6 +1,7 @@
 import {ReactNode} from "react";
 import {CounterpartiesRequestQuery, LoansRequestQuery, TransactionsRequestQuery} from "@app/shared";
 import {ValidateFields} from "../helpers/utils";
+import {FieldError, FieldErrorsImpl, Merge} from "react-hook-form";
 
 export interface ChildrenProp {
     children?: ReactNode | null
@@ -25,3 +26,4 @@ export interface ApiResponse<T> {
 }
 
 export type RequestQueryType = TransactionsRequestQuery | CounterpartiesRequestQuery | LoansRequestQuery;
+export type AnyFieldError = FieldError | Merge<FieldError, FieldErrorsImpl<any>> | undefined;

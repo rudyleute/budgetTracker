@@ -1,4 +1,4 @@
-import { createContext, useCallback, useContext, useMemo, useState } from 'react';
+import {createContext, useCallback, useContext, useMemo, useState} from 'react';
 import ConfirmationDialog from '../components/simple/ConfirmationDialog.jsx';
 import {ChildrenProp} from "../types/basic";
 import React from "react";
@@ -11,8 +11,12 @@ const defaultState: ConfirmationState = {
     text: null
 };
 
-const ConfirmationContext = createContext({});
-const ConfirmationProvider = ({ children }: ChildrenProp) => {
+interface ConfirmationContextType {
+    showConfirmation: (value: Omit<ConfirmationState, 'isShown' | 'onReject'> & { onReject?: ConfirmationState['onReject'] }) => void; //partial onReject
+}
+
+const ConfirmationContext = createContext<ConfirmationContextType>({} as ConfirmationContextType);
+const ConfirmationProvider = ({children}: ChildrenProp) => {
     const [data, setData] = useState(defaultState);
 
     const onAcceptAct = async () => {
@@ -25,11 +29,11 @@ const ConfirmationProvider = ({ children }: ChildrenProp) => {
         setData(defaultState);
     }
 
-    const showConfirmation = useCallback((
-        onAccept: ConfirmationState["onAccept"],
-        text: ConfirmationState["text"],
-        onReject: ConfirmationState["onReject"] = defaultState.onReject
-    ) => {
+    const showConfirmation: ConfirmationContextType["showConfirmation"] = useCallback(({
+                                                                                           onAccept,
+                                                                                           text,
+                                                                                           onReject = defaultState.onReject
+                                                                                       }) => {
         setData({
             isShown: true,
             onAccept,
@@ -38,7 +42,7 @@ const ConfirmationProvider = ({ children }: ChildrenProp) => {
         });
     }, []);
 
-    const value = useMemo(() => ({ showConfirmation }), [showConfirmation])
+    const value = useMemo(() => ({showConfirmation}), [showConfirmation])
 
     return (
         <ConfirmationContext.Provider value={value}>
@@ -53,4 +57,4 @@ const ConfirmationProvider = ({ children }: ChildrenProp) => {
 }
 
 const useConfirmation = () => useContext(ConfirmationContext);
-export { ConfirmationProvider, useConfirmation };
+export {ConfirmationProvider, useConfirmation};

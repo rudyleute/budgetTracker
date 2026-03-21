@@ -14,12 +14,12 @@ export interface SignUpArg extends LoginArg {
 }
 
 export interface ChangeEmailArg extends Password{
-    newEmail: string;
+    email: string;
 }
 
 export type Login = (value: LoginArg) => Promise<void>;
 export type SignUp = (value: SignUpArg) => Promise<Codes>;
-export type ReqEmailChange = (newEmail: ChangeEmailArg["newEmail"], password: ChangeEmailArg["password"]) => Promise<Codes>;
+export type ReqEmailChange = (newEmail: ChangeEmailArg["email"], password: ChangeEmailArg["password"]) => Promise<Codes>;
 export type ReAuth = (password: Password["password"]) => Promise<Codes>;
 
 export interface AccountProviderProps extends ChildrenProp {

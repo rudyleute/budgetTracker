@@ -130,17 +130,17 @@ const TransactionsForm = ({ ref, name, categoryId, price, timestamp, onSubmit, i
       <Input required={fieldsMeta.name.required} wClassName={"col-span-full modal:row-start-1"} label={"Name"}
              id={"name"} type={"text"} {...register("name", {
         onChange: () => clearErrors("name")
-      })} error={errors.name?.message}
+      })} error={errors.name}
       />
       <Input required={fieldsMeta.timestamp.required} label={"Timestamp"} id={"timestamp"}
              type={"datetime-local"} {...register("timestamp", {
         onChange: () => clearErrors("timestamp")
-      })} error={errors.timestamp?.message}
+      })} error={errors.timestamp}
       />
       <Input required={fieldsMeta.price.required} label={"Price"} id={"price"} type={"number"} min={0}
              step={0.01} {...register("price", {
         onChange: () => clearErrors("price")
-      })} error={errors.price?.message}
+      })} error={errors.price}
       />
 
       <Select
@@ -162,7 +162,7 @@ const TransactionsForm = ({ ref, name, categoryId, price, timestamp, onSubmit, i
         }
         onOptionClick={({ id }) => updateCategory(id)}
         options={options}
-        error={errors.categoryId?.message}
+        error={errors.categoryId}
       />
       <Button type={"submit"} className={"hidden"} aria-hidden={"true"} tabIndex={-1}/>
     </form>
