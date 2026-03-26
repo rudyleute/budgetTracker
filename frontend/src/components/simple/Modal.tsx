@@ -2,7 +2,6 @@ import IconButton from './IconButton';
 import { faCircleXmark, faFloppyDisk } from '@fortawesome/free-regular-svg-icons';
 import { createPortal } from 'react-dom';
 import { twMerge } from 'tailwind-merge';
-import React from "react";
 import {ButtonProps} from "./Button";
 
 interface ModalProps extends Omit<React.HTMLAttributes<HTMLDivElement>, 'onSubmit'> {

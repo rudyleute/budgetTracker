@@ -11,9 +11,11 @@ type CamelCase<S extends string> = S extends `${infer P}_${infer Q}`
 
 type CamelizeKeys<T> = T extends Array<infer U>
     ? CamelizeKeys<U>[]
-    : T extends object
-        ? { [K in keyof T as CamelCase<string & K>]: CamelizeKeys<T[K]> }
-        : T;
+    : T extends Date
+        ? T
+        : T extends object
+            ? { [K in keyof T as CamelCase<string & K>]: CamelizeKeys<T[K]> }
+            : T;
 
 
 export type CategoryGetClient = CamelizeKeys<CategoryGetServer>;

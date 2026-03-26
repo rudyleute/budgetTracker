@@ -1,7 +1,7 @@
 import {createContext, useCallback, useContext, useMemo, useState} from 'react';
 import ConfirmationDialog from '../components/simple/ConfirmationDialog.jsx';
 import {ChildrenProp} from "../types/basic";
-import React from "react";
+;
 import {ConfirmationState} from "../types/components/confirmation";
 
 const defaultState: ConfirmationState = {

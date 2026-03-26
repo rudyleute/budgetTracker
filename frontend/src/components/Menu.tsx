@@ -1,6 +1,5 @@
 import {
     faHouse,
-    faChartPie,
     faRightFromBracket,
     faCircleUser,
     faCoins, faPeopleArrows
@@ -11,7 +10,6 @@ import LinkIcon, {LinkIconProps} from './simple/LinkIcon.jsx';
 import { useModal } from '../context/ModalProvider.jsx';
 import { useCallback } from 'react';
 import Profile from './profile/Profile.jsx';
-import React from "react";
 
 const MenuLink = ({ to, title, icon }: LinkIconProps) => <LinkIcon to={to} title={title} icon={icon} iClassName={"max-lrg:icon-s lrg:icon-b"} />
 
@@ -20,10 +18,9 @@ const Menu = () => {
     const { showModal } = useModal();
 
     const onProfileShow = useCallback(() => {
-        showModal(
-            null,
-            <Profile />
-        )
+        showModal({
+            content: <Profile/>
+        })
     }, [showModal]);
 
     return (

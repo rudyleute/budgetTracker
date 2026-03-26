@@ -17,20 +17,18 @@ import {
     PagEntityPatch,
     PagEntityPost
 } from "../types/components/mappings";
-
-type OneOrMany<T> = T | T[];
-interface PaginatedResource<T extends RequestQueryType> {
-    endpoint: string;
-    defaultQueryParams?: T,
-    offset?: number,
-    limit?: number,
-    skipInitFetch?: boolean,
-    entityName: PagEntityName;
-}
+import {
+    AddItem, DeleteItem,
+    EditItem,
+    FetchItemsFromStart, GetNextPage,
+    PaginatedResource,
+    ResetQueryParams,
+    UpdateQueryParams
+} from "../types/usePagRes";
 
 const getDefaultValue =  <T extends AllowedPagResClient>(): PaginatedRes<T> => ({ data: [], total: 0, isLastPage: true });
 const emptyObject: Readonly<RequestQueryType> = {};
-export const usePaginatedResource = <E extends PagEntityName, T extends RequestQueryType>({
+export const usePagRes = <E extends PagEntityName, T extends RequestQueryType>({
                                          endpoint,
                                          defaultQueryParams = emptyObject as T,
                                          entityName,
@@ -53,7 +51,7 @@ export const usePaginatedResource = <E extends PagEntityName, T extends RequestQ
         LoaderElem: ChangeLoader
     } = useLoader({ color: "var(--color-sec)", LoaderComp: SyncLoader })
 
-    const fetchItemsFromStart = useCallback(async (newLimit = limit) => {
+    const fetchItemsFromStart: FetchItemsFromStart = useCallback(async (newLimit = limit) => {
         const res = await fetchHandler<PagEntityGet<E>>(endpoint, queryParams, offset, newLimit);
 
         if (res === null) return false;
@@ -75,12 +73,12 @@ export const usePaginatedResource = <E extends PagEntityName, T extends RequestQ
         })();
     }, [fetchItemsFromStart, hideGetLoader, showGetLoader, skipInitFetch]);
 
-    const updateQueryParams = useCallback((values: Partial<T>) => {
+    const updateQueryParams: UpdateQueryParams<T> = useCallback((values) => {
         //prev is returned and new requests are not made if none of the fields' values were changed
         setQueryParams(prev => newQueryParams(values, prev));
     }, [defaultQueryParams]);
 
-    const resetQueryParams = useCallback((params: OneOrMany<keyof T> = [], ignore: OneOrMany<keyof T> = []) => {
+    const resetQueryParams: ResetQueryParams<T> = useCallback((params = [], ignore = []) => {
         setQueryParams(prev => {
             let nParams = Array.isArray(params) ? params : [params];
             const nIgnore = Array.isArray(ignore) ? ignore : [ignore];
@@ -109,7 +107,7 @@ export const usePaginatedResource = <E extends PagEntityName, T extends RequestQ
         });
     }, [defaultQueryParams]);
 
-    const addItem = useCallback(async (data: PagEntityPost<E>, timeColName: PagEntityKey<E> = "createdAt") => {
+    const addItem: AddItem<E> = useCallback(async (data: PagEntityPost<E>, timeColName: PagEntityKey<E> = "createdAt") => {
         showChangeLoader();
 
         const { data: newItem, message } = await api.post<PagEntityGet<E>>(endpoint, data);
@@ -128,7 +126,7 @@ export const usePaginatedResource = <E extends PagEntityName, T extends RequestQ
         return newItem;
     }, [endpoint, entityName, fetchItemsFromStart, hideChangeLoader, items.total, showChangeLoader]);
 
-    const editItem = useCallback(async (id: string, data: PagEntityPatch<E>, timeColName: PagEntityKey<E> = "createdAt") => {
+    const editItem: EditItem<E> = useCallback(async (id: string, data: PagEntityPatch<E>, timeColName: PagEntityKey<E> = "createdAt") => {
         showChangeLoader();
         const { data: updatedItem, message } = await api.patch<PagEntityGet<E>>(`${endpoint}/${id}`, data);
 
@@ -147,7 +145,7 @@ export const usePaginatedResource = <E extends PagEntityName, T extends RequestQ
         return updatedItem;
     }, [endpoint, entityName, fetchItemsFromStart, hideChangeLoader, items.total, showChangeLoader]);
 
-    const deleteItem = useCallback(async (id: string) => {
+    const deleteItem: DeleteItem = useCallback(async (id: string) => {
         showChangeLoader();
 
         const { status, message } = await api.delete(`${endpoint}/${id}`);
@@ -165,7 +163,7 @@ export const usePaginatedResource = <E extends PagEntityName, T extends RequestQ
         return res;
     }, [endpoint, fetchItemsFromStart, hideChangeLoader, items.total, showChangeLoader]);
 
-    const getNextPage = useCallback(async () => {
+    const getNextPage: GetNextPage = useCallback(async () => {
         showGetLoader();
         const res = await fetchHandler<PagEntityGet<E>>(endpoint, queryParams, items.total);
         hideGetLoader();
@@ -202,4 +200,4 @@ export const usePaginatedResource = <E extends PagEntityName, T extends RequestQ
     };
 };
 
-export default usePaginatedResource;
+export default usePagRes;

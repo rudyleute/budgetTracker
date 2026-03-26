@@ -7,7 +7,7 @@ import {FieldNamesMarkedBoolean, FieldValues, Resolver, ResolverResult, UseFormT
 import {FormRef, RequestQueryType} from "../types/basic";
 import {AllowedResClient} from "../types/components/mappings";
 import {ChangeEmailArg} from "../types/accountProvider";
-import {AllowedSchemasClient, AllowedSchemasZodTypeClient} from "../resolvers/formUtils";
+import {AllowedSchemasZodTypeClient} from "../resolvers/formUtils";
 
 type Key<T extends z.ZodType<AllowedResClient>> = AllowedField<T> | (string & {});
 interface GroupByType<T extends z.ZodType<AllowedResClient>> {

@@ -1,7 +1,7 @@
 import {ReactNode} from "react";
 
 export interface ModalStackProps {
-    title: string,
+    title?: string,
     content: ReactNode,
     closeFunc?: () => void,
     saveFunc?: () => Promise<void>,

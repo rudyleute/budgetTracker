@@ -1,6 +1,5 @@
 import { createPortal } from 'react-dom';
 import Button from './Button';
-import React from "react";
 import {ConfirmationState} from "../../types/components/confirmation";
 
 const ConfirmationDialog = ({ onReject, onAccept, text }: Omit<ConfirmationState, 'isShown'>) => {

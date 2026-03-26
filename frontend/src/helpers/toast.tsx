@@ -1,4 +1,4 @@
-import React, {ReactNode} from "react";
+import {ReactNode} from "react";
 import {DateInput, formatTimestamp} from './time.js';
 
 export const formToast = (children: ReactNode) => {

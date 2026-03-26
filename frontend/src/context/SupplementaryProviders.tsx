@@ -1,4 +1,4 @@
-import React from "react";
+;
 import { ConfirmationProvider } from './ConfirmationProvider';
 import { ModalProvider } from './ModalProvider';
 import {ChildrenProp} from "../types/basic";

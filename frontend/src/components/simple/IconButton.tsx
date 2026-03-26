@@ -2,7 +2,6 @@ import Button, {ButtonProps} from './Button.jsx';
 import { twMerge } from 'tailwind-merge';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { IconProp, SizeProp } from '@fortawesome/fontawesome-svg-core';
-import React from "react";
 
 interface IconButtonProps extends Omit<ButtonProps, 'children'> {
     icon: IconProp;

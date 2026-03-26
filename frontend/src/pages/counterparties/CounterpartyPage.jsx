@@ -45,12 +45,12 @@ const CounterpartyPage = () => {
   )
 
   const handleOnEdit = useCallback(() => {
-    showModal(
-      "Edit counterparty",
-      <CounterpartiesForm onSubmit={onCounterpartyEdit} data={counterparty} ref={formRef} isUpdate={true}/>,
-      onCounterpartyEdit,
-      false
-    )
+    showModal({
+      title: "Edit counterparty",
+      content: <CounterpartiesForm onSubmit={onCounterpartyEdit} data={counterparty} ref={formRef} isUpdate={true}/>,
+      saveFunc: onCounterpartyEdit,
+      hideOnSave: false
+  })
   }, [counterparty, onCounterpartyEdit, showModal]);
 
   useEffect(() => {

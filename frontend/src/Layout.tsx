@@ -1,8 +1,7 @@
 import { Outlet } from "react-router-dom";
 import Menu from "./components/Menu";
-import Sidebar from './components/sidebar/Sidebar.jsx';
+import Sidebar from './components/sidebar/Sidebar';
 import SupplementaryProviders from './context/SupplementaryProviders';
-import React from "react";
 
 const Layout = () => {
     return (

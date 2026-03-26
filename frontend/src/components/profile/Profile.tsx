@@ -3,14 +3,14 @@ import { faGoogle } from '@fortawesome/free-brands-svg-icons';
 import { faCircleUser, faEnvelope, faKey, faLock, faUserXmark } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import PillButtons from '../simple/PillButtons.jsx';
-import { useModal } from '../../context/ModalProvider.jsx';
+import { useModal } from '../../context/ModalProvider';
 import { useCallback, useRef } from 'react';
-import ProfileEmailForm from './ProfileEmailForm.jsx';
-import { onFormSubmit } from '../../helpers/utils.js';
+import ProfileEmailForm from './ProfileEmailForm';
+import { onFormSubmit } from '../../helpers/utils';
 import { useAccount } from '../../context/AccountProvider';
 import { useConfirmation } from '../../context/ConfirmationProvider';
-import React from "react";
 import {ChangeEmailArg} from "../../types/accountProvider";
+import {FormRef} from "../../types/basic";
 
 const providerIconMap = {
     "google.com": {
@@ -33,7 +33,7 @@ const providerIconMap = {
  */
 const Profile = () => {
     const { showModal, hideModal } = useModal();
-    const formRef = useRef(null);
+    const formRef = useRef<FormRef>(null);
     const { requestEmailChange, CODES } = useAccount();
     const { showConfirmation } = useConfirmation();
 

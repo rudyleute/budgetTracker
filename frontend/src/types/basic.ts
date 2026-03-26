@@ -1,7 +1,8 @@
 import {ReactNode} from "react";
-import {CounterpartiesRequestQuery, LoansRequestQuery, TransactionsRequestQuery} from "@app/shared";
+import {LoansRequestQuery, TransactionsRequestQuery} from "@app/shared";
 import {ValidateFields} from "../helpers/utils";
 import {FieldError, FieldErrorsImpl, Merge} from "react-hook-form";
+import {CounterpartiesRequestQueryClient} from "../context/CounterpartiesProvider";
 
 export interface ChildrenProp {
     children?: ReactNode | null
@@ -25,5 +26,5 @@ export interface ApiResponse<T> {
     statusText: string | null;
 }
 
-export type RequestQueryType = TransactionsRequestQuery | CounterpartiesRequestQuery | LoansRequestQuery;
+export type RequestQueryType = TransactionsRequestQuery | LoansRequestQuery | CounterpartiesRequestQueryClient;
 export type AnyFieldError = FieldError | Merge<FieldError, FieldErrorsImpl<any>> | undefined;

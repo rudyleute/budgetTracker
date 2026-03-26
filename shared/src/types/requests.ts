@@ -23,13 +23,15 @@ export const transactionsRequestQuerySchema = basicRequestQuerySchema.extend({
 export type TransactionsRequestQuery = z.infer<typeof transactionsRequestQuerySchema>;
 
 
-const SORTABLE = loansGetSchema.pick({
+export const SORTABLE = loansGetSchema.pick({
     timestamp: true,
     deadline: true,
     name: true,
     priority: true,
-    type: true
+    type: true,
+    sum: true
 }).keyof().options;
+export type LoanSortableKey = typeof SORTABLE[number];
 
 export const loansRequestQuerySchema = basicRequestQuerySchema.extend({
     type: z.enum(LoanTypes).optional(),

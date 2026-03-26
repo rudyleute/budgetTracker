@@ -16,7 +16,7 @@ import LayoutLoans from './layouts/LayoutLoans.jsx';
 import LayoutCounterparties from './layouts/LayoutCounterparties.jsx';
 import UnverifiedRoute from './routes/UnverifiedRoute.jsx';
 import VerifyPage from './pages/VerifyPage.jsx';
-import React from "react";
+;
 
 const router = createBrowserRouter([
     {

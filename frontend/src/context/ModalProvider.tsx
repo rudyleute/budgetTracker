@@ -2,7 +2,6 @@ import {createContext, useCallback, useContext, useMemo, useState} from 'react';
 import Modal from '../components/simple/Modal.jsx';
 import {ModalStackProps} from "../types/components/modal";
 import {ChildrenProp} from "../types/basic";
-import React from "react";
 
 interface ModalContextProps {
     showModal: (value: ModalStackProps) => void;

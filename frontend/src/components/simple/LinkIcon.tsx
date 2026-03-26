@@ -2,7 +2,6 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {Link, LinkProps} from 'react-router-dom';
 import { twMerge } from 'tailwind-merge';
 import {IconProp} from "@fortawesome/fontawesome-svg-core";
-import React from "react";
 
 export interface LinkIconProps extends LinkProps {
     iClassName?: string;
