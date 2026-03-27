@@ -2,11 +2,11 @@ import { auth } from "../../services/firebase.js";
 import { faGoogle } from '@fortawesome/free-brands-svg-icons';
 import { faCircleUser, faEnvelope, faKey, faLock, faUserXmark } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import PillButtons from '../simple/PillButtons.jsx';
+import PillButtons from '../simple/PillButtons';
 import { useModal } from '../../context/ModalProvider';
 import { useCallback, useRef } from 'react';
 import ProfileEmailForm from './ProfileEmailForm';
-import { onFormSubmit } from '../../helpers/utils';
+import {onFormSubmit, SubmitWithoutId} from '../../helpers/utils';
 import { useAccount } from '../../context/AccountProvider';
 import { useConfirmation } from '../../context/ConfirmationProvider';
 import {ChangeEmailArg} from "../../types/accountProvider";
@@ -23,6 +23,8 @@ const providerIconMap = {
     }
 }
 
+type ProviderId = keyof typeof providerIconMap;
+
 /*
  @todo the flow should be the following
  1 - if google account is the only provider of the account, email change should be blocked in the first place
@@ -38,11 +40,11 @@ const Profile = () => {
     const { showConfirmation } = useConfirmation();
 
     const onRequiredReauthentication = useCallback(async ({email: newEmail, password}: ChangeEmailArg) => {
-        //only google and password providers are enabled, so if there is a provider in addition to the password...
         const onAccept = async () => {
             if (await requestEmailChange(newEmail, password) === CODES.SUCCESS) hideModal();
         };
 
+        //only google and password providers are enabled, so if there is a provider in addition to the password...
         if (auth.currentUser!.providerData.length === 2) {
             showConfirmation({
                 onAccept,
@@ -53,9 +55,12 @@ const Profile = () => {
 
 
     const onEmailSubmit = useCallback(
-        async () => onFormSubmit(formRef.current.getData, onRequiredReauthentication),
+        async () => onFormSubmit<void>(
+            () => formRef.current?.getData() ?? Promise.resolve(null),
+            onRequiredReauthentication as SubmitWithoutId<void>
+        ),
         [onRequiredReauthentication]
-    )
+    );
 
     const onChangeEmailRequest = useCallback(() => {
         showModal({
@@ -68,11 +73,12 @@ const Profile = () => {
         <div className={"flex flex-col justify-around h-full"}>
             <div className={"flex flex-col items-center gap-2"}>
                 <FontAwesomeIcon size={"4x"} icon={faCircleUser}/>
-                {auth.currentUser.displayName && <span>{auth.currentUser.displayName}</span>}
-                <span>{auth.currentUser.email}</span>
+                {auth.currentUser?.displayName && <span>{auth.currentUser.displayName}</span>}
+                <span>{auth.currentUser!.email}</span>
                 <div className={"flex gap-1 mt-1"}>{
-                    auth.currentUser.providerData.map(({ providerId }) => {
-                        const { icon, name } = providerIconMap[providerId];
+                    auth.currentUser!.providerData.map(({ providerId }) => {
+                        if (!(providerId in providerIconMap)) return null;
+                        const { icon, name } = providerIconMap[providerId as ProviderId];
 
                         return <span className={"hover:cursor-pointer bg-(--color-third) p-[2px_8px] rounded-[15px]"}
                                      title={`Authentication via ${name} is enabled for this account`} key={providerId}>
@@ -83,7 +89,7 @@ const Profile = () => {
             </div>
             <PillButtons color={"(--color-third)"} bClassName={"w-[33%]!"} className={"w-full! h-10 justify-center"}
                          buttons={[
-                             { content: <FontAwesomeIcon icon={faEnvelope}/>, title: "Change email", onClick: auth.currentUser.providerData.some(e => e.providerId === "password") && onChangeEmailRequest },
+                             { content: <FontAwesomeIcon icon={faEnvelope}/>, title: "Change email", onClick: auth.currentUser?.providerData.some(e => e.providerId === "password") ? onChangeEmailRequest : undefined},
                              { content: <FontAwesomeIcon icon={faLock}/>, title: "Change password" },
                              { content: <FontAwesomeIcon icon={faUserXmark}/>, title: "Delete account" }
                          ]}

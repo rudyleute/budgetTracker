@@ -1,19 +1,18 @@
-import {RefObject, useEffect, useMemo} from 'react';
+import {useMemo} from 'react';
 import Input from '../simple/Input';
 import { useForm } from 'react-hook-form';
 import Button from '../simple/Button';
 import {onFormSubmit, validateFields} from '../../helpers/utils';
 import {changeEmailFormUtils, ChangeEmailSchema} from '../../resolvers/changeEmailResolver';
-import React from 'react';
 import {z} from "zod";
 import {FormRef} from "../../types/basic";
+import {forwardRef, useImperativeHandle} from "react";
 
 interface ProfileEmailFormProps {
-    ref: RefObject<FormRef>,
-    onSubmit: <T>() => ReturnType<typeof onFormSubmit<T>>
+    onSubmit: () => ReturnType<typeof onFormSubmit<void>>
 }
 
-const ProfileEmailForm = ({ ref, onSubmit }: ProfileEmailFormProps) => {
+const ProfileEmailForm = forwardRef<FormRef, ProfileEmailFormProps>(({ onSubmit }, ref) => {
     const { resolver: changeEmailResolver, fieldsMeta } = useMemo(() => {
         return changeEmailFormUtils();
     }, []);
@@ -36,16 +35,16 @@ const ProfileEmailForm = ({ ref, onSubmit }: ProfileEmailFormProps) => {
         reValidateMode: "onSubmit"
     })
 
-    useEffect(() => {
-        if (ref) ref.current = {
+    useImperativeHandle(ref, (): FormRef => {
+        return {
             getData: () => validateFields(trigger, getValues(), formState.dirtyFields)
         }
-    }, [formState.dirtyFields, getValues, ref, trigger]);
+    });
 
     return (
         <form onSubmit={async (e) => {
             e.preventDefault();
-            onSubmit && onSubmit()
+            onSubmit && await onSubmit()
         }} className={"form"}>
             <Input required={fieldsMeta.email.required} {...register("email", {
                 onChange: () => clearErrors("email")
@@ -60,6 +59,6 @@ const ProfileEmailForm = ({ ref, onSubmit }: ProfileEmailFormProps) => {
             <Button type={"submit"} className={"hidden"} aria-hidden={"true"} tabIndex={-1}/>
         </form>
     )
-}
+})
 
 export default ProfileEmailForm;

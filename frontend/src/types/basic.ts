@@ -9,7 +9,7 @@ export interface ChildrenProp {
 }
 
 export interface FormRef {
-    getData: ValidateFields
+    getData: () => ReturnType<ValidateFields>
 }
 
 export interface ErrorDetails {

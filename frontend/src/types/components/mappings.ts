@@ -35,7 +35,7 @@ export type LoanPatchClient = CamelizeKeys<LoanPatchServer>;
 export type CounterpartyPatchClient = CamelizeKeys<CounterpartyPatchServer>;
 export type CategoryPatchClient = CamelizeKeys<CategoryPatchServer>;
 
-export interface PagEntityMap {
+interface PagEntityMap {
     transaction: {
         get: TransactionGetClient,
         post: TransactionPostClient,
@@ -61,4 +61,4 @@ export type PagEntityKey<K extends PagEntityName> = keyof PagEntityGet<K>;
 
 export type AllowedPagResClient = CounterpartyGetClient | LoanGetClient | TransactionGetClient;
 export type AllowedNPagResClient = CategoryGetClient;
-export type AllowedResClient = AllowedPagResClient | AllowedNPagResClient | UserGetClient;
+export type AllowedResClient = AllowedPagResClient | AllowedNPagResClient;
