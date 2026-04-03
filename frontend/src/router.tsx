@@ -1,21 +1,21 @@
 import { createBrowserRouter } from 'react-router-dom';
 import Layout from './Layout';
 import NotFoundPage from './pages/NotFoundPage';
-import TransactionsPage from './pages/TransactionsPage.jsx';
-import LoginPage from './pages/LoginPage.jsx';
-import SignUpPage from './pages/SignUpPage.jsx';
+import TransactionsPage from './pages/TransactionsPage';
+import LoginPage from './pages/LoginPage';
+import SignUpPage from './pages/SignUpPage';
 import LoansPage from './pages/loans/LoansPage.jsx';
-import AnonRoute from './routes/AnonRoute.jsx';
-import VerifiedRoute from './routes/VerifiedRoute.jsx';
-import RootLayout from './layouts/RootLayout.jsx';
+import AnonRoute from './routes/AnonRoute';
+import VerifiedRoute from './routes/VerifiedRoute';
+import RootLayout from './layouts/RootLayout';
 import LoanPage from './pages/loans/LoanPage.jsx';
 import CounterpartiesPage from './pages/counterparties/CounterpartiesPage.jsx';
 import CounterpartyPage from './pages/counterparties/CounterpartyPage.jsx';
-import LayoutTransactions from './layouts/LayoutTransactions.jsx';
-import LayoutLoans from './layouts/LayoutLoans.jsx';
-import LayoutCounterparties from './layouts/LayoutCounterparties.jsx';
-import UnverifiedRoute from './routes/UnverifiedRoute.jsx';
-import VerifyPage from './pages/VerifyPage.jsx';
+import LayoutTransactions from './layouts/LayoutTransactions';
+import LayoutLoans from './layouts/LayoutLoans';
+import LayoutCounterparties from './layouts/LayoutCounterparties';
+import UnverifiedRoute from './routes/UnverifiedRoute';
+import VerifyPage from './pages/VerifyPage';
 ;
 
 const router = createBrowserRouter([
