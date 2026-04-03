@@ -1,6 +1,6 @@
-import { createContext, useContext, useMemo } from 'react';
+import {createContext, useContext, useMemo} from 'react';
 import usePagRes from '../hooks/usePaginatedResource';
-import { TransactionsRequestQuery } from '@app/shared';
+import {TransactionsRequestQuery} from '@app/shared';
 import {ChildrenProp} from "../types/basic";
 
 const defaultQueryParams: TransactionsRequestQuery = {
@@ -9,8 +9,7 @@ const defaultQueryParams: TransactionsRequestQuery = {
     to: ""
 };
 
-const TransactionsContext = createContext({});
-const TransactionsProvider = ({ children }: ChildrenProp) => {
+const useTransactionsValue = () => {
     const {
         items: transactions,
         queryParams: queryTransParams,
@@ -22,13 +21,13 @@ const TransactionsProvider = ({ children }: ChildrenProp) => {
         resetQueryParams: resetTransQueryParams,
         GetLoader: TransGetLoader,
         ChangeLoader: TransChangeLoader
-    } = usePagRes({
+    } = usePagRes<'transaction', TransactionsRequestQuery>({
         endpoint: '/transactions',
         defaultQueryParams,
         entityName: 'transaction'
     })
 
-    const value = useMemo(() => ({
+    return useMemo(() => ({
         transactions,
         addTransaction,
         deleteTransaction,
@@ -40,6 +39,13 @@ const TransactionsProvider = ({ children }: ChildrenProp) => {
         TransGetLoader,
         TransChangeLoader
     }), [TransChangeLoader, TransGetLoader, addTransaction, deleteTransaction, editTransaction, getNextTransactionsPage, queryTransParams, resetTransQueryParams, transactions, updateTransQueryParams])
+}
+
+type TransactionsContextType = ReturnType<typeof useTransactionsValue>;
+const TransactionsContext = createContext<TransactionsContextType>({} as TransactionsContextType);
+
+const TransactionsProvider = ({children}: ChildrenProp) => {
+    const value = useTransactionsValue();
 
     return (
         <TransactionsContext.Provider value={value}>
@@ -49,4 +55,4 @@ const TransactionsProvider = ({ children }: ChildrenProp) => {
 }
 
 const useTransactions = () => useContext(TransactionsContext);
-export { TransactionsProvider, useTransactions };
+export {TransactionsProvider, useTransactions};

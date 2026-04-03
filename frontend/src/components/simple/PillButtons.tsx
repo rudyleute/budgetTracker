@@ -4,7 +4,7 @@ import React from "react";
 
 interface PillButtonsProps {
     buttons: (Omit<React.HTMLAttributes<HTMLButtonElement>, 'content'> & {content: React.ReactNode})[];
-    color: string,
+    color?: string,
     className?: string,
     bClassName?: string,
     dir?: 'horizontal' | 'vertical'

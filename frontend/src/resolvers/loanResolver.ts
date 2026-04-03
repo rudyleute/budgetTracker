@@ -30,3 +30,4 @@ const loanSchema = (typeValues: LoanTypes, priorityValues: PriorityTypes) => {
 
 export const loanFormUtils = (typeValues: LoanTypes, priorityValues: PriorityTypes) => formUtils(loanSchema(typeValues, priorityValues));
 export type LoanSchema = ReturnType<typeof loanSchema>;
+export type LoanSchemaType = z.infer<LoanSchema>;

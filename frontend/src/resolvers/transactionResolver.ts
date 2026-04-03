@@ -12,9 +12,10 @@ const transactionSchema = () => {
             .refine((date) => date <= new Date(), {
                 message: "Timestamp cannot be in the future"
             }),
-        categoryId: z.uuid("Category cannot be empty")
+        categoryId: z.uuid("Category cannot be empty").nullish()
     });
 }
 
 export const transactionFormUtils = () => formUtils(transactionSchema());
 export type TransactionSchema = ReturnType<typeof transactionSchema>;
+export type TransactionSchemaType = z.infer<TransactionSchema>;

@@ -4,6 +4,6 @@ export interface ModalStackProps {
     title?: string,
     content: ReactNode,
     closeFunc?: () => void,
-    saveFunc?: () => Promise<void>,
+    saveFunc?: () => Promise<unknown>,
     hideOnSave?: boolean
 }

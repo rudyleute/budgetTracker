@@ -12,6 +12,11 @@ export interface FormRef {
     getData: () => ReturnType<ValidateFields>
 }
 
+export interface UpdatableFormProps {
+    isUpdate?: boolean;
+    onSubmit?: (data: Awaited<NonNullable<ReturnType<ValidateFields>>>) => void;
+}
+
 export interface ErrorDetails {
     status: number | null;
     statusText: string | null;

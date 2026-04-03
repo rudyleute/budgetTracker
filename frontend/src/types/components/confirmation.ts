@@ -1,6 +1,6 @@
 export interface ConfirmationState {
     isShown: boolean,
-    onAccept: () => Promise<void>,
-    onReject: () => void,
+    onAccept: () => unknown,
+    onReject: () => unknown,
     text: string | null
 }

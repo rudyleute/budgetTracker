@@ -10,3 +10,4 @@ const categorySchema = () => {
 
 export const categoryFormUtils = () => formUtils(categorySchema());
 export type CategorySchema = ReturnType<typeof categorySchema>;
+export type CategorySchemaType = z.infer<CategorySchema>;

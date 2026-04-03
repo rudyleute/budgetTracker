@@ -10,3 +10,4 @@ const loginSchema = () => {
 
 export const loginFormUtils = () => formUtils(loginSchema())
 export type LoginSchema = ReturnType<typeof loginSchema>;
+export type LoginSchemaType = z.infer<LoginSchema>;

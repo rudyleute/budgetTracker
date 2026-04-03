@@ -14,3 +14,4 @@ const changeEmailSchema = () => {
 
 export const changeEmailFormUtils = () => formUtils(changeEmailSchema())
 export type ChangeEmailSchema = ReturnType<typeof changeEmailSchema>;
+export type ChangeEmailSchemaType = z.infer<ChangeEmailSchema>;

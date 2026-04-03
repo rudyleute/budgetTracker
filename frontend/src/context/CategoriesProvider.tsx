@@ -17,8 +17,8 @@ const defaultValue: CategoriesState = {
     data: [],
     dataMap: {} as CategoriesState["dataMap"]
 };
-const CategoriesContext = createContext({});
-const CategoriesProvider = ({ children }: ChildrenProp) => {
+
+const useCategoriesValue = () => {
     const [categories, setCategories] = useState<CategoriesState>(defaultValue);
 
     useEffect(() => {
@@ -82,12 +82,12 @@ const CategoriesProvider = ({ children }: ChildrenProp) => {
         return category;
     }, [])
 
-    const deleteCategory = useCallback(async (id: string) => {
+    const deleteCategory = useCallback(async (id: string): Promise<boolean> => {
         const { status, message } = await api.delete(`/categories/${id}`);
 
         if (status !== 204) {
             toast.error(formToast(`Failed to delete category: ${message}`));
-            return;
+            return false;
         }
 
         setCategories(prev => {
@@ -104,14 +104,23 @@ const CategoriesProvider = ({ children }: ChildrenProp) => {
                 dataMap: newMap
             };
         })
+
+        return true;
     }, []);
 
-    const value = useMemo(() => ({
+    return useMemo(() => ({
         categories,
         addCategory,
         editCategory,
         deleteCategory
     }), [addCategory, categories, deleteCategory, editCategory])
+}
+
+type CategoriesContextType = ReturnType<typeof useCategoriesValue>;
+const CategoriesContext = createContext<CategoriesContextType>({} as CategoriesContextType);
+
+const CategoriesProvider = ({ children }: ChildrenProp) => {
+    const value = useCategoriesValue();
 
     return (
         <CategoriesContext.Provider value={value}>

@@ -1,7 +1,6 @@
 import DOMPurify from 'dompurify';
 import {zodResolver} from '@hookform/resolvers/zod';
 import _ from 'lodash';
-import {AllowedField} from "@app/shared";
 import {z} from "zod";
 import {FieldNamesMarkedBoolean, FieldValues, Resolver, ResolverResult, UseFormTrigger} from "react-hook-form";
 import {FormRef, RequestQueryType} from "../types/basic";
@@ -9,32 +8,31 @@ import {AllowedResClient} from "../types/components/mappings";
 import {ChangeEmailArg} from "../types/accountProvider";
 import {AllowedSchemasZodTypeClient} from "../resolvers/formUtils";
 
-type Key<T extends z.ZodType<AllowedResClient>> = AllowedField<T> | (string & {});
-interface GroupByType<T extends z.ZodType<AllowedResClient>> {
-    data: z.infer<T>[];
-    columnName: AllowedField<T>;
-    getKey?: (value: z.infer<T>[AllowedField<T>]) => string;
+interface GroupByType<T extends AllowedResClient, K extends keyof T> {
+    data: T[];
+    columnName: K;
+    getKey?: (value: T[K]) => string;
 }
-interface GroupByReturnType<T extends z.ZodType<AllowedResClient>> {
-    keys: Key<T>[];
-    groups: Map<Key<T>, z.infer<T>[]>;
+interface GroupByReturnType<T extends AllowedResClient> {
+    keys: string[];
+    groups: Record<string, T[]>;
 }
-export const groupBy = <T extends z.ZodType<AllowedResClient>>({
+export const groupBy = <T extends AllowedResClient, K extends keyof T>({
                                                                       data,
                                                                       columnName,
                                                                       getKey = (value) => String(value)
-                                                                  }: GroupByType<T>): GroupByReturnType<T> => {
-    const keys: Key<T>[] = [];
-    const groups = new Map<Key<T>, z.infer<T>[]>();
+                                                                  }: GroupByType<T, K>): GroupByReturnType<T> => {
+    const keys: GroupByReturnType<T>["keys"] = [];
+    const groups: GroupByReturnType<T>["groups"] = {} as GroupByReturnType<T>["groups"];
 
     data.forEach(item => {
-        const newKey = getKey(item[columnName]) as Key<T>;
+        const newKey = getKey(item[columnName]);
 
-        if (groups.has(newKey)) {
-            groups.get(newKey)!.push(item);
+        if (groups[newKey]) {
+            groups[newKey].push(item);
         } else {
             keys.push(newKey);
-            groups.set(newKey, [item]);
+            groups[newKey] = [item];
         }
     });
 
@@ -89,19 +87,20 @@ export const validateFields: ValidateFields = async (trigger, values, dirtyField
     }, {} as Partial<FieldValues>);
 };
 
-export type OnSuccessFn<T> = (res: T) => Promise<void>;
+export type OnSuccessFn<T> = (res: T) => Promise<void> | void;
 export type SubmitWithId<T> = (id: string, fields: Partial<FieldValues>) => Promise<T>;
 export type SubmitWithoutId<T> = (fields: Partial<FieldValues> | ChangeEmailArg) => Promise<T>;
 
-export async function onFormSubmit<T>(validateFields: () => ReturnType<FormRef["getData"]>, submit: SubmitWithoutId<T>, onSuccess?: OnSuccessFn<T> | null): Promise<T | null>;
-export async function onFormSubmit<T>(validateFields: () => ReturnType<FormRef["getData"]>, submit: SubmitWithId<T>, onSuccess: OnSuccessFn<T> | null, id: string): Promise<T | null>;
+type ValidateFieldsParam = (() => ReturnType<FormRef["getData"]>) | undefined;
+export async function onFormSubmit<T>(validateFields: ValidateFieldsParam, submit: SubmitWithoutId<T>, onSuccess?: OnSuccessFn<T> | null): Promise<T | null>;
+export async function onFormSubmit<T>(validateFields: ValidateFieldsParam, submit: SubmitWithId<T>, onSuccess: OnSuccessFn<T> | null, id: string): Promise<T | null>;
 export async function onFormSubmit<T>(
-    validateFields: () => ReturnType<FormRef["getData"]>,
+    validateFields: ValidateFieldsParam,
     submit: SubmitWithId<T> | SubmitWithoutId<T>,
     onSuccess: OnSuccessFn<T> | null = null,
     id: string | null = null
 ): Promise<T | null> {
-    const fields = await validateFields();
+    const fields = await (validateFields?.());
 
     if (_.isEmpty(fields)) return null;
 

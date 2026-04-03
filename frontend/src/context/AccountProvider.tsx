@@ -23,7 +23,6 @@ import useLoader from '../hooks/useLoader';
 import api from '../services/axios';
 import {AuthStatus, authStatuses} from '../helpers/variables';
 import {AccountProviderProps, Login, ReAuth, ReqEmailChange, SignUp} from "../types/accountProvider";
-import React from 'react';
 
 const CODES = { "SUCCESS": 0, "ERROR": -1, "WRONG_PWD": -2 } as const;
 export type Codes = typeof CODES[keyof typeof CODES];

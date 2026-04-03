@@ -14,3 +14,4 @@ const signUpSchema = () => {
 
 export const signUpFormUtils = () => formUtils(signUpSchema())
 export type SignUpSchema = ReturnType<typeof signUpSchema>;
+export type SignUpSchemaType = z.infer<SignUpSchema>;

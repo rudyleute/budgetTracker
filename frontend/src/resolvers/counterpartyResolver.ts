@@ -25,3 +25,4 @@ const counterpartySchema = () => {
 
 export const counterpartyFormUtils = () => formUtils(counterpartySchema());
 export type CounterpartySchema = ReturnType<typeof counterpartySchema>;
+export type CounterpartySchemaType = z.infer<CounterpartySchema>;

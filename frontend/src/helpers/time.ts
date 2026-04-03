@@ -1,3 +1,5 @@
+import {TransactionsRequestQuery} from "@app/shared";
+
 export type DateInput = ConstructorParameters<typeof Date>[0];
 export const getDate = (date: DateInput, options: Intl.DateTimeFormatOptions = {}): string => new Date(date).toLocaleDateString("en-CA", {hour12: false, ...options})
 export const formatTimestamp = (timestamp: DateInput, options: Intl.DateTimeFormatOptions): string => new Date(timestamp).toLocaleString("en-UK", { hour12: false, ...options })
@@ -23,7 +25,7 @@ export function daysUntilDateOnly(dateString: string) {
     return Math.floor(diffMs / (1000 * 60 * 60 * 24));
 }
 
-export const createTimeFilters = (setValues: (from: DateInput, to: DateInput) => void) => {
+export const createTimeFilters = (setValues: (from: TransactionsRequestQuery["from"], to: TransactionsRequestQuery["to"]) => unknown) => {
     const getDateRange = (label: string) => {
         const today = new Date();
         const formatDate = (date: DateInput) => getDate(date, {year: "numeric", month: "2-digit", day: "2-digit"});
@@ -117,14 +119,14 @@ export const createTimeFilters = (setValues: (from: DateInput, to: DateInput) =>
     }
 
     return [
-        { label: "Today", func: () => formOption("Today") },
-        { label: "Yesterday", func: () => formOption("Yesterday") },
-        { label: "This week", func: () => formOption("This week") },
-        { label: "Last week", func: () => formOption("Last week") },
-        { label: "This month", func: () => formOption("This month") },
-        { label: "Last month", func: () => formOption("Last month") },
-        { label: "Last four months", func: () => formOption("Last four months") },
-        { label: "This year", func: () => formOption("This year") },
-        { label: "Last year", func: () => formOption("Last year") },
+        { id: "1", label: "Today", func: () => formOption("Today") },
+        { id: "2", label: "Yesterday", func: () => formOption("Yesterday") },
+        { id: "3", label: "This week", func: () => formOption("This week") },
+        { id: "4", label: "Last week", func: () => formOption("Last week") },
+        { id: "5", label: "This month", func: () => formOption("This month") },
+        { id: "6", label: "Last month", func: () => formOption("Last month") },
+        { id: "7", label: "Last four months", func: () => formOption("Last four months") },
+        { id: "8", label: "This year", func: () => formOption("This year") },
+        { id: "9", label: "Last year", func: () => formOption("Last year") },
     ]
 }

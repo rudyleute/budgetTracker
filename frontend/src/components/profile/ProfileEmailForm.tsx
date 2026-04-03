@@ -2,11 +2,11 @@ import {useMemo} from 'react';
 import Input from '../simple/Input';
 import { useForm } from 'react-hook-form';
 import Button from '../simple/Button';
-import {onFormSubmit, validateFields} from '../../helpers/utils';
-import {changeEmailFormUtils, ChangeEmailSchema} from '../../resolvers/changeEmailResolver';
-import {z} from "zod";
+import {onFormSubmit} from '../../helpers/utils';
+import {changeEmailFormUtils, ChangeEmailSchemaType} from '../../resolvers/changeEmailResolver';
 import {FormRef} from "../../types/basic";
-import {forwardRef, useImperativeHandle} from "react";
+import {forwardRef} from "react";
+import {useFormRef} from "../../hooks/useFormRef";
 
 interface ProfileEmailFormProps {
     onSubmit: () => ReturnType<typeof onFormSubmit<void>>
@@ -17,29 +17,24 @@ const ProfileEmailForm = forwardRef<FormRef, ProfileEmailFormProps>(({ onSubmit 
         return changeEmailFormUtils();
     }, []);
 
-    const {
-        register,
-        trigger,
-        getValues,
-        formState: { errors },
-        clearErrors,
-        formState,
-    } = useForm({
+    const form = useForm({
         resolver: changeEmailResolver,
         defaultValues: {
             email: "",
             confirmEmail: "",
             password: ""
-        } satisfies Record<keyof z.infer<ChangeEmailSchema>, unknown>,
+        } satisfies Record<keyof ChangeEmailSchemaType, unknown>,
         mode: "onSubmit",
         reValidateMode: "onSubmit"
-    })
-
-    useImperativeHandle(ref, (): FormRef => {
-        return {
-            getData: () => validateFields(trigger, getValues(), formState.dirtyFields)
-        }
     });
+
+    const {
+        register,
+        formState: { errors },
+        clearErrors,
+    } = form;
+
+    useFormRef(ref, form);
 
     return (
         <form onSubmit={async (e) => {

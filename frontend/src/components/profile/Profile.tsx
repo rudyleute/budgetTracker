@@ -56,7 +56,7 @@ const Profile = () => {
 
     const onEmailSubmit = useCallback(
         async () => onFormSubmit<void>(
-            () => formRef.current?.getData() ?? Promise.resolve(null),
+            formRef.current?.getData,
             onRequiredReauthentication as SubmitWithoutId<void>
         ),
         [onRequiredReauthentication]
