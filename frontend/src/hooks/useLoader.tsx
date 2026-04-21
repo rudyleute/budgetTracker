@@ -1,4 +1,4 @@
-import React, {ReactNode} from "react";
+import {ReactNode} from "react";
 import { useCallback, useState } from 'react';
 import { createPortal } from 'react-dom';
 import {GridLoader, ScaleLoader, SyncLoader} from 'react-spinners';
@@ -11,7 +11,7 @@ interface LoaderState {
     message: string;
 }
 
-interface UseLoader {
+export interface UseLoader {
     color?: string,
     overlayColor?: string,
     size?: LengthType,
