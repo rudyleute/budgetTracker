@@ -8,11 +8,12 @@ import LoansCard from '../../components/loans/LoansCard';
 import { useCallback, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {PagEntityGet} from "../../types/components/mappings";
+import _ from "lodash";
 
 const LoanPage = () => {
     const { id } = useParams();
     const navigate = useNavigate();
-    const [loan, setLoan] = useState<PagEntityGet<'loan'> | null>(null);
+    const [loan, setLoan] = useState<PagEntityGet<'loan'>>({} as PagEntityGet<'loan'>);
 
     const onSendEdited = useCallback(async (newLoan: PagEntityGet<'loan'>) => {
         if (newLoan) setLoan(newLoan);
@@ -47,7 +48,7 @@ const LoanPage = () => {
     return (
         <GetLoader>
             <div className={"loans-list-wrapper"}>
-                {loan && <LoansCard loan={loan} onAfterEdit={onSendEdited} onAfterDeleteSuccess={onAfterDeleteSuccess} />}
+                {!_.isEmpty(loan) && <LoansCard loan={loan} onAfterEdit={onSendEdited} onAfterDeleteSuccess={onAfterDeleteSuccess} />}
             </div>
         </GetLoader>
     )

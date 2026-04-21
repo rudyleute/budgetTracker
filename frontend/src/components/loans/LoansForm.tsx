@@ -19,7 +19,7 @@ interface LoansFormProps {
     onSubmit?: () => unknown,
     counterparty?: CounterpartyGetClient
 }
-const LoansForm = forwardRef<FormRef, LoansFormProps>(({ data = {} as PagEntityGet<'loan'>, isUpdate = false, onSubmit, counterparty }, ref) => {
+const LoansForm = forwardRef<FormRef, LoansFormProps>(({ data = {} as NonNullable<LoansFormProps['data']>, isUpdate = false, onSubmit, counterparty }, ref) => {
     const { priorities, types } = useLoans();
     const { resolver: loanResolver, fieldsMeta } = useMemo(() => {
         return loanFormUtils(types, priorities);

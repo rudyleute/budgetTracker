@@ -8,8 +8,7 @@ const defaultQueryParams: CounterpartiesRequestQueryClient = {
     filter: ""
 };
 
-const CounterpartiesContext = createContext({});
-const CounterpartiesProvider = ({ children }: ChildrenProp) => {
+const useCounterpartiesContext = () => {
     const {
         items: counterparties,
         queryParams: counterpartiesQueryParams,
@@ -27,7 +26,7 @@ const CounterpartiesProvider = ({ children }: ChildrenProp) => {
         entityName: 'counterparty'
     });
 
-    const value = useMemo(() => ({
+    return useMemo(() => ({
         counterparties,
         counterpartiesQueryParams,
         addCounterparty,
@@ -39,6 +38,11 @@ const CounterpartiesProvider = ({ children }: ChildrenProp) => {
         CounterpartiesGetLoader,
         CounterpartiesChangeLoader
     }), [CounterpartiesChangeLoader, CounterpartiesGetLoader, addCounterparty, deleteCounterparty, editCounterparty, getNextCounterpartiesPage, counterparties, counterpartiesQueryParams, resetCounterpartiesQueryParams, updateCounterpartiesQueryParams])
+}
+
+const CounterpartiesContext = createContext<ReturnType<typeof useCounterpartiesContext>>({} as ReturnType<typeof useCounterpartiesContext>);
+const CounterpartiesProvider = ({ children }: ChildrenProp) => {
+    const value = useCounterpartiesContext();
 
     return (<CounterpartiesContext.Provider value={value}>
         {children}
