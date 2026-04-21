@@ -11,7 +11,7 @@ import api from '../../services/axios';
 import {priorityColorMap} from '../../helpers/variables';
 import {twMerge} from 'tailwind-merge';
 import IconButton from '../simple/IconButton';
-import {AllowedResClient, CounterpartyGetClient, LoanGetClient, PagEntityGet} from "../../types/components/mappings";
+import {AllowedResClient, PagEntityGet} from "../../types/components/mappings";
 
 interface SidebarState {
     loans: PagEntityGet<'loan'>[],
@@ -60,7 +60,7 @@ const Sidebar = () => {
     const getLoansLink = <T extends AllowedResClient>(item: T) => `/loans/${item.id}`;
     const getCounterLink = <T extends AllowedResClient>(item: T) => `/counterparties/${item.id}`;
 
-    const renderLoanItem = (loan: LoanGetClient) => {
+    const renderLoanItem = (loan: PagEntityGet<'loan'>) => {
         return (
             <>
                 {
@@ -97,7 +97,7 @@ const Sidebar = () => {
         )
     }
 
-    const renderCounterItem = (item: CounterpartyGetClient) => {
+    const renderCounterItem = (item: PagEntityGet<'counterparty'>) => {
         //IconLink can't be used here as there will be nested <a>'s
         return (
             <>

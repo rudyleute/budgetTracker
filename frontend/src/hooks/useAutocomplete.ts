@@ -8,7 +8,7 @@ import {PagEntityGet, PagEntityName} from "../types/components/mappings";
 
 const emptyObject: Readonly<RequestQueryType> = {}
 
-type OnOptionClick <E extends PagEntityName> = (elem: PagEntityGet<E>) => void;
+type OnOptionClick <E extends PagEntityName> = (elem: PagEntityGet<E>) => unknown;
 type LabelColumn <E extends PagEntityName> = keyof PagEntityGet<E>;
 export interface AutocompleteProps<E extends PagEntityName, T extends RequestQueryType> {
     defaultValue?: string;
@@ -84,4 +84,5 @@ const useAutocomplete = <E extends PagEntityName, T extends RequestQueryType>({
     }
 }
 
+export type UseAutocompleteReturnType<E extends PagEntityName, T extends RequestQueryType> = ReturnType<typeof useAutocomplete<E, T>>;
 export default useAutocomplete;

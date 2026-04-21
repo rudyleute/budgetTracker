@@ -107,6 +107,7 @@ const api = {
     get: <T extends AllowedNPagResClient>(endpoint: string, params = {}): Promise<ApiResponse<GetNPagResClient<T>>> =>
         instance.get(endpoint, { params }),
     getPaginated: <T extends AllowedPagResClient>(endpoint: string, params = {}): Promise<ApiResponse<GetPagResClient<T>>> => instance.get(endpoint, { params }),
+    getById: <T extends AllowedPagResClient>(endpoint: string, params = {}): Promise<ApiResponse<T>> => instance.get(endpoint, { params }),
     post: <T extends AllowedResClient>(endpoint: string, data = {}): Promise<ApiResponse<T>> => instance.post(endpoint, data),
     patch: <T extends AllowedResClient>(endpoint: string, data = {}): Promise<ApiResponse<T>> => instance.patch(endpoint, data),
     delete: (endpoint: string): Promise<ApiResponse<CustomError | void>> => instance.delete(endpoint)

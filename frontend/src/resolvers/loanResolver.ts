@@ -2,7 +2,7 @@ import { z } from 'zod';
 import { formUtils } from './formUtils.js';
 import {LoanTypes, PriorityTypes} from "@app/shared";
 
-const loanSchema = (typeValues: LoanTypes, priorityValues: PriorityTypes) => {
+const loanSchema = (typeValues: LoanTypes[], priorityValues: PriorityTypes[]) => {
     return z.object({
         name: z.string().min(3, "Min 3 symbols are required").max(255, "Max 255 symbols are allowed").trim(),
         sum: z.coerce.number().positive("Sum must be positive").min(0.01, "Sum must be at least 0.01"),
@@ -28,6 +28,6 @@ const loanSchema = (typeValues: LoanTypes, priorityValues: PriorityTypes) => {
     });
 }
 
-export const loanFormUtils = (typeValues: LoanTypes, priorityValues: PriorityTypes) => formUtils(loanSchema(typeValues, priorityValues));
+export const loanFormUtils = (typeValues: LoanTypes[], priorityValues: PriorityTypes[]) => formUtils(loanSchema(typeValues, priorityValues));
 export type LoanSchema = ReturnType<typeof loanSchema>;
 export type LoanSchemaType = z.infer<LoanSchema>;

@@ -4,7 +4,7 @@ import {
     loansPostSchema, LoanGetServer,
     LoanGetSchema, LoansGetServer,
     LoansRequestQuery, loansRequestQuerySchema,
-    CustomError, GetResServer, processLoans, GetPagResServer
+    CustomError, processLoans, GetPagResServer
 } from "@app/shared";
 import {Logger} from "../utils/logger";
 import {DB} from "../utils/db";

@@ -20,8 +20,7 @@ type CloseLoan = (id: string) => Promise<PagEntityGet<'loan'> | null>;
 
 type LoansProviderProps<T extends RequestQueryType> = ChildrenProp & Pick<PaginatedResource<T>, 'skipInitFetch'>;
 
-const LoansContext = createContext({});
-const LoansProvider = ({ children, skipInitFetch=false }: LoansProviderProps<LoansRequestQuery>) => {
+const useLoansContextValue = (skipInitFetch: boolean = false) => {
     const {
         items: loans,
         queryParams: loansQueryParams,
@@ -63,7 +62,7 @@ const LoansProvider = ({ children, skipInitFetch=false }: LoansProviderProps<Loa
         return updatedItem;
     }, [fetchItemsFromStart, hideChangeLoader, showChangeLoader, total])
 
-    const value = useMemo(() => ({
+    return useMemo(() => ({
         loans,
         loansQueryParams,
         addLoan,
@@ -79,6 +78,13 @@ const LoansProvider = ({ children, skipInitFetch=false }: LoansProviderProps<Loa
         sortByOptions,
         closeLoan
     }), [LoansChangeLoader, LoansGetLoader, addLoan, deleteLoan, editLoan, getNextLoansPage, loans, loansQueryParams, resetLoansQueryParams, updateLoansQueryParams, closeLoan])
+}
+
+export type LoansContextType = ReturnType<typeof useLoansContextValue>;
+const LoansContext = createContext<LoansContextType>({} as LoansContextType);
+
+const LoansProvider = ({ children, skipInitFetch=false }: LoansProviderProps<LoansRequestQuery>) => {
+    const value = useLoansContextValue(skipInitFetch)
 
     return (<LoansContext.Provider value={value}>
         {children}

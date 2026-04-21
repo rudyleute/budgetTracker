@@ -20,7 +20,7 @@ import TransactionsForm from './TransactionsForm';
 import {onFormSubmit, SubmitWithoutId} from '../../helpers/utils';
 import {TransactionsRequestQuery} from "@app/shared";
 import {FormRef} from "../../types/basic";
-import {TransactionGetClient} from "../../types/components/mappings";
+import {PagEntityGet} from "../../types/components/mappings";
 
 const defaultOption = {label: "---Select the period---", id: "-1"}
 const TransactionsFilters = () => {
@@ -50,9 +50,9 @@ const TransactionsFilters = () => {
     const options = useMemo(() => createTimeFilters(setValues), [setValues]);
 
     const onTransactionCreate = useCallback(
-        async () => onFormSubmit<TransactionGetClient>(
+        async () => onFormSubmit<PagEntityGet<'transaction'>>(
             formRef.current?.getData,
-            addTransaction as SubmitWithoutId<TransactionGetClient>,
+            addTransaction as SubmitWithoutId<PagEntityGet<'transaction'>>,
             hideModal
         ), [addTransaction, hideModal]
     );

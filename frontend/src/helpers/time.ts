@@ -2,7 +2,7 @@ import {TransactionsRequestQuery} from "@app/shared";
 
 export type DateInput = ConstructorParameters<typeof Date>[0];
 export const getDate = (date: DateInput, options: Intl.DateTimeFormatOptions = {}): string => new Date(date).toLocaleDateString("en-CA", {hour12: false, ...options})
-export const formatTimestamp = (timestamp: DateInput, options: Intl.DateTimeFormatOptions): string => new Date(timestamp).toLocaleString("en-UK", { hour12: false, ...options })
+export const formatTimestamp = (timestamp: DateInput, options?: Intl.DateTimeFormatOptions): string => new Date(timestamp).toLocaleString("en-UK", { hour12: false, ...options })
 
 export const getDatetimeLocal = (date: Date) => {
     const year = date.getFullYear();
@@ -13,7 +13,7 @@ export const getDatetimeLocal = (date: Date) => {
     return `${year}-${month}-${day}T${hours}:${minutes}`;
 };
 
-export function daysUntilDateOnly(dateString: string) {
+export function daysUntilDateOnly(dateString: DateInput) {
     const now = new Date();
     const target = new Date(dateString);
 

@@ -5,23 +5,23 @@ import { twMerge } from 'tailwind-merge';
 import Asterisk from './Asterisk.jsx';
 import {AnyFieldError} from "../../types/basic";
 
-export interface SelectOption {
-    label: ReactNode
+export interface SelectOption<E = string> {
+    label: E
     func?: () => unknown
     id: string
 }
 
-interface SelectProps {
+interface SelectProps<E = string> {
     error?: AnyFieldError;
     lClassName?: string;
     className?: string;
     required?: boolean;
     value: ReactNode;
-    options: SelectOption[];
-    onOptionClick?: (elem: SelectOption) => unknown,
+    options: SelectOption<E>[];
+    onOptionClick?: (elem: SelectOption<E>) => unknown,
     label?: ReactNode;
 }
-const Select = ({ value, options, onOptionClick, required, className, label, error, lClassName }: SelectProps) => {
+const Select = <E = string>({ value, options, onOptionClick, required, className, label, error, lClassName }: SelectProps<E>) => {
     const [isOpen, setIsOpen] = useState<boolean>(false);
     const wrapperRef = useRef<HTMLDivElement>(null);
 
@@ -56,7 +56,7 @@ const Select = ({ value, options, onOptionClick, required, className, label, err
                                                            setIsOpen(false)
                                                            if (elem.func) await elem.func()
                                                            onOptionClick && await onOptionClick(elem)
-                                                       }}>{elem.label}</li>)}
+                                                       }}>{String(elem.label)}</li>)}
                   </ul>
                 </div>}
             </div>
@@ -65,4 +65,4 @@ const Select = ({ value, options, onOptionClick, required, className, label, err
     )
 }
 
-export default React.memo(Select);
+export default React.memo(Select) as typeof Select;
