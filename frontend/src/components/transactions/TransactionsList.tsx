@@ -52,7 +52,6 @@ const TransactionsList = () => {
         </Accordion>
     }), [grouped]);
 
-
     const isEmpty = transactionsMap.length === 0;
     return (
         <div className={"w-full flex flex-col gap-[5px] max-esml:gap-5 items-center"}>

@@ -28,8 +28,7 @@ const loansSchema = z.object({
     ).nullish(),
     created_at: createdAtField,
     updated_at: updatedAtField,
-    user_uid: userUidField,
-    is_due: z.boolean()
+    user_uid: userUidField
 });
 
 const loansCounterpartySchema = counterpartiesGetSchema.omit({
@@ -43,7 +42,8 @@ export const loansUserlessSchema = loansSchema.omit({ user_uid: true });
 export const loansGetSchema = loansUserlessSchema.omit({
     counterparty_id: true
 }).extend({
-    counterparty: loansCounterpartySchema
+    counterparty: loansCounterpartySchema,
+    is_due: z.boolean()
 });
 
 export const loansWriteSchema = loansUserlessSchema.omit({

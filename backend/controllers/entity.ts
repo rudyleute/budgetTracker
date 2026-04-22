@@ -37,7 +37,8 @@ export abstract class EntityController<TGetSchema extends z.ZodType<Exclude<Allo
         this.router.patch('/:id', this.updateEntity);
     }
 
-    protected getQueryFields = (source: string): string => this.getFields.map((field) => `${source}.${field as string}`).join(', ');
+    //some fields may need to be ignored if they are generated manually (not present in the table) but are present in the schema
+    protected getQueryFields = (source: string, ignore: typeof this.getFields = []): string => this.getFields.map((field) => !ignore.includes(field) && `${source}.${field as string}`).join(', ');
 
     protected createEntity = (req: Request, res: Response<z.infer<TGetSchema> | CustomError>) => this.handleUpsert({
         req,

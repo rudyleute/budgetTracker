@@ -13,11 +13,14 @@ export const transactionsRequestQuerySchema = basicRequestQuerySchema.extend({
     to: z.coerce.date().optional()
 }).omit({
     order: true,
-}).transform(data =>
+}).refine(({from, to}) => {
+    if (from && to) return from <= to;
+    return true;
+}, {message: "from must be before to", path: ["from"]}).transform(data =>
     Object.fromEntries(
         Object.entries(data)
             .filter(([, v]) => v !== undefined)
-            .map(([k, v]) => [k, String(v)])
+            .map(([k, v]) => [k, v instanceof Date ? v.toISOString() : String(v)])
     ) as Record<string, string>
 );
 export type TransactionsRequestQuery = z.infer<typeof transactionsRequestQuerySchema>;
@@ -52,5 +55,5 @@ export const loansRequestQuerySchema = basicRequestQuerySchema.extend({
 );
 export type LoansRequestQuery = z.infer<typeof loansRequestQuerySchema>;
 
-export const counterpartiesRequestQuerySchema = basicRequestQuerySchema.omit({ order: true });
+export const counterpartiesRequestQuerySchema = basicRequestQuerySchema.omit({order: true});
 export type CounterpartiesRequestQuery = z.infer<typeof counterpartiesRequestQuerySchema>;

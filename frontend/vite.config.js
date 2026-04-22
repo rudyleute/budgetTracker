@@ -11,4 +11,10 @@ export default defineConfig({
     react(),
     tailwindcss(),
   ],
+  define: {
+    'process.env': Object.fromEntries(
+      Object.entries(process.env)
+        .filter(([key]) => key.startsWith('VITE_'))
+    )
+  }
 })

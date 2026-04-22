@@ -25,13 +25,13 @@ import {PagEntityGet} from "../../types/components/mappings";
 const defaultOption = {label: "---Select the period---", id: "-1"}
 const TransactionsFilters = () => {
     const [option, setOption] = useState<SelectOption>(defaultOption);
-    const [searchValue, setSearchValue] = useState("");
+    const [searchValue, setSearchValue] = useState<string>("");
     const {addTransaction, queryTransParams, updateTransQueryParams, resetTransQueryParams} = useTransactions();
     const {showModal, hideModal} = useModal();
     const formRef = useRef<FormRef>(null);
 
     const debouncedSearch = useCallback(
-        _.debounce((value) => {
+        _.debounce((value: string) => {
             updateTransQueryParams({filter: value})
         }, 500),
         [updateTransQueryParams]
@@ -41,7 +41,7 @@ const TransactionsFilters = () => {
         const value = e.target.value;
         setSearchValue(value);
         debouncedSearch(value);
-    }, [debouncedSearch])
+    }, [debouncedSearch]);
 
     const setValues = useCallback((from: TransactionsRequestQuery["from"], to: TransactionsRequestQuery["to"]) => {
         updateTransQueryParams({from, to});
@@ -66,6 +66,7 @@ const TransactionsFilters = () => {
         })
     }, [onTransactionCreate, showModal])
 
+    //todo should check that from does not chronologically precede to. Refuse setting the value otherwise
     return (
         <div className={"grid filters-4-grid gap-2.5 animate-fade-in"}>
             <Input

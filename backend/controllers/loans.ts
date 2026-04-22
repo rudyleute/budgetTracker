@@ -259,7 +259,7 @@ export class LoansController extends EntityController<LoanGetSchema> {
 
         return {
             query: `
-                SELECT ${this.getQueryFields(source)},
+                SELECT ${this.getQueryFields(source, ['counterparty', 'is_due'])},
                        json_build_object(
                                'id', cp.id,
                                'name', cp.name,

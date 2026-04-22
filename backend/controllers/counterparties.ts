@@ -79,7 +79,7 @@ export class CounterpartiesController extends EntityController<CounterpartyGetSc
             const offsetClause = `OFFSET $${params.length}`;
 
             const query = `
-                ${this.getBasicQuery(this.tableName, params.length - 2)}
+                ${this.getBasicQuery(this.tableName, 1)}
                 WHERE ${cond.join(' AND ')}
                     GROUP BY ${this.tableName}.id
                     ORDER BY balance DESC, ${this.tableName}.name

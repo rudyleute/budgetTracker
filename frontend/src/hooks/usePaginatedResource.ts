@@ -1,10 +1,10 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { toast } from 'react-toastify';
 import _ from 'lodash';
-import api from '../services/axios.js';
-import { fetchHandler } from '../services/api.js';
-import { formToast, formToastMain } from '../helpers/toast.jsx';
-import { newQueryParams } from '../helpers/utils.js';
+import api from '../services/axios';
+import { fetchHandler } from '../services/api';
+import { formToast, formToastMain } from '../helpers/toast';
+import { newQueryParams } from '../helpers/utils';
 import useLoader from './useLoader';
 import { ScaleLoader, SyncLoader } from 'react-spinners';
 import {RequestQueryType} from "../types/basic";
