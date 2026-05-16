@@ -103,10 +103,10 @@ const Sidebar = () => {
             <>
         <span className={"flex justify-center w-full shrink-0 whitespace-nowrap text-(--color-text)"}>
           {item.phone &&
-            <IconButton title={`Call +${item.phone}`} onClick={() => navigate(`tel:+${item.phone}`)} icon={faPhone}
+            <IconButton title={`Call +${item.phone}`} onClick={() => window.location.href = `tel:${item.phone}`} icon={faPhone}
                         iconClassName={"text-(--color-third)"}/>}
             {item.email &&
-              <IconButton title={`Mail ${item.email}`} onClick={() => navigate(`mailto:${item.email}`)} icon={faAt}
+              <IconButton title={`Mail ${item.email}`} onClick={() => window.location.href = `mailto:${item.email}`} icon={faAt}
                           iconClassName={"text-(--color-third)"}/>}
         </span>
                 <span className={"text-clipped"}>{item.name}</span>

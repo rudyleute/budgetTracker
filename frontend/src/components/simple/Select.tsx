@@ -5,13 +5,13 @@ import { twMerge } from 'tailwind-merge';
 import Asterisk from './Asterisk.jsx';
 import {AnyFieldError} from "../../types/basic";
 
-export interface SelectOption<E = string> {
+export interface SelectOption<E extends ReactNode = string> {
     label: E
     func?: () => unknown
     id: string
 }
 
-interface SelectProps<E = string> {
+interface SelectProps<E extends ReactNode = string> {
     error?: AnyFieldError;
     lClassName?: string;
     className?: string;
@@ -21,7 +21,7 @@ interface SelectProps<E = string> {
     onOptionClick?: (elem: SelectOption<E>) => unknown,
     label?: ReactNode;
 }
-const Select = <E = string>({ value, options, onOptionClick, required, className, label, error, lClassName }: SelectProps<E>) => {
+const Select = <E extends ReactNode = string>({ value, options, onOptionClick, required, className, label, error, lClassName }: SelectProps<E>) => {
     const [isOpen, setIsOpen] = useState<boolean>(false);
     const wrapperRef = useRef<HTMLDivElement>(null);
 
@@ -56,7 +56,7 @@ const Select = <E = string>({ value, options, onOptionClick, required, className
                                                            setIsOpen(false)
                                                            if (elem.func) await elem.func()
                                                            onOptionClick && await onOptionClick(elem)
-                                                       }}>{String(elem.label)}</li>)}
+                                                       }}>{elem.label}</li>)}
                   </ul>
                 </div>}
             </div>

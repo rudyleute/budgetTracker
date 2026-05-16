@@ -9,6 +9,7 @@ export type ButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement> & Childr
 const Button = ({ children, className, onClick, ...rest }: ButtonProps) => {
     const handleOnClick = (e: React.MouseEvent<HTMLButtonElement>) => {
         e.stopPropagation();
+        e.preventDefault();
         onClick && onClick(e);
     }
     return (
